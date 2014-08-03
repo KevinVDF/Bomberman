@@ -6,6 +6,7 @@
              xmlns:gameRoom="clr-namespace:ClientWPF.ViewModels.GameRoom"
              mc:Ignorable="d" 
              d:DataContext="{d:DesignInstance gameRoom:GameRoomViewModelDesignData, IsDesignTimeCreatable=True}"
+<<<<<<< HEAD
              d:DesignHeight="900" d:DesignWidth="1400">
     <Grid>
         
@@ -27,5 +28,25 @@
 
                 </Button>
         </StackPanel>
+=======
+             d:DesignHeight="300" d:DesignWidth="300">
+    <Grid>
+        <Grid.Resources>
+            <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
+        </Grid.Resources>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="20"/>
+        </Grid.RowDefinitions>
+        <TextBlock Grid.Row="0" Width="400" Height="500"
+                     Text="{Binding Path=RichText}">
+        </TextBlock>
+        <Button Grid.Row="1" Content="Start Game" 
+                IsEnabled="{Binding IsStartEnabled}"
+                Command="{Binding StartGameCommand}"
+                Visibility="{Binding IsStartVisible, Converter={StaticResource BooleanToVisibilityConverter}}">
+
+        </Button>
+>>>>>>> origin/master
     </Grid>
 </UserControl>

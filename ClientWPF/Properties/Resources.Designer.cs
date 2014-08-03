@@ -9,6 +9,12 @@
 //------------------------------------------------------------------------------
 
 namespace ClientWPF.Properties {
+<<<<<<< HEAD
+=======
+    using System;
+    
+    
+>>>>>>> origin/master
     /// <summary>
     ///   A strongly-typed resource class, for looking up localized strings, etc.
     /// </summary>

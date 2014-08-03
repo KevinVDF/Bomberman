@@ -1,15 +1,24 @@
 ﻿using System.Collections.Generic;
 using System.Collections.ObjectModel;
+<<<<<<< HEAD
 using System.Linq;
 using System.Windows.Input;
 using ClientWPF.MVVM;
 using Common.DataContract;
 using Common.Interfaces;
+=======
+using System.ComponentModel;
+using System.Configuration;
+using System.Windows.Documents;
+using System.Windows.Input;
+using Common.DataContract;
+>>>>>>> origin/master
 
 namespace ClientWPF.ViewModels.GameRoom
 {
     public class GameRoomViewModel : ViewModelBase
     {
+<<<<<<< HEAD
         public static IBombermanService Proxy { get; set; }
 
         public const string MapPath = @"C:\Users\hisil\HDD backup 2012\Bomberman\Server\map.dat";
@@ -17,6 +26,11 @@ namespace ClientWPF.ViewModels.GameRoom
         public Player Player { get; set; }
 
         public ObservableCollection<string> PlayerList { get; set; }
+=======
+        public ObservableCollection<string> PlayerList { get; 
+            set;
+        }
+>>>>>>> origin/master
 
         private bool _isVisible;
         public bool IsVisible
@@ -49,6 +63,7 @@ namespace ClientWPF.ViewModels.GameRoom
         private ICommand _startGameCommand;
         public ICommand StartGameCommand
         {
+<<<<<<< HEAD
             get
             {
                 _startGameCommand = _startGameCommand ?? new RelayCommand(StartGame);
@@ -82,6 +97,16 @@ namespace ClientWPF.ViewModels.GameRoom
             }
             else richText += "Wait until the creator start the game.";
             RichText = richText;
+=======
+            get { return _startGameCommand; } 
+            set { Set(() => StartGameCommand, ref _startGameCommand, value); }
+        }
+
+        public void Initialize(bool isLogged, string text)
+        {
+            IsVisible = isLogged;
+            RichText = text;
+>>>>>>> origin/master
         }
     }
 

@@ -4,13 +4,27 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:login="clr-namespace:ClientWPF.Views.Login"
+<<<<<<< HEAD
         xmlns:gameroom="clr-namespace:ClientWPF.Views.GameRoom"
         xmlns:startedgame="clr-namespace:ClientWPF.Views.StartedGame"
         xmlns:viewModels="clr-namespace:ClientWPF.ViewModels"
+=======
+<<<<<<< HEAD
+        xmlns:gameroom="clr-namespace:ClientWPF.Views.GameRoom"
+        xmlns:viewModels="clr-namespace:ClientWPF.ViewModels"
+        xmlns:converter="clr-namespace:ClientWPF.Converter"
+=======
+        xmlns:viewModels="clr-namespace:ClientWPF.ViewModels"
+>>>>>>> origin/master
+>>>>>>> origin/master
         mc:Ignorable="d"
         d:DataContext="{d:DesignInstance viewModels:BombermanViewModelDesignData, IsDesignTimeCreatable=True}"
         Loaded="Window_Loaded" Title="Bomberman v1.0" Height="900" Width="1400" WindowStartupLocation="CenterScreen" WindowStyle="ToolWindow">
     <Grid>
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+>>>>>>> origin/master
         <Grid.Resources>
             <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
         </Grid.Resources>
@@ -19,7 +33,13 @@
                        DataContext="{Binding Path=LoginViewModel}"/>
         <gameroom:ucGameRoom  Visibility="{Binding IsVisible, Converter={StaticResource BooleanToVisibilityConverter}}"
                              DataContext="{Binding Path=GameRoomViewModel}"/>
+<<<<<<< HEAD
         <startedgame:ucStartedGame Visibility="{Binding IsVisible, Converter={StaticResource BooleanToVisibilityConverter}}"
                              DataContext="{Binding Path=StartedGameViewModel}"/>
+=======
+=======
+        <login:ucLogin/>
+>>>>>>> origin/master
+>>>>>>> origin/master
     </Grid>
 </Window>

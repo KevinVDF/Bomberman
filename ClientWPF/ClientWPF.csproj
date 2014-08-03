@@ -81,6 +81,11 @@
     <Compile Include="Views\StartedGame\ucStartedGame.xaml.cs">
       <DependentUpon>ucStartedGame.xaml</DependentUpon>
     </Compile>
+    <Compile Include="ViewModels\Login\LoginViewModel.cs" />
+    <Compile Include="ViewModels\ViewModelBase.cs" />
+    <Compile Include="Views\Login\ucLogin.xaml.cs">
+      <DependentUpon>ucLogin.xaml</DependentUpon>
+    </Compile>
     <Page Include="Views\Bomberman.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
