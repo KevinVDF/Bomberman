@@ -1,9 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using ClientWPF.ViewModels;
 using Common.DataContract;
 
-namespace Client.Logic
+namespace ClientWPF.Logic
 {
     public class ClientProcessor
     {
@@ -11,46 +12,21 @@ namespace Client.Logic
 
         public Map Map { get; set; }
 
+        public static BombermanViewModel BombermanViewModel { get; set; }
+
         public void OnUserConnected(Player player, List<String> loginsList, bool canStartGame)
         {
-            Player = player;
-
-            InitializeConsole();
-            Console.WriteLine("--------------------------------------");
-            Console.WriteLine("-------- Welcome to Bomberman --------");
-            Console.WriteLine("--------------------------------------\n\n");
-            Console.WriteLine("New User Joined the server : " + player.Username + "\n");
-            Console.WriteLine("List of players online :\n\n");
-            foreach (string login in loginsList)
-            {
-                Console.WriteLine(login + "\n\n");
-            }
-            if (Player.IsCreator)
-            {
-                //todo don't allow user to click on s if canstartgame is false
-                Console.WriteLine(canStartGame ? "Press S to start the game" : "Wait for other players.");
-            }
-            else Console.WriteLine("Wait until the creator start the game.");
+            BombermanViewModel.OnUserConnected(player, loginsList, canStartGame);
         }
 
         public void OnGameStarted(Game newGame)
         {
             InitializeConsole();
-            Console.WriteLine("--------------------------------------");
-            Console.WriteLine("-------- Welcome to Bomberman --------");
-            Console.WriteLine("--------------------------------------");
-            Console.WriteLine("---------------FIGHT!-----------------");
-            Console.WriteLine("--------------------------------------");
             DisplayMap(newGame);
         }
 
         private static void InitializeConsole()
         {
-            Console.SetWindowSize(80, 30);
-            Console.BufferWidth = 80;
-            Console.BufferHeight = 30;
-            Console.CursorVisible = false;
-            Console.Clear();
         }
 
         public void OnMove(LivingObject objectToMoveBefore, LivingObject objectToMoveAfter)

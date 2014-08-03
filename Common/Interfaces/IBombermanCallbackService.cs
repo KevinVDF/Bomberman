@@ -5,11 +5,11 @@ using Common.DataContract;
 
 namespace Common.Interfaces
 {
-
+    
     public interface IBombermanCallbackService
     {
         [OperationContract(IsOneWay = true)]
-        void OnUserConnected(Player player, List<string> logins, bool canStartGame);
+        void OnUserConnected(Player newPlayer, List<string> logins, bool canStartGame);
 
         [OperationContract(IsOneWay = true)]
         void OnGameStarted(Game newGame);
