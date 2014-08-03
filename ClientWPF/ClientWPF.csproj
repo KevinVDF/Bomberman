@@ -70,6 +70,8 @@
     <Compile Include="Views\GameRoom\ucGameRoom.xaml.cs">
       <DependentUpon>ucGameRoom.xaml</DependentUpon>
     </Compile>
+    <Compile Include="ViewModels\Login\LoginViewModel.cs" />
+    <Compile Include="ViewModels\ViewModelBase.cs" />
     <Compile Include="Views\Login\ucLogin.xaml.cs">
       <DependentUpon>ucLogin.xaml</DependentUpon>
     </Compile>

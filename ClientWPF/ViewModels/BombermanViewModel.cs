@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,6 +11,10 @@ using ClientWPF.ViewModels.Login;
 using Common.DataContract;
 using Common.Interfaces;
 using System.ServiceModel;
+=======
+﻿using ClientWPF.ViewModels.Login;
+using Common.Interfaces;
+>>>>>>> origin/master
 
 namespace ClientWPF.ViewModels
 {
@@ -17,7 +22,11 @@ namespace ClientWPF.ViewModels
     {
         #region Properties
 
+<<<<<<< HEAD
         public Player Player { get; set; }
+=======
+        public IBombermanService Proxy { get; private set; }
+>>>>>>> origin/master
 
         private LoginViewModel _loginViewModel;
         public LoginViewModel LoginViewModel
@@ -26,6 +35,7 @@ namespace ClientWPF.ViewModels
             set { Set(() => LoginViewModel, ref _loginViewModel, value); }
         }
 
+<<<<<<< HEAD
         private GameRoomViewModel _gameRoomViewModel;
         public GameRoomViewModel GameRoomViewModel
         {
@@ -39,12 +49,15 @@ namespace ClientWPF.ViewModels
             GameRoomViewModel = new GameRoomViewModel();
         }
 
+=======
+>>>>>>> origin/master
         #endregion 
 
         #region Methods
 
         public void Initialize()
         {
+<<<<<<< HEAD
             var context = new InstanceContext(new BombermanCallbackService(this));
             var factory = new DuplexChannelFactory<IBombermanService>(context, "WSDualHttpBinding_IBombermanService");
             LoginViewModel.Initialize(true,factory.CreateChannel());
@@ -74,6 +87,9 @@ namespace ClientWPF.ViewModels
             if (canStartGame)
                 GameRoomViewModel.IsStartEnabled = true;
             GameRoomViewModel.IsStartVisible = Player.IsCreator;
+=======
+            LoginViewModel.Initialize(Proxy);
+>>>>>>> origin/master
         }
 
         #endregion
@@ -84,7 +100,10 @@ namespace ClientWPF.ViewModels
         public BombermanViewModelDesignData()
         {
             LoginViewModel = new LoginViewModelDesignData();
+<<<<<<< HEAD
             GameRoomViewModel = new GameRoomViewModelDesignData();
+=======
+>>>>>>> origin/master
         }
     }
 }
