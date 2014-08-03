@@ -55,9 +55,11 @@ namespace Client.Logic
 
         public void OnMove(LivingObject objectToMoveBefore, LivingObject objectToMoveAfter)
         {
-            if (Map == null) return;
+            if (Map == null) 
+                return;
             //check if object to move does exists
-            if (!Map.GridPositions.Any(livingObject => livingObject.ComparePosition(objectToMoveBefore))) return;
+            if (!Map.GridPositions.Any(livingObject => livingObject.ComparePosition(objectToMoveBefore))) 
+                return;
             //if before is player and is "me" then update global player
             if (objectToMoveBefore is Player && Player.CompareId(objectToMoveBefore))
                 Player = objectToMoveAfter as Player;
@@ -79,7 +81,7 @@ namespace Client.Logic
             {
                 Console.SetCursorPosition(item.ObjectPosition.PositionX, 10 + item.ObjectPosition.PositionY); // 10 should be replaced with map parameters
                 char toDisplay = ObjectToChar(item);
-                
+
                 Console.Write(toDisplay);
             }
         }

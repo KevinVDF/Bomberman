@@ -30,7 +30,7 @@ namespace Server.Logic
         //id is generated client side to allow many players with same username
         public void ConnectUser(string username, int id)
         {
-            //create new Player
+           //create new Player
             PlayerModel newPlayer = new PlayerModel
                 {
                     Player = new Player
@@ -57,7 +57,7 @@ namespace Server.Logic
 
         public void StartGame(string mapPath)
         {
-            //create the list of players to pass to client
+           //create the list of players to pass to client
             List<Player> players = _server.PlayersOnline.Select(playerModel => playerModel.Player).ToList();
 
             Game newGame = new Game
@@ -79,7 +79,7 @@ namespace Server.Logic
 
         public void MovePlayerToLocation(int idPlayer, ActionType actionType)
         {
-            foreach (Player player in _server.GameCreated.Map.GridPositions.Where(livingObject => livingObject is Player && ((Player)livingObject).Id == idPlayer))
+foreach (Player player in _server.GameCreated.Map.GridPositions.Where(livingObject => livingObject is Player && ((Player)livingObject).Id == idPlayer))
             {
                 switch (actionType)
                 {
@@ -167,40 +167,6 @@ namespace Server.Logic
             }
             return matrice;
         }
-
-
-        //// SinaC: Move(0,-1) for MoveUp, Move(0,+1) for MoveDown, ...
-        //private void Move(Player before, int stepX, int stepY)
-        //{
-        //    // Get object at future player location
-        //    LivingObject collider = _server.GameCreated.Map.GridPositions.FirstOrDefault(x => before.ObjectPosition.PositionY + stepY == x.ObjectPosition.PositionY
-        //                                                                                     && before.ObjectPosition.PositionX + stepX == x.ObjectPosition.PositionX);
-        //    // Can't go thru wall
-        //    if (collider is Wall)
-        //        return;
-        //    //can't go if another player is already on the way
-        //    if (collider is Player)
-        //        return;
-        //    Player after = new Player
-        //    {
-        //        Username = before.Username,
-        //        ObjectPosition = new Position
-        //        {
-        //            PositionX = before.ObjectPosition.PositionX + stepX,
-        //            PositionY = before.ObjectPosition.PositionY + stepY,
-        //        },
-        //        Id = before.Id
-        //    };
-
-        //    // Remove player from old position
-        //    _server.GameCreated.Map.GridPositions.Remove(before);
-        //    // And add to new position
-        //    _server.GameCreated.Map.GridPositions.Add(after);
-
-        //    // Send new player position to players
-        //    foreach (PlayerModel playerModel in _server.PlayersOnline)
-        //        playerModel.CallbackService.OnMove(before, after);
-        //}
         // SinaC: Move(0,-1) for MoveUp, Move(0,+1) for MoveDown, ...
         // alternative to bypass the erase in window console
         private void Move(Player before, int stepX, int stepY)
@@ -223,7 +189,8 @@ namespace Server.Logic
                     Id = before.Id
                 };
             }
-            else after = before;
+            else 
+                after = before;
             // Remove player from old position
             _server.GameCreated.Map.GridPositions.Remove(before);
             // And add to new position
