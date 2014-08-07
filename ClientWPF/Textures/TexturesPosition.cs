@@ -1,6 +1,4 @@
-﻿using System.Drawing.Printing;
-
-namespace ClientWPF.Textures
+﻿namespace ClientWPF.Textures
 {
     public class TexturesPosition
     {
@@ -16,12 +14,12 @@ namespace ClientWPF.Textures
 
         public const int SpaceBetweenImages = 3;
 
-        public const int DownImagePosition = 0;
+        public const int DownImagePosition = 1;
 
-        public const int LeftImagePosition = 3;
+        public const int LeftImagePosition = 4;
 
-        public const int RightImagePosition = 6;
+        public const int RightImagePosition = 7;
 
-        public const int UpImagePosition = 9;
+        public const int UpImagePosition = 10;
     }
 }

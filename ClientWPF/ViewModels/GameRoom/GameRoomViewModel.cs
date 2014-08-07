@@ -1,10 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Configuration;
 using System.Linq;
-using System.ServiceModel.Configuration;
-using System.Windows.Forms;
 using System.Windows.Input;
 using ClientWPF.MVVM;
 using Common.DataContract;

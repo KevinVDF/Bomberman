@@ -1,6 +1,4 @@
-﻿using ClientWPF.ViewModels.GameRoom;
-
-namespace ClientWPF.Views.GameRoom
+﻿namespace ClientWPF.Views.GameRoom
 {
     /// <summary>
     /// Interaction logic for ucGameRoom.xaml

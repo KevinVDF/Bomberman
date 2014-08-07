@@ -27,8 +27,7 @@ namespace Client
             Console.WriteLine("Type your player name :\n");
             string login = Console.ReadLine();
             username = login;
-            id = Guid.NewGuid().GetHashCode();
-            ConnectPlayer(username, id);
+            ConnectPlayer(username);
             Log.Initialize(@"D:\Temp\BombermanLogs", "Client_" + login +".log");
             Log.WriteLine(Log.LogLevels.Info, "Logged at " + DateTime.Now.ToShortTimeString());
 
@@ -43,16 +42,16 @@ namespace Client
                         StartGame();
                         break;
                     case ConsoleKey.UpArrow:
-                        MoveTo(id, ActionType.MoveUp);
+                        MoveTo(ActionType.MoveUp);
                         break;
                     case ConsoleKey.LeftArrow:
-                        MoveTo(id, ActionType.MoveLeft);
+                        MoveTo(ActionType.MoveLeft);
                         break;
                     case ConsoleKey.RightArrow:
-                        MoveTo(id, ActionType.MoveRight);
+                        MoveTo(ActionType.MoveRight);
                         break;
                     case ConsoleKey.DownArrow:
-                        MoveTo(id, ActionType.MoveDown);
+                        MoveTo(ActionType.MoveDown);
                         break;
                     case ConsoleKey.X: // SinaC: never leave a while(true) without an exit condition
                         stop = true;
@@ -83,9 +82,9 @@ namespace Client
             Proxy.StartGame(MapPath);
         }
 
-        private static void MoveTo(int playerId, ActionType actionType)
+        private static void MoveTo(int playerID, ActionType actionType)
         {
-            Proxy.MovePlayerToLocation(playerId, actionType);
+            Proxy.MoveObjectToLocation(playerID, actionType);
         }
     }
 }

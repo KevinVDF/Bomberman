@@ -61,6 +61,7 @@
     <Compile Include="Helpers\ExecuteOnUIThread.cs" />
     <Compile Include="Helpers\IOService.cs" />
     <Compile Include="Helpers\UriHelpers.cs" />
+    <Compile Include="ViewModels\StartedGame\Sprite.cs" />
     <Compile Include="MVVM\AsyncMessenger.cs" />
     <Compile Include="MVVM\ObservableObject.cs" />
     <Compile Include="MVVM\RelayCommand.cs" />
@@ -69,10 +70,9 @@
     <Compile Include="ViewModels\GameRoom\GameRoomViewModel.cs" />
     <Compile Include="ViewModels\Login\LoginViewModel.cs" />
     <Compile Include="ViewModels\StartedGame\MapViewModel.cs" />
-    <Compile Include="Model\PlayerItem.cs" />
-    <Compile Include="ViewModels\StartedGame\Sprite.cs" />
+    <Compile Include="ViewModels\StartedGame\PlayerItem.cs" />
     <Compile Include="ViewModels\StartedGame\StartedGameViewModel.cs" />
-    <Compile Include="Model\WallItem.cs" />
+    <Compile Include="ViewModels\StartedGame\WallItem.cs" />
     <Compile Include="ViewModels\ViewModelBase.cs" />
     <Compile Include="Views\GameRoom\ucGameRoom.xaml.cs">
       <DependentUpon>ucGameRoom.xaml</DependentUpon>
@@ -177,7 +177,9 @@
   <ItemGroup>
     <Resource Include="Images\Players.png" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="Model\" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

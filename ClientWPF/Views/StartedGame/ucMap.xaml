@@ -17,10 +17,10 @@
             <ItemsControl.ItemTemplate>
                 <DataTemplate>
                     <Canvas>
-                        <Rectangle Width="50" Height="50" Canvas.Top="{Binding Path=PositionY}" Canvas.Left="{Binding Path=PositionX}">
-                            <Rectangle.Fill>
-                                <ImageBrush ImageSource="{Binding Sprite}"/>
-                            </Rectangle.Fill>
+                        <Rectangle Width="50" Height="50" Canvas.Top="{Binding Path=PositionY}" Canvas.Left="{Binding Path=PositionX}" Fill="{Binding ImageInUse}">
+                            <!--<Rectangle.Fill>
+                                <ImageBrush  ImageSource="{Binding ImageInUse}" />
+                            </Rectangle.Fill>-->
                         </Rectangle>
                     </Canvas>
                 </DataTemplate>

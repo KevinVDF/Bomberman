@@ -13,6 +13,6 @@ namespace Common.Interfaces
         void StartGame(string mapPath);
 
         [OperationContract(IsOneWay = true)]
-        void MoveObjectToLocation(int idPlayer, ActionType actionType); //up,down,left,right
+        void MoveObjectToLocation(int playerID, ActionType actionType);
     }
 }

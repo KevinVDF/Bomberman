@@ -14,7 +14,6 @@ namespace Common.DataContract
         [DataMember]
         public bool IsCreator { get; set; }
 
-
         public bool CompareId(LivingObject objectToCompare)
         {
             if (GetType() == objectToCompare.GetType())

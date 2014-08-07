@@ -1,17 +1,15 @@
-﻿using System;
-using System.Windows.Controls;
-using System.Windows.Media;
+﻿using System.Windows.Media;
 using ClientWPF.MVVM;
 
 namespace ClientWPF.ViewModels.StartedGame
 {
     public abstract class LivingObjectItem : ObservableObject
     {
-        private Brush _sprite;
-        public Brush Sprite
+        private Brush _imageInUse;
+        public Brush ImageInUse
         {
-            get { return _sprite; } 
-            set { Set(() => Sprite, ref _sprite, value); }
+            get { return _imageInUse; }
+            set { Set(() => ImageInUse, ref _imageInUse, value); }
         }
 
         private int _positionX;

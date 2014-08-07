@@ -1,12 +1,9 @@
 ﻿using System;
 using System.Configuration;
-using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using ClientWPF.ViewModels.StartedGame;
-using Common.DataContract;
 
 namespace ClientWPF.Views.StartedGame
 {

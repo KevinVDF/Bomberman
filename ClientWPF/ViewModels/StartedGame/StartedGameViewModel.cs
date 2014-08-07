@@ -4,12 +4,10 @@ using System.Configuration;
 using System.Windows;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using ClientWPF.Model;
 using ClientWPF.Textures;
 using Common.DataContract;
 using Common.Interfaces;
 using Common.Log;
-using Player = ClientWPF.Model.Player;
 
 namespace ClientWPF.ViewModels.StartedGame
 {
@@ -66,22 +64,26 @@ namespace ClientWPF.ViewModels.StartedGame
             foreach (LivingObject livingObject in newGame.Map.GridPositions)
             {
                 LivingObjectItem livingObjectItem = null;
-                if(livingObject is Wall)
-                    livingObjectItem = new Wall
-                    {
-                        PositionX = livingObject.ObjectPosition.PositionX,
-                        PositionY = livingObject.ObjectPosition.PositionY,
-                        WallType = ((Wall)livingObject).WallType
-                    };
-                if (livingObject is Common.DataContract.Player)
+                if (livingObject is Wall)
                 {
-                    livingObjectItem = new Player
+                    livingObjectItem = new WallItem
+                    {
+                        PositionX = livingObject.ObjectPosition.PositionX,
+                        PositionY = livingObject.ObjectPosition.PositionY,
+                        WallType = ((Wall) livingObject).WallType
+                    };
+                    GetSpriteForWall(livingObjectItem);
+                }
+                if (livingObject is Player)
+                {
+                    livingObjectItem = new PlayerItem
                     {
                         PositionX = livingObject.ObjectPosition.PositionX,
                         PositionY = livingObject.ObjectPosition.PositionY,
                     };
+                    
+                    GetSpriteForPlayer(livingObjectItem as PlayerItem, playerNumber);
                     playerNumber++;
-                    GetSpriteForPlayer(livingObjectItem as Player, playerNumber);
                 }
                 
                 livingObjectItems.Add(livingObjectItem);
@@ -89,21 +91,34 @@ namespace ClientWPF.ViewModels.StartedGame
             MapViewModel.LivingObjects = livingObjectItems;
         }
 
-        private void GetSpriteForPlayer(Player player, int playerNumber)
+        private void GetSpriteForPlayer(PlayerItem player, int playerNumber)
         {
+            string playersImagePath = String.Format(@"{0}\players.png", GlobalImagePath);
+            BitmapImage imageBmp = new BitmapImage(new Uri(playersImagePath));
 
-            string playersImagePath = String.Format("{0}/players.png", GlobalImagePath);
-            
-            for (int i = 0; i <= TexturesPosition.NumberImagesPerSpriteByPlayer; i++)
+            for (int i = 0; i < TexturesPosition.NumberImagesPerSpriteByPlayer; i++)
             {
                 //down
-                ExtractDown(player, playerNumber, playersImagePath, i, TexturesPosition.DownImagePosition);
+                ExtractDown(player, playerNumber, imageBmp, i, TexturesPosition.DownImagePosition);
                 ////left
                 //ExtractLeft(playerItem, playerNumber, playersImagePath);
                 ////right
                 //ExtractRight(playerItem, playerNumber, playersImagePath);
                 ////up
                 //ExtractUp(playerItem, playerNumber, playersImagePath);
+            }
+        }
+
+        private void GetSpriteForWall(LivingObjectItem livingObjectItem)
+        {
+            switch (((WallItem)livingObjectItem).WallType)
+            {
+                case WallType.Undestructible:
+                    livingObjectItem.ImageInUse = new ImageBrush(new BitmapImage(new Uri(ConfigurationManager.AppSettings["ImagePath"] + @"\Undestructible.png")));
+                    break;
+                case WallType.Destructible:
+                    livingObjectItem.ImageInUse = new ImageBrush(new BitmapImage(new Uri(ConfigurationManager.AppSettings["ImagePath"] + @"\Destructible.png")));
+                    break;
             }
         }
 
@@ -140,42 +155,17 @@ namespace ClientWPF.ViewModels.StartedGame
         //    }
         //}
 
-        private void ExtractDown(Player player, int playerNumber, string playersImagePath, int imageNumber, int imageDirectionStart)
+        private static void ExtractDown(PlayerItem player, int playerNumber, BitmapImage imageBmp, int imageNumber, int imageDirectionStart)
         {
             //posX = start + Image direction start * number of image * (player width + space between them)
-            int posX = TexturesPosition.PlayerStartImageX + (imageDirectionStart * imageNumber * (TexturesPosition.PlayerWidth + TexturesPosition.SpaceBetweenImages));
+            int posX = TexturesPosition.PlayerStartImageX + (imageDirectionStart*imageNumber*(TexturesPosition.PlayerWidth + TexturesPosition.SpaceBetweenImages));
             //posY = start + player number * (playerHeight  + space between them)
             int posY = TexturesPosition.PlayerStartImageY + playerNumber*(TexturesPosition.PlayerHeight + TexturesPosition.SpaceBetweenImages);
 
-            player.Down.Images.Add(ExtractBackground(new BitmapImage(
-                    new Uri(playersImagePath)), posX, posY , TexturesPosition.PlayerWidth, TexturesPosition.PlayerHeight));
-            
+            player.Down.Images.Add(ExtractBackground(imageBmp, posX, posY, TexturesPosition.PlayerWidth, TexturesPosition.PlayerHeight));
+            if(imageNumber == 2)
+                player.ImageInUse = player.Down.Images[1];
         }
-
-        //private void GetSpriteForWall(LivingObjectItem livingObjectItem, int playerNumber)
-        //{
-
-        //    livingObjectItem.Sprite = new Sprite();
-        //    if (livingObjectItem is WallItem)
-        //    {
-        //        if (((WallItem)livingObjectItem).WallType == WallType.Undestructible)
-        //        {
-        //            livingObjectItem.Sprite.Image1 =
-        //                new Uri(ConfigurationManager.AppSettings["ImagePath"] + @"\Undestructible.png");
-        //        }
-        //        if (((WallItem)livingObjectItem).WallType == WallType.Destructible)
-        //        {
-        //            livingObjectItem.Sprite.Image1 =
-        //                new Uri(ConfigurationManager.AppSettings["ImagePath"] + @"\Destructible.png");
-        //        }
-        //    }
-        //    else if (livingObjectItem is PlayerItem)
-        //    {
-
-        //        livingObjectItem.Sprite.Image1 = new Uri(ConfigurationManager.AppSettings["ImagePath"] + @"\Player" + playerNumber + ".png");
-        //    }
-
-        //}
 
         private static Brush ExtractBackground(BitmapImage image, int posX, int posY, int width, int height)
         {
@@ -196,9 +186,6 @@ namespace ClientWPF.ViewModels.StartedGame
             return background;
         }
         
-
-        
-
         #endregion
     }
 
