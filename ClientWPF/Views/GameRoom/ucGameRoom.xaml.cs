@@ -9,8 +9,6 @@ namespace ClientWPF.Views.GameRoom
     {
         public ucGameRoom()
         {
-            GameRoomViewModel gameRoomViewModel = new GameRoomViewModel();
-            DataContext = gameRoomViewModel;
             InitializeComponent();
         }
     }

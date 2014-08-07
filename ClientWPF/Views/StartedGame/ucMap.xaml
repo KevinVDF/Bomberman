@@ -2,10 +2,30 @@
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
-             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:startedGame="clr-namespace:ClientWPF.ViewModels.StartedGame"
              mc:Ignorable="d" 
+             d:DataContext="{d:DesignInstance startedGame:MapViewModelDesignData, IsDesignTimeCreatable=True}"
              d:DesignHeight="300" d:DesignWidth="300">
-    <Grid>
-            
-    </Grid>
+        <ItemsControl ItemsSource="{Binding Path=LivingObjects}">
+            <ItemsControl.ItemsPanel>
+                <ItemsPanelTemplate>
+                <Canvas x:Name="MapBackground"  Height="500" Width="800" HorizontalAlignment="Center" VerticalAlignment="Center" FocusManager.IsFocusScope="True">
+                    </Canvas>
+                </ItemsPanelTemplate>
+            </ItemsControl.ItemsPanel>
+            <ItemsControl.ItemTemplate>
+                <DataTemplate>
+                    <Canvas>
+                        <Rectangle Width="50" Height="50" Canvas.Top="{Binding Path=PositionY}" Canvas.Left="{Binding Path=PositionX}">
+                            <Rectangle.Fill>
+                                <ImageBrush ImageSource="{Binding Sprite}"/>
+                            </Rectangle.Fill>
+                        </Rectangle>
+                    </Canvas>
+                </DataTemplate>
+            </ItemsControl.ItemTemplate>
+        </ItemsControl>
 </UserControl>
+
+<!--"{Binding PositionX, RelativeSource={RelativeSource AncestorType=startedGame:LivingObjectItem}}"-->

@@ -3,9 +3,14 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:map="clr-namespace:ClientWPF.Views.StartedGame"
+             xmlns:startedGame="clr-namespace:ClientWPF.ViewModels.StartedGame"
              mc:Ignorable="d" 
-             d:DesignHeight="300" d:DesignWidth="300">
+             d:DataContext="{d:DesignInstance startedGame:StartedGameViewModelDesignData, IsDesignTimeCreatable=True}"
+             d:DesignHeight="300" d:DesignWidth="300"
+             PreviewKeyDown="UcStartedGame_OnKeyDown"
+             MouseDown="UcStartedGame_OnMouseDown">
     <Grid>
-            
+            <map:ucMap DataContext="{Binding Path=MapViewModel}"/>
     </Grid>
 </UserControl>

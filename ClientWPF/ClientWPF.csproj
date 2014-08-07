@@ -35,6 +35,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
+    <Reference Include="System.Configuration" />
     <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.ServiceModel" />
@@ -63,11 +64,15 @@
     <Compile Include="MVVM\AsyncMessenger.cs" />
     <Compile Include="MVVM\ObservableObject.cs" />
     <Compile Include="MVVM\RelayCommand.cs" />
+    <Compile Include="Textures\TexturesPosition.cs" />
     <Compile Include="Util\TextInputToVisibilityConverter.cs" />
     <Compile Include="ViewModels\GameRoom\GameRoomViewModel.cs" />
     <Compile Include="ViewModels\Login\LoginViewModel.cs" />
     <Compile Include="ViewModels\StartedGame\MapViewModel.cs" />
+    <Compile Include="Model\PlayerItem.cs" />
+    <Compile Include="ViewModels\StartedGame\Sprite.cs" />
     <Compile Include="ViewModels\StartedGame\StartedGameViewModel.cs" />
+    <Compile Include="Model\WallItem.cs" />
     <Compile Include="ViewModels\ViewModelBase.cs" />
     <Compile Include="Views\GameRoom\ucGameRoom.xaml.cs">
       <DependentUpon>ucGameRoom.xaml</DependentUpon>
@@ -75,16 +80,12 @@
     <Compile Include="Views\Login\ucLogin.xaml.cs">
       <DependentUpon>ucLogin.xaml</DependentUpon>
     </Compile>
+    <Compile Include="ViewModels\StartedGame\LivingObjectItem.cs" />
     <Compile Include="Views\StartedGame\ucMap.xaml.cs">
       <DependentUpon>ucMap.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\StartedGame\ucStartedGame.xaml.cs">
       <DependentUpon>ucStartedGame.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="ViewModels\Login\LoginViewModel.cs" />
-    <Compile Include="ViewModels\ViewModelBase.cs" />
-    <Compile Include="Views\Login\ucLogin.xaml.cs">
-      <DependentUpon>ucLogin.xaml</DependentUpon>
     </Compile>
     <Page Include="Views\Bomberman.xaml">
       <Generator>MSBuild:Compile</Generator>
@@ -152,7 +153,29 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <Resource Include="Images\Background.png" />
     <Resource Include="Images\bombawallpaper.png" />
+    <Resource Include="Images\Player1.png" />
+    <Resource Include="Images\Player2.png" />
+    <Resource Include="Images\Player3.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\14bomberman.PNG" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\Undestructible.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\Destructible.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\Empty.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\Player4.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\Players.png" />
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

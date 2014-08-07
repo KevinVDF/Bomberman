@@ -1,6 +1,9 @@
 ﻿using System.ComponentModel;
+using System.Windows;
+using System.Windows.Input;
 using ClientWPF.Helpers;
 using ClientWPF.ViewModels;
+using Common.DataContract;
 
 namespace ClientWPF.Views
 {
@@ -9,10 +12,12 @@ namespace ClientWPF.Views
     /// </summary>
     public partial class Bomberman
     {
+
+        public BombermanViewModel BombermanViewModel { get; set; }
+
         public Bomberman()
         {
             ExecuteOnUIThread.Initialize();
-
             InitializeComponent();
         }
 
@@ -20,9 +25,29 @@ namespace ClientWPF.Views
         {
             if (!DesignerProperties.GetIsInDesignMode(this))
             {
-                BombermanViewModel vm = new BombermanViewModel();
-                DataContext = vm;
-                vm.Initialize();
+                BombermanViewModel = new BombermanViewModel();
+                DataContext = BombermanViewModel;
+                BombermanViewModel.Initialize();
+            }
+            Focusable = true;
+        }
+
+        private void Bomberman_OnKeyDown(object sender, KeyEventArgs e)
+        {
+            switch (e.Key)
+            {
+                case Key.Left:
+                    BombermanViewModel.MoveObjectToLocation(ActionType.MoveLeft);
+                    break;
+                case Key.Right:
+                    BombermanViewModel.MoveObjectToLocation(ActionType.MoveRight);
+                    break;
+                case Key.Up:
+                    BombermanViewModel.MoveObjectToLocation(ActionType.MoveUp);
+                    break;
+                case Key.Down:
+                    BombermanViewModel.MoveObjectToLocation(ActionType.MoveDown);
+                    break;
             }
         }
     }

@@ -1,12 +1,4 @@
-<<<<<<< HEAD
 ﻿using ClientWPF.ViewModels.Login;
-=======
-<<<<<<< HEAD
-﻿using ClientWPF.ViewModels.Login;
-=======
-﻿using System.Windows.Controls;
->>>>>>> origin/master
->>>>>>> origin/master
 
 namespace ClientWPF.Views.Login
 {
@@ -17,16 +9,6 @@ namespace ClientWPF.Views.Login
     {
         public ucLogin()
         {
-<<<<<<< HEAD
-            LoginViewModel loginViewModel = new LoginViewModel();
-            DataContext = loginViewModel;
-=======
-<<<<<<< HEAD
-            LoginViewModel loginViewModel = new LoginViewModel();
-            DataContext = loginViewModel;
-=======
->>>>>>> origin/master
->>>>>>> origin/master
             InitializeComponent();
         }
     }

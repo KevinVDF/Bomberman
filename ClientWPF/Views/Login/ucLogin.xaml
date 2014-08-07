@@ -34,27 +34,11 @@
                     </Grid.RowDefinitions>
                     <Grid Grid.Row="0" Background="{StaticResource BrushWatermarkBackground}" Style="{StaticResource EntryFieldStyle}" >
                         <TextBlock Margin="5,2" Text="Enter your username" Foreground="{StaticResource BrushWatermarkForeground}"
-<<<<<<< HEAD
-=======
-<<<<<<< HEAD
->>>>>>> origin/master
                            Visibility="{Binding ElementName=TxtUserEntry, Path=Text[0], Converter={StaticResource BooleanToVisibilityConverter}}"/>
                         <TextBox Name="TxtUserEntry" Width="130" Text="{Binding Login}" Background="Transparent" BorderBrush="{StaticResource BrushWatermarkBorder}" />
                     </Grid>
                 </Grid>
                 <Button Content="Connect" Height="20" Width="70" Margin="10" Command="{Binding Path=ConnectCommand}" IsEnabled="True"/>
-<<<<<<< HEAD
-=======
-=======
-                           Visibility="{Binding ElementName=TxtUserEntry, Path=Text[0], Converter={StaticResource BooleanToVisibilityConverter}}" />
-                        <TextBox Name="TxtUserEntry" Width="130" Background="Transparent" BorderBrush="{StaticResource BrushWatermarkBorder}" />
-                    </Grid>
-                </Grid>
-                <Button Height="20" Width="70" Margin="10" Command="{Binding ConnectCommand}">
-                    <TextBlock Text="Connect"></TextBlock>
-                </Button>
->>>>>>> origin/master
->>>>>>> origin/master
             </StackPanel>
         </Border>
     </Grid>

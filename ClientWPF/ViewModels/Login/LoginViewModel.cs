@@ -9,10 +9,6 @@ namespace ClientWPF.ViewModels.Login
     {
         #region Properties
 
-<<<<<<< HEAD
-=======
-<<<<<<< HEAD
->>>>>>> origin/master
         public static IBombermanService Proxy { get; set; }
 
         public string Login { get; set; }
@@ -24,15 +20,6 @@ namespace ClientWPF.ViewModels.Login
             set { Set(() => IsVisible, ref _isVisible, value); }
         }
 
-<<<<<<< HEAD
-=======
-=======
-        public IBombermanService Proxy { get; private set; }
-
-        public string Login { get; set; }
-
->>>>>>> origin/master
->>>>>>> origin/master
         private ICommand _connectCommand;
         public ICommand ConnectCommand
         {
@@ -49,26 +36,13 @@ namespace ClientWPF.ViewModels.Login
 
         private void Connect()
         {
-            int id = Guid.NewGuid().GetHashCode();
-            Proxy.ConnectUser(Login, id);
+            Proxy.ConnectUser(Login);
         }
 
-<<<<<<< HEAD
-=======
-<<<<<<< HEAD
->>>>>>> origin/master
         public void Initialize(bool isVisible, IBombermanService proxy)
         {
             Proxy = proxy;
             IsVisible = isVisible;
-<<<<<<< HEAD
-=======
-=======
-        public void Initialize(IBombermanService proxy)
-        {
-            Proxy = proxy;
->>>>>>> origin/master
->>>>>>> origin/master
         }
 
         #endregion

@@ -7,12 +7,12 @@ namespace Common.Interfaces
     public interface IBombermanService
     {
         [OperationContract(IsOneWay = true)]
-        void ConnectUser(string username, int id);
+        void ConnectUser(string username);
 
         [OperationContract(IsOneWay = true)]
         void StartGame(string mapPath);
 
         [OperationContract(IsOneWay = true)]
-        void MovePlayerToLocation(int idPlayer, ActionType actionType); //up,down,left,right
+        void MoveObjectToLocation(int idPlayer, ActionType actionType); //up,down,left,right
     }
 }

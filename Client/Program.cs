@@ -11,14 +11,14 @@ namespace Client
     {
         public static IBombermanService Proxy { get; private set; }
 
-        public const string MapPath = @"C:\Users\hisil\HDD backup 2012\Bomberman\Server\map.dat";
+        public const string MapPath = @"F:\\Bomberman\Server\map.dat";
 
         static void Main()
         {
             string username = "";
             int id;
             var context = new InstanceContext(new BombermanCallbackService());
-            var factory = new DuplexChannelFactory<IBombermanService>(context, "WSDualHttpBinding_IBombermanService");
+            var factory = new DuplexChannelFactory<IBombermanService>(context, "netTcpBinding_IBombermanService");
             Proxy = factory.CreateChannel();
 
             Console.WriteLine("--------------------------------------");
@@ -40,25 +40,7 @@ namespace Client
                 {
                     //s
                     case ConsoleKey.S:
-<<<<<<< HEAD
                         StartGame();
-=======
-<<<<<<< HEAD
-                        StartGame();
-=======
-<<<<<<< HEAD
-                        StartGame();
-=======
-<<<<<<< HEAD
-                        //Console.WriteLine("\nEnter the path of the map.bat");
-                        StartGame(@"C:\Users\hisil\HDD backup 2012\Bomberman\Server\map.bat");
-=======
-                        Console.WriteLine("\nEnter the path of the map.bat");
-                        StartGame(Console.ReadLine());
->>>>>>> origin/master
->>>>>>> origin/master
->>>>>>> origin/master
->>>>>>> origin/master
                         break;
                     case ConsoleKey.UpArrow:
                         MoveTo(id, ActionType.MoveUp);
@@ -91,9 +73,9 @@ namespace Client
         }
 
         //todo replace playername by an id ...
-        private static void ConnectPlayer(string username, int id)
+        private static void ConnectPlayer(string username)
         {
-            Proxy.ConnectUser(username, id);
+            Proxy.ConnectUser(username);
         }
 
         private static void StartGame()

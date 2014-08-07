@@ -14,9 +14,9 @@ namespace Server.Logic
     {
         #region variables
 
-        private const int MapSize = 10;
+        public ServerModel Server;
 
-        private ServerModel _server;
+        public int MapSize = 10;
 
         #endregion variables
 
@@ -24,31 +24,31 @@ namespace Server.Logic
 
         public void StartServer()
         {
-            _server = new ServerModel();
-            _server.Initialize();
+            Server = new ServerModel();
+            Server.Initialize();
         }
         //id is generated client side to allow many players with same username
-        public void ConnectUser(string username, int id)
+        public void ConnectUser(string username)
         {
             //create new Player
             PlayerModel newPlayer = new PlayerModel
                 {
                     Player = new Player
                     {
-                        Id = id,
+                        Id = Guid.NewGuid().GetHashCode(),
                         Username = username,
                         //Check if its the first user to be connected
-                        IsCreator = _server.PlayersOnline.Count == 0
+                        IsCreator = Server.PlayersOnline.Count == 0
                     },
                     CallbackService = OperationContext.Current.GetCallbackChannel<IBombermanCallbackService>()
                 };
             //register user to the server
-            _server.PlayersOnline.Add(newPlayer);
+            Server.PlayersOnline.Add(newPlayer);
             //create a list of login to send to client
-            List<string> playersNamesList = _server.PlayersOnline.Select(x => x.Player.Username).ToList();
+            List<string> playersNamesList = Server.PlayersOnline.Select(x => x.Player.Username).ToList();
             //Warning players that a new player is connected and send them the list of all players online
-            bool canStartGame = _server.PlayersOnline.Count > 1; // SinaC: no need to compute this in inner loop
-            foreach (PlayerModel player in _server.PlayersOnline)
+            bool canStartGame = Server.PlayersOnline.Count > 1; // SinaC: no need to compute this in inner loop
+            foreach (PlayerModel player in Server.PlayersOnline)
             {
                 //todo check if player disconnect
                 player.CallbackService.OnUserConnected(newPlayer.Player, playersNamesList, canStartGame);
@@ -58,7 +58,7 @@ namespace Server.Logic
         public void StartGame(string mapPath)
         {
             //create the list of players to pass to client
-            List<Player> players = _server.PlayersOnline.Select(playerModel => playerModel.Player).ToList();
+            List<Player> players = Server.PlayersOnline.Select(playerModel => playerModel.Player).ToList();
 
             Game newGame = new Game
                 {
@@ -69,17 +69,17 @@ namespace Server.Logic
                         },
                     CurrentStatus = GameStatus.Started,
                 };
-            _server.GameCreated = newGame;
+            Server.GameCreated = newGame;
             //send the game firt and last time to all players
-            foreach (PlayerModel currentPlayer in _server.PlayersOnline)
+            foreach (PlayerModel currentPlayer in Server.PlayersOnline)
             {
                 currentPlayer.CallbackService.OnGameStarted(newGame);
             }
         }
 
-        public void MovePlayerToLocation(int idPlayer, ActionType actionType)
+        public void MoveObjectToLocation(int idPlayer, ActionType actionType)
         {
-            foreach (Player player in _server.GameCreated.Map.GridPositions.Where(livingObject => livingObject is Player && ((Player)livingObject).Id == idPlayer))
+            foreach (Player player in Server.GameCreated.Map.GridPositions.Where(livingObject => livingObject is Player && ((Player)livingObject).Id == idPlayer))
             {
                 switch (actionType)
                 {
@@ -193,8 +193,7 @@ namespace Server.Logic
         //    };
 
         //    // Remove player from old position
-        //    _server.GameCreated.Map.GridPositions.Remove(before);
-        //    // And add to new position
+        //    _server.GameCreated.Map.GridPositions.Remove(bef   // And add to new position
         //    _server.GameCreated.Map.GridPositions.Add(after);
 
         //    // Send new player position to players
@@ -206,7 +205,7 @@ namespace Server.Logic
         private void Move(Player before, int stepX, int stepY)
         {
             // Get object at future player location
-            LivingObject collider = _server.GameCreated.Map.GridPositions.FirstOrDefault(x => before.ObjectPosition.PositionY + stepY == x.ObjectPosition.PositionY
+            LivingObject collider = Server.GameCreated.Map.GridPositions.FirstOrDefault(x => before.ObjectPosition.PositionY + stepY == x.ObjectPosition.PositionY
                                                                                              && before.ObjectPosition.PositionX + stepX == x.ObjectPosition.PositionX);
             Player after;
             // Can't go thru wall or player
@@ -225,12 +224,12 @@ namespace Server.Logic
             }
             else after = before;
             // Remove player from old position
-            _server.GameCreated.Map.GridPositions.Remove(before);
+            Server.GameCreated.Map.GridPositions.Remove(before);
             // And add to new position
-            _server.GameCreated.Map.GridPositions.Add(after);
+            Server.GameCreated.Map.GridPositions.Add(after);
 
             // Send new player position to players
-            foreach (PlayerModel playerModel in _server.PlayersOnline)
+            foreach (PlayerModel playerModel in Server.PlayersOnline)
                 playerModel.CallbackService.OnMove(before, after);
         }
         #endregion methods
