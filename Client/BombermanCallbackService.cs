@@ -16,9 +16,29 @@ namespace Client
             ClientProcessor.OnUserConnected(player, loginsList, canStartGame);
         }
 
+        public void OnConnection(Player mePlayer, List<string> logins)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void OnUserConnected(List<string> logins)
+        {
+            throw new NotImplementedException();
+        }
+
         public void OnGameStarted(Game newGame)
         {
             ClientProcessor.OnGameStarted(newGame);
+        }
+
+        public void OnPlayerMove(LivingObject objectToMoveBefore, LivingObject objectToMoveAfter)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void OnBombDropped(Position bombPosition)
+        {
+            throw new NotImplementedException();
         }
 
         public void OnMove(LivingObject objectToMoveBefore, LivingObject objectToMoveAfter)

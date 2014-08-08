@@ -18,8 +18,6 @@ namespace ClientWPF.ViewModels.GameRoom
 
         public string MapPath = ConfigurationManager.AppSettings["MapPath"];
 
-        public ObservableCollection<string> PlayerList { get; set; }
-
         private bool _isVisible;
         public bool IsVisible
         {
@@ -79,7 +77,7 @@ namespace ClientWPF.ViewModels.GameRoom
             richText += "---------- Welcome to Bomberman ----------\n";
             richText += "-----------------" + myUsername + "---------------\n\n\n";
             richText += "           List of players online\n\n";
-            richText += "__________________________________________/n/n/n";
+            richText += "__________________________________________\n\n\n";
             richText = loginsList.Aggregate(richText, (current, login) => current + (login + "\n\n"));
             if (isCreator)
             {
@@ -99,8 +97,9 @@ namespace ClientWPF.ViewModels.GameRoom
             RichText = "------------------------------------------------\n";
             RichText += "---------- Welcome to Bomberman ----------\n";
             RichText += "----------------- test ---------------\n\n\n";
-            RichText += "           List of players online";
+            RichText += "           List of players online\n";
             RichText += "__________________________________________\n\n\n";
+            IsStartVisible = true;
         }
     }
 }

@@ -52,7 +52,7 @@ namespace ClientWPF.ViewModels
 
         public void Initialize()
         {
-            var context = new InstanceContext(new BombermanCallbackService());
+            var context = new InstanceContext(new BombermanCallbackService(this));
             var factory = new DuplexChannelFactory<IBombermanService>(context, "netTcpBinding_IBombermanService");
             Proxy = factory.CreateChannel();
             LoginViewModel.Initialize(true, Proxy);

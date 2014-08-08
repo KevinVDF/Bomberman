@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using ClientWPF.Logic;
+using ClientWPF.ViewModels;
 using Common.DataContract;
 using Common.Interfaces;
 
@@ -7,7 +8,15 @@ namespace ClientWPF.CallBackService
 {
     public class BombermanCallbackService : IBombermanCallbackService
     {
-        public ClientModel ClientModel = new ClientModel();
+        public ClientModel ClientModel;
+
+        public BombermanCallbackService(BombermanViewModel bombermanViewModel)
+        {
+
+            ClientModel = new ClientModel(bombermanViewModel);
+        }
+
+
 
         public void OnConnection(Player mePlayer, List<string> logins)
         {

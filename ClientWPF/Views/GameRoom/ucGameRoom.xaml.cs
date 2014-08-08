@@ -1,4 +1,6 @@
-﻿namespace ClientWPF.Views.GameRoom
+﻿using ClientWPF.ViewModels.GameRoom;
+
+namespace ClientWPF.Views.GameRoom
 {
     /// <summary>
     /// Interaction logic for ucGameRoom.xaml
@@ -7,7 +9,7 @@
     {
         public ucGameRoom()
         {
-            InitializeComponent();
+            InitializeComponent();       
         }
     }
 }

@@ -18,9 +18,9 @@ namespace ClientWPF.Logic
 
         #endregion Properties
 
-        public ClientModel()
+        public ClientModel(BombermanViewModel bombermanViewModel)
         {
-            BombermanViewModel = new BombermanViewModel();
+            BombermanViewModel = bombermanViewModel;
         }
 
         #region Methods

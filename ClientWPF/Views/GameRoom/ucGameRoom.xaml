@@ -15,16 +15,19 @@
         <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
                 <Border  Margin="5" Padding="5" Background="Black" HorizontalAlignment="Center" VerticalAlignment="Center" Width="300" Height="400"
                                     BorderBrush="SteelBlue" BorderThickness="3,5,3,5" CornerRadius="3">
-                <TextBlock  Width="300" Height="400" Foreground="Azure" TextAlignment="Center"
+                <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+                    <TextBlock  Width="300" Height="300" Foreground="Azure" TextAlignment="Center" HorizontalAlignment="Center"
                          Text="{Binding Path=RichText}">
                 </TextBlock>
-                </Border>
                 <Button Content="Start Game" Width="80" Height="40" HorizontalAlignment="Center" 
                         IsEnabled="{Binding IsStartEnabled}"
                         Command="{Binding StartGameCommand}"
                         Visibility="{Binding IsStartVisible, Converter={StaticResource BooleanToVisibilityConverter}}">
 
                 </Button>
+              </StackPanel>
+            </Border>
+                
         </StackPanel>
     </Grid>
 </UserControl>
