@@ -6,7 +6,7 @@ using Common.DataContract;
 
 namespace ClientWPF.Logic
 {
-    public class ClientModel
+    public class ClientProcessor
     {
 
         #region Properties
@@ -17,7 +17,7 @@ namespace ClientWPF.Logic
 
         public BombermanViewModel BombermanViewModel { get; set; }
 
-        public ClientModel()
+        public ClientProcessor()
         {
             BombermanViewModel = new BombermanViewModel();
         }

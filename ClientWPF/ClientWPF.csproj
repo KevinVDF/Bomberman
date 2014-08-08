@@ -100,7 +100,7 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="CallBackService\BombermanCallbackService.cs" />
-    <Compile Include="Logic\ClientProcessor.cs" />
+    <Compile Include="Logic\ClientModel.cs" />
     <Compile Include="ViewModels\BombermanViewModel.cs" />
     <Compile Include="Views\Bomberman.xaml.cs">
       <DependentUpon>Bomberman.xaml</DependentUpon>
