@@ -1,32 +1,32 @@
 ﻿using System.ServiceModel;
 using Common.DataContract;
+using Common.Interfaces;
 using Server.Logic;
+using Server.Model;
 
 namespace Server
 {
     [ServiceBehavior(InstanceContextMode = InstanceContextMode.Single, ConcurrencyMode = ConcurrencyMode.Reentrant)]
     public class BombermanService : Common.Interfaces.IBombermanService
     {
-        private static readonly ServerProcessor ServerProcessor = new ServerProcessor();
+        public static ServerModel Server = new ServerModel();
 
-        public static void StartServer()
+        public void RegisterMe(string username)
         {
-            ServerProcessor.StartServer();
-        }
-
-        public void ConnectUser(string username)
-        {
-            ServerProcessor.ConnectUser(username);
+            IBombermanCallbackService callback = OperationContext.Current.GetCallbackChannel<IBombermanCallbackService>();
+            Server.ConnectUser(callback, username);
         }
 
         public void StartGame(string mapPath)
         {
-            ServerProcessor.StartGame(mapPath);
+            IBombermanCallbackService callback = OperationContext.Current.GetCallbackChannel<IBombermanCallbackService>();
+            Server.StartGame(callback, mapPath);
         }
 
-        public void MoveObjectToLocation(int idPlayer, ActionType actionType)
+        public void PlayerAction(ActionType actionType)
         {
-            ServerProcessor.MoveObjectToLocation(idPlayer, actionType);
+            IBombermanCallbackService callback = OperationContext.Current.GetCallbackChannel<IBombermanCallbackService>();
+            Server.PlayerAction(callback, actionType);
         }
     }
 }

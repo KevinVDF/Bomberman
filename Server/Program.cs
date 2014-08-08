@@ -10,12 +10,12 @@ namespace Server
         public static ServerModel Server;
 
 
-        static void Main(string[] args)
+        static void Main()
         {
             Log.Initialize(@"D:\Temp\BombermanLogs","Server.log");
 
             Server = new ServerModel();
-            BombermanService.StartServer();
+            Server.Initialize();
             Console.WriteLine("------ ServerStarted ------");
             Log.WriteLine(Log.LogLevels.Info,  "Server Started at " + DateTime.Now.ToShortTimeString());
             var svcHost = new ServiceHost(typeof (BombermanService));
@@ -23,8 +23,7 @@ namespace Server
             while (Server.ServerStatus == ServerStatus.Started)
             {
                 Console.WriteLine("1) Players Online");
-                Console.WriteLine("2) Games playing");
-                Console.WriteLine("3) Server Status");
+                Console.WriteLine("2) Server Status");
                 var read = Console.ReadKey();
                 switch (read.KeyChar)
                 {
@@ -32,9 +31,6 @@ namespace Server
                         GetOnlinePlayers();
                         break;
                     case '2':
-                        GetCurrentGames();
-                        break;
-                    case '3':
                         Console.WriteLine("\n\nServer Status : " + Server.ServerStatus + "\n\n");
                         break;
                 }
@@ -42,15 +38,10 @@ namespace Server
             svcHost.Close();
         }
 
-        private static void GetCurrentGames()
-        {
-            
-        }
-
         private static void GetOnlinePlayers()
         {
-            //foreach (PlayerModel player in Server.PlayersOnline)
-            //    Console.WriteLine("Player " + player.Username + "Creator : " + player.IsCreator);
+            foreach (PlayerModel player in Server.PlayersOnline)
+                Console.WriteLine("Player " + player.Player.Username + "Creator : " + player.Player.IsCreator);
         }
     }
 }

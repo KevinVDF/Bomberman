@@ -14,7 +14,5 @@ namespace Common.DataContract
         MoveUp,
         [EnumMember]
         DropBomb,
-        [EnumMember]
-        ShootBomb,
     }
 }

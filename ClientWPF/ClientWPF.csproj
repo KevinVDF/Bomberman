@@ -61,6 +61,7 @@
     <Compile Include="Helpers\ExecuteOnUIThread.cs" />
     <Compile Include="Helpers\IOService.cs" />
     <Compile Include="Helpers\UriHelpers.cs" />
+    <Compile Include="ViewModels\DebugViewModel.cs" />
     <Compile Include="ViewModels\StartedGame\Sprite.cs" />
     <Compile Include="MVVM\AsyncMessenger.cs" />
     <Compile Include="MVVM\ObservableObject.cs" />
@@ -74,6 +75,9 @@
     <Compile Include="ViewModels\StartedGame\StartedGameViewModel.cs" />
     <Compile Include="ViewModels\StartedGame\WallItem.cs" />
     <Compile Include="ViewModels\ViewModelBase.cs" />
+    <Compile Include="Views\Debug.xaml.cs">
+      <DependentUpon>Debug.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\GameRoom\ucGameRoom.xaml.cs">
       <DependentUpon>ucGameRoom.xaml</DependentUpon>
     </Compile>
@@ -102,6 +106,10 @@
       <DependentUpon>Bomberman.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Page Include="Views\Debug.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Views\GameRoom\ucGameRoom.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -173,9 +181,6 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Images\Player4.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Images\Players.png" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Model\" />

@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
+using System.Windows.Forms.VisualStyles;
 using ClientWPF.CallBackService;
 using ClientWPF.ViewModels.GameRoom;
 using ClientWPF.ViewModels.Login;
@@ -106,14 +108,25 @@ namespace ClientWPF.ViewModels
             if (objectToMoveBefore is Player && Player.CompareId(objectToMoveBefore))
                 Player = objectToMoveAfter as Player;
             //Map.GridPositions.Remove(objectToMoveBefore);
-            LivingObjectItem objectToMove = StartedGameViewModel.MapViewModel.LivingObjects.FirstOrDefault(player => player.PositionX == (objectToMoveBefore.ObjectPosition.PositionX*50)+100 && player.PositionY == objectToMoveBefore.ObjectPosition.PositionY*50);
+            PlayerItem objectToMove = StartedGameViewModel.MapViewModel.LivingObjects.FirstOrDefault(player => player.PositionX == (objectToMoveBefore.ObjectPosition.PositionX*50)+100 && player.PositionY == objectToMoveBefore.ObjectPosition.PositionY*50) as PlayerItem;
             if (objectToMove != null)
             {
-                objectToMove.PositionX = objectToMoveAfter.ObjectPosition.PositionX;
-                objectToMove.PositionY = objectToMoveAfter.ObjectPosition.PositionY;
-            }
-                
+                Timer timer; 
+                for(int i=3; i>0; i++)
+                {
 
+                    timer = new Timer(MovePlayer(objectToMove, objectToMoveAfter, i));
+                   
+                     
+                }
+            }
+        }
+
+        private TimerCallback MovePlayer(PlayerItem objectToMove, LivingObject objectToMoveAfter, int i)
+        {
+             objectToMove.PositionX = objectToMoveAfter.ObjectPosition.PositionX/i;
+                    objectToMove.PositionY = objectToMoveAfter.ObjectPosition.PositionY/i;
+                    objectToMove.ImageInUse = objectToMove.Down.Images[i - 1];
         }
 
         #endregion

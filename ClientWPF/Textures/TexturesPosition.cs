@@ -4,15 +4,15 @@
     {
         public const int NumberImagesPerSpriteByPlayer = 3;
 
-        public const int PlayerStartImageY = 1;
+        public const int PlayerStartImageY = 36;
 
-        public const int PlayerStartImageX = 44;
+        public const int PlayerStartImageX = 51;
 
-        public const int PlayerWidth = 15;
+        public const int PlayerWidth = 17;
 
-        public const int PlayerHeight = 25;
+        public const int PlayerHeight = 27;
 
-        public const int SpaceBetweenImages = 3;
+        public const int SpaceBetweenImages = 1;
 
         public const int DownImagePosition = 1;
 

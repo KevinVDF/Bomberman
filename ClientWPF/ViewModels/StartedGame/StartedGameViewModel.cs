@@ -17,6 +17,8 @@ namespace ClientWPF.ViewModels.StartedGame
 
         public string GlobalImagePath { get; set; }
 
+        public const int MiddleImage = 2;
+
         public static IBombermanService Proxy;
 
         private MapViewModel _mapViewModel;
@@ -93,7 +95,7 @@ namespace ClientWPF.ViewModels.StartedGame
 
         private void GetSpriteForPlayer(PlayerItem player, int playerNumber)
         {
-            string playersImagePath = String.Format(@"{0}\players.png", GlobalImagePath);
+            string playersImagePath = String.Format(@"{0}\13Bomberman.png", GlobalImagePath);
             BitmapImage imageBmp = new BitmapImage(new Uri(playersImagePath));
 
             for (int i = 0; i < TexturesPosition.NumberImagesPerSpriteByPlayer; i++)
@@ -162,9 +164,11 @@ namespace ClientWPF.ViewModels.StartedGame
             //posY = start + player number * (playerHeight  + space between them)
             int posY = TexturesPosition.PlayerStartImageY + playerNumber*(TexturesPosition.PlayerHeight + TexturesPosition.SpaceBetweenImages);
 
-            player.Down.Images.Add(ExtractBackground(imageBmp, posX, posY, TexturesPosition.PlayerWidth, TexturesPosition.PlayerHeight));
-            if(imageNumber == 2)
+            Brush brushLeft = ExtractBackground(imageBmp, posX, posY, TexturesPosition.PlayerWidth, TexturesPosition.PlayerHeight);
+
+            if (imageNumber == MiddleImage)
                 player.ImageInUse = player.Down.Images[1];
+
         }
 
         private static Brush ExtractBackground(BitmapImage image, int posX, int posY, int width, int height)
@@ -176,7 +180,7 @@ namespace ClientWPF.ViewModels.StartedGame
                 {
                     ViewboxUnits = BrushMappingMode.Absolute,
                     Viewbox = new Rect(posX, posY, width, height),
-                    Stretch = Stretch.None
+                    Stretch = Stretch.Fill
                 };
             }
             catch (Exception ex)

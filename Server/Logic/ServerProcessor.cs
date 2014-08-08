@@ -27,8 +27,8 @@ namespace Server.Logic
             Server = new ServerModel();
             Server.Initialize();
         }
-        //id is generated client side to allow many players with same username
-        public void ConnectUser(string username)
+
+        public void ConnectUser(IBombermanCallbackService callback, string username)
         {
             //create new Player
             PlayerModel newPlayer = new PlayerModel
@@ -40,7 +40,7 @@ namespace Server.Logic
                         //Check if its the first user to be connected
                         IsCreator = Server.PlayersOnline.Count == 0
                     },
-                    CallbackService = OperationContext.Current.GetCallbackChannel<IBombermanCallbackService>()
+                    CallbackService = callback
                 };
             //register user to the server
             Server.PlayersOnline.Add(newPlayer);
@@ -55,7 +55,7 @@ namespace Server.Logic
             }
         }
 
-        public void StartGame(string mapPath)
+        public void StartGame(IBombermanCallbackService callback, string mapPath)
         {
             //create the list of players to pass to client
             List<Player> players = Server.PlayersOnline.Select(playerModel => playerModel.Player).ToList();
@@ -70,33 +70,33 @@ namespace Server.Logic
                     CurrentStatus = GameStatus.Started,
                 };
             Server.GameCreated = newGame;
-            //send the game firt and last time to all players
+            //send the game to all players (only once)
             foreach (PlayerModel currentPlayer in Server.PlayersOnline)
             {
                 currentPlayer.CallbackService.OnGameStarted(newGame);
             }
         }
 
-        public void MoveObjectToLocation(int idPlayer, ActionType actionType)
+        public void MoveObjectToLocation(IBombermanCallbackService callback, ActionType actionType)
         {
-            foreach (Player player in Server.GameCreated.Map.GridPositions.Where(livingObject => livingObject is Player && ((Player)livingObject).Id == idPlayer))
+            PlayerModel player =  Server.PlayersOnline.FirstOrDefault(x => x.CallbackService == callback);
+            if (player != null)
             {
                 switch (actionType)
                 {
                     case ActionType.MoveUp:
-                        Move(player, 0, -1);
+                        Move(player.Player, 0, -1);
                         break;
                     case ActionType.MoveDown:
-                        Move(player, 0, +1);
+                        Move(player.Player, 0, +1);
                         break;
                     case ActionType.MoveRight:
-                        Move(player, +1, 0);
+                        Move(player.Player, +1, 0);
                         break;
                     case ActionType.MoveLeft:
-                        Move(player, -1, 0);
+                        Move(player.Player, -1, 0);
                         break;
                 }
-                break;
             }
         }
 

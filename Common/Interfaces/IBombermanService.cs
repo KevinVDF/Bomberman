@@ -6,13 +6,14 @@ namespace Common.Interfaces
     [ServiceContract(CallbackContract = typeof(IBombermanCallbackService))]
     public interface IBombermanService
     {
+        //on button login
         [OperationContract(IsOneWay = true)]
-        void ConnectUser(string username);
-
+        void RegisterMe(string username);
+        //on button start
         [OperationContract(IsOneWay = true)]
         void StartGame(string mapPath);
-
+        //on any action
         [OperationContract(IsOneWay = true)]
-        void MoveObjectToLocation(int playerID, ActionType actionType);
+        void PlayerAction(ActionType actionType);
     }
 }

@@ -40,6 +40,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="DataContract\ActionType.cs" />
+    <Compile Include="DataContract\Bomb.cs" />
     <Compile Include="DataContract\Bonus.cs" />
     <Compile Include="DataContract\Game.cs" />
     <Compile Include="DataContract\GameStatus.cs" />

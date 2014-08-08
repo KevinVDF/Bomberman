@@ -8,13 +8,20 @@ namespace Common.Interfaces
     
     public interface IBombermanCallbackService
     {
+        //when i connect myself
         [OperationContract(IsOneWay = true)]
-        void OnUserConnected(Player newPlayer, List<string> logins, bool canStartGame);
-
+        void OnConnection(Player mePlayer, List<string> logins);
+        //when an other player connects
+        [OperationContract(IsOneWay = true)]
+        void OnUserConnected(List<string> logins);
+        //when the creator start the game
         [OperationContract(IsOneWay = true)]
         void OnGameStarted(Game newGame);
-
+        //when any player makes a move
         [OperationContract(IsOneWay = true)]
-        void OnMove(LivingObject objectToMoveBefore, LivingObject objectToMoveAfter);
+        void OnPlayerMove(LivingObject objectToMoveBefore, LivingObject objectToMoveAfter);
+        //when an user drop a bomb
+        [OperationContract(IsOneWay = true)]
+        void OnBombDropped(Position bombPosition);
     }
 }
