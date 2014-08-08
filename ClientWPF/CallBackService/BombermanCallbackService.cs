@@ -7,16 +7,16 @@ namespace ClientWPF.CallBackService
 {
     public class BombermanCallbackService : IBombermanCallbackService
     {
-        public ClientProcessor ClientProcessor = new ClientProcessor();
+        public ClientModel ClientModel = new ClientModel();
 
         public void OnConnection(Player mePlayer, List<string> logins)
         {
-            ClientProcessor.OnConnection(mePlayer, logins);
+            ClientModel.OnConnection(mePlayer, logins);
         }
 
         public void OnUserConnected(List<string> logins)
         {
-            ClientProcessor.OnUserConnected(logins);
+            ClientModel.OnUserConnected(logins);
         }
 
         public void OnGameStarted(Game newGame)
