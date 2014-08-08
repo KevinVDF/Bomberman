@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ServiceModel.PeerResolvers;
 using ClientWPF.ViewModels;
 using Common.DataContract;
 
@@ -17,12 +16,12 @@ namespace ClientWPF.Logic
 
         public BombermanViewModel BombermanViewModel { get; set; }
 
+        #endregion Properties
+
         public ClientProcessor()
         {
             BombermanViewModel = new BombermanViewModel();
         }
-
-        #endregion Properties
 
         #region Methods
 
@@ -38,13 +37,13 @@ namespace ClientWPF.Logic
 
         public void OnUserConnected(List<String> loginsList)
         {
-            
+            //todo
             
         }
 
         public void OnGameStarted(Game newGame)
         {
-
+            //todo
         }
 
         #endregion Properties

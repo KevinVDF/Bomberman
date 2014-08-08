@@ -7,9 +7,7 @@
              xmlns:startedGame="clr-namespace:ClientWPF.ViewModels.StartedGame"
              mc:Ignorable="d" 
              d:DataContext="{d:DesignInstance startedGame:StartedGameViewModelDesignData, IsDesignTimeCreatable=True}"
-             d:DesignHeight="300" d:DesignWidth="300"
-             PreviewKeyDown="UcStartedGame_OnKeyDown"
-             MouseDown="UcStartedGame_OnMouseDown">
+             d:DesignHeight="300" d:DesignWidth="300">
     <Grid>
             <map:ucMap DataContext="{Binding Path=MapViewModel}"/>
     </Grid>

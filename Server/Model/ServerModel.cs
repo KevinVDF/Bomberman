@@ -45,7 +45,6 @@ namespace Server.Model
                 },
                 CallbackService = callback
             };
-            Console.WriteLine("New player connected : " + username);
             Log.WriteLine(Log.LogLevels.Info, "New player connected : " + username);
 
             //register user to the server

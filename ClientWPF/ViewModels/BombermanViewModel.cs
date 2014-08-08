@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading;
-using System.Windows.Forms.VisualStyles;
 using ClientWPF.CallBackService;
 using ClientWPF.ViewModels.GameRoom;
 using ClientWPF.ViewModels.Login;
@@ -58,7 +56,7 @@ namespace ClientWPF.ViewModels
             var factory = new DuplexChannelFactory<IBombermanService>(context, "netTcpBinding_IBombermanService");
             Proxy = factory.CreateChannel();
             LoginViewModel.Initialize(true, Proxy);
-            GameRoomViewModel.Initialize(false, "", Proxy);
+            GameRoomViewModel.Initialize(false, Proxy);
             StartedGameViewModel.Initialize(false, Proxy);
         }
 
@@ -80,19 +78,7 @@ namespace ClientWPF.ViewModels
 
         public void OnUserConnected(Player newPlayer, List<String> loginsList, bool canStartGame, bool isCreator)
         {
-            // generate text in the room game
-            //pass to game room mode
-            LoginViewModel.IsVisible = false;
-            GameRoomViewModel.IsVisible = true;
-
-            if (canStartGame)
-                GameRoomViewModel.IsStartEnabled = true;
-            //check if the player is creator then he has the button visible
-            GameRoomViewModel.IsStartVisible = isCreator;//to change
-
-            // TODO: remove
-            GameRoomViewModel.IsStartVisible = true;
-            GameRoomViewModel.IsStartEnabled = true;
+            //todo
         }
 
         public void OnGameStarted(Game newGame)

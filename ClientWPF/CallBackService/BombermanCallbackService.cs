@@ -1,7 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using ClientWPF.Logic;
-using ClientWPF.ViewModels;
 using Common.DataContract;
 using Common.Interfaces;
 

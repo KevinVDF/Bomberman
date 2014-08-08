@@ -2,6 +2,7 @@
 using System.Collections.ObjectModel;
 using System.Configuration;
 using System.Linq;
+using System.Windows.Controls;
 using System.Windows.Input;
 using ClientWPF.MVVM;
 using Common.Interfaces;
@@ -66,10 +67,9 @@ namespace ClientWPF.ViewModels.GameRoom
             Proxy.StartGame(MapPath);
         }
 
-        public void Initialize(bool isLogged, string text, IBombermanService proxy)
+        public void Initialize(bool isLogged, IBombermanService proxy)
         {
             IsVisible = isLogged;
-            RichText = text;
             Proxy = proxy;
         }
 
@@ -94,6 +94,13 @@ namespace ClientWPF.ViewModels.GameRoom
 
     public class GameRoomViewModelDesignData : GameRoomViewModel
     {
-        
+        public GameRoomViewModelDesignData()
+        {
+            RichText = "------------------------------------------------\n";
+            RichText += "---------- Welcome to Bomberman ----------\n";
+            RichText += "----------------- test ---------------\n\n\n";
+            RichText += "           List of players online";
+            RichText += "__________________________________________\n\n\n";
+        }
     }
 }
