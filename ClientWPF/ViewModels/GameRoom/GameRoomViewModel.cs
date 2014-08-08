@@ -4,18 +4,18 @@ using System.Configuration;
 using System.Linq;
 using System.Windows.Input;
 using ClientWPF.MVVM;
-using Common.DataContract;
 using Common.Interfaces;
 
 namespace ClientWPF.ViewModels.GameRoom
 {
     public class GameRoomViewModel : ViewModelBase
     {
+
+        #region Properties
+
         public static IBombermanService Proxy { get; set; }
 
         public string MapPath = ConfigurationManager.AppSettings["MapPath"];
-
-        public Player Player { get; set; }
 
         public ObservableCollection<string> PlayerList { get; set; }
 
@@ -57,6 +57,10 @@ namespace ClientWPF.ViewModels.GameRoom
             }
         }
 
+        #endregion Properties
+
+        #region Methods
+
         public void StartGame()
         {
             Proxy.StartGame(MapPath);
@@ -69,21 +73,23 @@ namespace ClientWPF.ViewModels.GameRoom
             Proxy = proxy;
         }
 
-        public void GenerateGameRoomText(Player newPlayer, List<string> loginsList, bool canStartGame)
+        public void GenerateTextOnConnection(string myUsername, List<string> loginsList, bool canStartGame, bool isCreator)
         {
             string richText = "------------------------------------------------\n";
-            richText += "------------- Welcome to Bomberman -------------\n";
-            richText += "-----------------" + Player.Username + "---------------\n\n";
-            richText += "New User Joined the server : " + newPlayer.Username + "\n";
-            richText += "List of players online :\n\n";
+            richText += "---------- Welcome to Bomberman ----------\n";
+            richText += "-----------------" + myUsername + "---------------\n\n\n";
+            richText += "           List of players online\n\n";
+            richText += "__________________________________________/n/n/n";
             richText = loginsList.Aggregate(richText, (current, login) => current + (login + "\n\n"));
-            if (Player.IsCreator)
+            if (isCreator)
             {
                 richText += canStartGame ? "Click button !!" : "Wait for other players...";
             }
             else richText += "Wait until the creator start the game.";
             RichText = richText;
         }
+
+        #endregion Methods
     }
 
     public class GameRoomViewModelDesignData : GameRoomViewModel

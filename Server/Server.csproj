@@ -38,7 +38,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BombermanService.cs" />
-    <Compile Include="Logic\ServerProcessor.cs" />
     <Compile Include="Model\PlayerModel.cs" />
     <Compile Include="Model\ServerModel.cs" />
     <Compile Include="Program.cs" />

@@ -17,8 +17,6 @@ namespace ClientWPF.ViewModels
     {
         #region Properties
 
-        public Player Player { get; set; }
-
         public IBombermanService Proxy { get; set; }
 
         private LoginViewModel _loginViewModel;
@@ -56,7 +54,7 @@ namespace ClientWPF.ViewModels
 
         public void Initialize()
         {
-            var context = new InstanceContext(new BombermanCallbackService(this));
+            var context = new InstanceContext(new BombermanCallbackService());
             var factory = new DuplexChannelFactory<IBombermanService>(context, "netTcpBinding_IBombermanService");
             Proxy = factory.CreateChannel();
             LoginViewModel.Initialize(true, Proxy);
@@ -64,28 +62,23 @@ namespace ClientWPF.ViewModels
             StartedGameViewModel.Initialize(false, Proxy);
         }
 
-        public void MoveObjectToLocation(ActionType actionType)
+        public void OnConnection(string myUsername, List<string> logins, bool canStartGame, bool isCreator)
         {
-            Proxy.MoveObjectToLocation(Player.Id, actionType);
+            //warn the room that you join the server and if you can start a game
+            GameRoomViewModel.GenerateTextOnConnection(myUsername,logins, canStartGame, isCreator);
         }
 
-        public void OnUserConnected(Player newPlayer, List<String> loginsList, bool canStartGame)
+        public void OnUserConnected(Player newPlayer, List<String> loginsList, bool canStartGame, bool isCreator)
         {
-            // if the player just connected then initialize it 
-            if (Player == null)
-            {
-                Player = newPlayer;
-                GameRoomViewModel.Player = newPlayer;
-            }
             // generate text in the room game
-            GameRoomViewModel.GenerateGameRoomText(newPlayer,loginsList, canStartGame) ;
+            
             //pass to game room mode
             LoginViewModel.IsVisible = false;
             GameRoomViewModel.IsVisible = true;
             if (canStartGame)
                 GameRoomViewModel.IsStartEnabled = true;
             //check if the player is creator then he has the button visible
-            GameRoomViewModel.IsStartVisible = Player.IsCreator;//to change
+            GameRoomViewModel.IsStartVisible = isCreator;//to change
 
             // TODO: remove
             GameRoomViewModel.IsStartVisible = true;
@@ -94,39 +87,45 @@ namespace ClientWPF.ViewModels
 
         public void OnGameStarted(Game newGame)
         {
-            //pass to started game mode
-            GameRoomViewModel.IsVisible = false;
-            StartedGameViewModel.IsVisible = true;
-            //set the new game retreive from server
-            StartedGameViewModel.RegisterGame(newGame);
-            StartedGameViewModel.InitializePlayer(Player);
+            ////pass to started game mode
+            //GameRoomViewModel.IsVisible = false;
+            //StartedGameViewModel.IsVisible = true;
+            ////set the new game retreive from server
+            //StartedGameViewModel.RegisterGame(newGame);
+            //StartedGameViewModel.InitializePlayer(Player); todo
         }
 
         public void OnMove(LivingObject objectToMoveBefore, LivingObject objectToMoveAfter)
         {
-            //if before is player and is "me" then update global player
-            if (objectToMoveBefore is Player && Player.CompareId(objectToMoveBefore))
-                Player = objectToMoveAfter as Player;
-            //Map.GridPositions.Remove(objectToMoveBefore);
-            PlayerItem objectToMove = StartedGameViewModel.MapViewModel.LivingObjects.FirstOrDefault(player => player.PositionX == (objectToMoveBefore.ObjectPosition.PositionX*50)+100 && player.PositionY == objectToMoveBefore.ObjectPosition.PositionY*50) as PlayerItem;
-            if (objectToMove != null)
-            {
-                Timer timer; 
-                for(int i=3; i>0; i++)
-                {
+            ////if before is player and is "me" then update global player
+            //if (objectToMoveBefore is Player && Player.CompareId(objectToMoveBefore))
+            //    Player = objectToMoveAfter as Player;
+            ////Map.GridPositions.Remove(objectToMoveBefore);
+            //PlayerItem objectToMove = StartedGameViewModel.MapViewModel.LivingObjects.FirstOrDefault(player => player.PositionX == (objectToMoveBefore.ObjectPosition.PositionX*50)+100 && player.PositionY == objectToMoveBefore.ObjectPosition.PositionY*50) as PlayerItem;
+            //if (objectToMove != null)
+            //{
+            //    Timer timer; 
+            //    for(int i=3; i>0; i++)
+            //    {
 
-                    timer = new Timer(MovePlayer(objectToMove, objectToMoveAfter, i));
+            //        timer = new Timer(MovePlayer(objectToMove, objectToMoveAfter, i));
                    
                      
-                }
-            }
+            //    }
+            //}todo
+        }
+
+        public void MoveObjectToLocation(ActionType actionType)
+        {
+            //Proxy.MoveObjectToLocation(Player.Id, actionType); todo
         }
 
         private TimerCallback MovePlayer(PlayerItem objectToMove, LivingObject objectToMoveAfter, int i)
         {
-             objectToMove.PositionX = objectToMoveAfter.ObjectPosition.PositionX/i;
-                    objectToMove.PositionY = objectToMoveAfter.ObjectPosition.PositionY/i;
-                    objectToMove.ImageInUse = objectToMove.Down.Images[i - 1];
+             //objectToMove.PositionX = objectToMoveAfter.ObjectPosition.PositionX/i;
+             //       objectToMove.PositionY = objectToMoveAfter.ObjectPosition.PositionY/i;
+             //       objectToMove.ImageInUse = objectToMove.Down.Images[i - 1];todo
+            return null;
         }
 
         #endregion

@@ -1,15 +1,14 @@
 ﻿using System.ServiceModel;
 using Common.DataContract;
 using Common.Interfaces;
-using Server.Logic;
 using Server.Model;
 
 namespace Server
 {
     [ServiceBehavior(InstanceContextMode = InstanceContextMode.Single, ConcurrencyMode = ConcurrencyMode.Reentrant)]
-    public class BombermanService : Common.Interfaces.IBombermanService
+    public class BombermanService : IBombermanService
     {
-        public static ServerModel Server = new ServerModel();
+        public ServerModel Server = new ServerModel();
 
         public void RegisterMe(string username)
         {

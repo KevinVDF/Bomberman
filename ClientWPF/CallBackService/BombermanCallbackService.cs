@@ -9,28 +9,36 @@ namespace ClientWPF.CallBackService
 {
     public class BombermanCallbackService : IBombermanCallbackService
     {
-        private static readonly ClientProcessor ClientProcessor = new ClientProcessor();
+        public ClientProcessor ClientProcessor = new ClientProcessor();
 
-        public static BombermanViewModel BombermanViewModel;
-
-        public BombermanCallbackService(BombermanViewModel bombermanViewmodel )
+        public void OnConnection(Player mePlayer, List<string> logins)
         {
-            BombermanViewModel = bombermanViewmodel;
+            ClientProcessor.OnConnection(mePlayer, logins);
         }
 
-        public void OnUserConnected(Player newPlayer, List<String> loginsList, bool canStartGame)
+        public void OnUserConnected(List<string> logins)
         {
-            BombermanViewModel.OnUserConnected(newPlayer, loginsList, canStartGame);
+            ClientProcessor.OnUserConnected(logins);
         }
 
         public void OnGameStarted(Game newGame)
         {
-            BombermanViewModel.OnGameStarted(newGame);
+            //ClientProcessor.OnGameStarted(newGame); todo
+        }
+
+        public void OnPlayerMove(LivingObject objectToMoveBefore, LivingObject objectToMoveAfter)
+        {
+            //ClientProcessor.OnPlayerMove(objectToMoveBefore, objectToMoveAfter);todo
+        }
+
+        public void OnBombDropped(Position bombPosition)
+        {
+            //ClientProcessor.OnBombDropped(bombPosition todo
         }
 
         public void OnMove(LivingObject objectToMoveBefore, LivingObject objectToMoveAfter)
         {
-            BombermanViewModel.OnMove(objectToMoveBefore, objectToMoveAfter);
+            //ClientProcessor.OnMove(objectToMoveBefore, objectToMoveAfter);todo
         }
     }
 }

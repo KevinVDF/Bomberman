@@ -35,7 +35,7 @@ namespace ClientWPF.ViewModels.Login
 
         private void Connect()
         {
-            Proxy.ConnectUser(Login);
+            Proxy.RegisterMe(Login);
         }
 
         public void Initialize(bool isVisible, IBombermanService proxy)

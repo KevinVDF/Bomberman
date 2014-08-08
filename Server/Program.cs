@@ -15,7 +15,6 @@ namespace Server
             Log.Initialize(@"D:\Temp\BombermanLogs","Server.log");
 
             Server = new ServerModel();
-            Server.Initialize();
             Console.WriteLine("------ ServerStarted ------");
             Log.WriteLine(Log.LogLevels.Info,  "Server Started at " + DateTime.Now.ToShortTimeString());
             var svcHost = new ServiceHost(typeof (BombermanService));
