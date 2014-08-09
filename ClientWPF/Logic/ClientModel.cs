@@ -29,15 +29,13 @@ namespace ClientWPF.Logic
         {
             //Register myself
             Player = mePlayer;
-            //if first player online then warn wiewmodel that he can start a game
-            bool canStartGame = logins.Count == 1;
             //warn viewmodel to change the wiew with the list of player connected
-            BombermanViewModel.OnConnection(Player.Username, logins, canStartGame, Player.IsCreator);
+            BombermanViewModel.OnConnection(Player.Username, logins, Player.IsCreator);
         }
 
-        public void OnUserConnected(List<String> loginsList)
+        public void OnUserConnected(List<String> logins)
         {
-            //todo
+            BombermanViewModel.OnUserConnected(Player.Username, logins , Player.IsCreator);
             
         }
 

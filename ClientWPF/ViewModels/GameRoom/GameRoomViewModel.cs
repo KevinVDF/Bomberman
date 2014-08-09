@@ -62,7 +62,7 @@ namespace ClientWPF.ViewModels.GameRoom
 
         public void StartGame()
         {
-            Proxy.StartGame(MapPath);
+            Proxy.StartGame(MapPath);//todo
         }
 
         public void Initialize(bool isLogged, IBombermanService proxy)
@@ -71,7 +71,7 @@ namespace ClientWPF.ViewModels.GameRoom
             Proxy = proxy;
         }
 
-        public void GenerateTextOnConnection(string myUsername, List<string> loginsList, bool canStartGame, bool isCreator)
+        public void GenerateTextOnConnection(string myUsername, List<string> loginsList, bool isCreator)
         {
             string richText = "------------------------------------------------\n";
             richText += "---------- Welcome to Bomberman ----------\n";
@@ -81,7 +81,7 @@ namespace ClientWPF.ViewModels.GameRoom
             richText = loginsList.Aggregate(richText, (current, login) => current + (login + "\n\n"));
             if (isCreator)
             {
-                richText += canStartGame ? "Click button !!" : "Wait for other players...";
+                richText += loginsList.Count() > 1 ? "Click button !!": "Wait for other players...";
             }
             else richText += "Wait until the creator start the game.";
             RichText = richText;
@@ -97,7 +97,7 @@ namespace ClientWPF.ViewModels.GameRoom
             RichText = "------------------------------------------------\n";
             RichText += "---------- Welcome to Bomberman ----------\n";
             RichText += "----------------- test ---------------\n\n\n";
-            RichText += "           List of players online\n";
+            RichText += "         List of players online\n";
             RichText += "__________________________________________\n\n\n";
             IsStartVisible = true;
         }

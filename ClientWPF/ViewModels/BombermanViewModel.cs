@@ -60,25 +60,26 @@ namespace ClientWPF.ViewModels
             StartedGameViewModel.Initialize(false, Proxy);
         }
 
-        public void OnConnection(string myUsername, List<string> logins, bool canStartGame, bool isCreator)
+        public void OnConnection(string myUsername, List<string> logins, bool isCreator)
         {
             //pass to game room mode
             LoginViewModel.IsVisible = false;
             GameRoomViewModel.IsVisible = true;
-            GameRoomViewModel.IsStartEnabled = canStartGame;
-            //check if the player is creator then he has the button visible
+            GameRoomViewModel.IsStartEnabled = false;
+            //check if the player is creator then he can start a game
             GameRoomViewModel.IsStartVisible = isCreator;
             //warn the room that you join the server and if you can start a game
-            GameRoomViewModel.GenerateTextOnConnection(myUsername, logins, canStartGame, isCreator);
+            GameRoomViewModel.GenerateTextOnConnection(myUsername, logins, isCreator);
 
             // TODO: remove
             GameRoomViewModel.IsStartVisible = true;
             GameRoomViewModel.IsStartEnabled = true;
         }
 
-        public void OnUserConnected(Player newPlayer, List<String> loginsList, bool canStartGame, bool isCreator)
+        public void OnUserConnected(string username, List<String> logins, bool isCreator)
         {
-            //todo
+            //warn the room that you join the server and if you can start a game
+            GameRoomViewModel.GenerateTextOnConnection(username, logins, isCreator);
         }
 
         public void OnGameStarted(Game newGame)

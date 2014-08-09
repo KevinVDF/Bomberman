@@ -16,8 +16,6 @@ namespace ClientWPF.CallBackService
             ClientModel = new ClientModel(bombermanViewModel);
         }
 
-
-
         public void OnConnection(Player mePlayer, List<string> logins)
         {
             ClientModel.OnConnection(mePlayer, logins);
