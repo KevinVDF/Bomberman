@@ -1,7 +1,6 @@
 ﻿using System;
 using System.ServiceModel;
 using Common.Log;
-using Server.Model;
 
 namespace Server
 {
@@ -30,7 +29,5 @@ namespace Server
             }
             svcHost.Close();
         } 
-
-
     }
 }

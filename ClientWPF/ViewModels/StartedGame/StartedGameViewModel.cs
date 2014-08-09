@@ -19,8 +19,6 @@ namespace ClientWPF.ViewModels.StartedGame
 
         public const int MiddleImage = 2;
 
-        public static IBombermanService Proxy;
-
         private MapViewModel _mapViewModel;
         public MapViewModel MapViewModel
         {
@@ -45,17 +43,10 @@ namespace ClientWPF.ViewModels.StartedGame
             MapViewModel = new MapViewModel();
         }
 
-        public void Initialize(bool isVisible, IBombermanService proxy)
+        public void Initialize(bool isVisible)
         {
-            Proxy = proxy;
             IsVisible = isVisible;
-            MapViewModel.Initialize(proxy);
             GlobalImagePath = ConfigurationManager.AppSettings["ImagePath"];
-        }
-
-        public void InitializePlayer(Common.DataContract.Player player)
-        {
-            MapViewModel.InitializePlayer(player);
         }
 
         public void RegisterGame(Game newGame)
@@ -102,7 +93,7 @@ namespace ClientWPF.ViewModels.StartedGame
             {
                 //down
                 ExtractDown(player, playerNumber, imageBmp, i, TexturesPosition.DownImagePosition);
-                ////left
+                ////left TODO
                 //ExtractLeft(playerItem, playerNumber, playersImagePath);
                 ////right
                 //ExtractRight(playerItem, playerNumber, playersImagePath);
@@ -164,9 +155,10 @@ namespace ClientWPF.ViewModels.StartedGame
             //posY = start + player number * (playerHeight  + space between them)
             int posY = TexturesPosition.PlayerStartImageY + playerNumber*(TexturesPosition.PlayerHeight + TexturesPosition.SpaceBetweenImages);
 
-            Brush brushLeft = ExtractBackground(imageBmp, posX, posY, TexturesPosition.PlayerWidth, TexturesPosition.PlayerHeight);
+            Brush brush = ExtractBackground(imageBmp, posX, posY, TexturesPosition.PlayerWidth, TexturesPosition.PlayerHeight);
+            player.Down.Images.Add(brush);
 
-            if (imageNumber == MiddleImage)
+            if (imageNumber == TexturesPosition.MiddleImage)
                 player.ImageInUse = player.Down.Images[1];
 
         }
@@ -189,8 +181,14 @@ namespace ClientWPF.ViewModels.StartedGame
             }
             return background;
         }
+
+        public void OnPlayerMove(Player player, Position newPosition)
+        {
+            MapViewModel.OnPlayerMove(player, newPosition);
+        }
         
         #endregion
+
     }
 
     public class StartedGameViewModelDesignData : StartedGameViewModel

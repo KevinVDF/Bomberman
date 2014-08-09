@@ -21,5 +21,7 @@
         public const int RightImagePosition = 7;
 
         public const int UpImagePosition = 10;
+
+        public const int MiddleImage = 2;
     }
 }

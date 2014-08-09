@@ -1,4 +1,6 @@
-﻿namespace ClientWPF.ViewModels.StartedGame
+﻿using ClientWPF.Model;
+
+namespace ClientWPF.ViewModels.StartedGame
 {
     public class PlayerItem : LivingObjectItem
     {

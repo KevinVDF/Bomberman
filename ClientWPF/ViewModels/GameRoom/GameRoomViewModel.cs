@@ -1,9 +1,8 @@
 ﻿using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Configuration;
 using System.Linq;
-using System.Windows.Controls;
 using System.Windows.Input;
+using ClientWPF.Logic;
 using ClientWPF.MVVM;
 using Common.Interfaces;
 
@@ -13,10 +12,6 @@ namespace ClientWPF.ViewModels.GameRoom
     {
 
         #region Properties
-
-        public static IBombermanService Proxy { get; set; }
-
-        public string MapPath = ConfigurationManager.AppSettings["MapPath"];
 
         private bool _isVisible;
         public bool IsVisible
@@ -62,13 +57,12 @@ namespace ClientWPF.ViewModels.GameRoom
 
         public void StartGame()
         {
-            Proxy.StartGame(MapPath);//todo
+            ClientModel.StartGame();
         }
 
-        public void Initialize(bool isLogged, IBombermanService proxy)
+        public void Initialize(bool isLogged)
         {
             IsVisible = isLogged;
-            Proxy = proxy;
         }
 
         public void GenerateTextOnConnection(string myUsername, List<string> loginsList, bool isCreator)

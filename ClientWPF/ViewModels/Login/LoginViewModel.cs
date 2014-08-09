@@ -1,5 +1,8 @@
-﻿using System.Windows.Input;
+﻿using System;
+using System.Windows.Input;
+using ClientWPF.Logic;
 using ClientWPF.MVVM;
+using ClientWPF.Proxies;
 using Common.Interfaces;
 
 namespace ClientWPF.ViewModels.Login
@@ -8,9 +11,12 @@ namespace ClientWPF.ViewModels.Login
     {
         #region Properties
 
-        public static IBombermanService Proxy { get; set; }
-
-        public string Login { get; set; }
+        private String _login;
+        public string Login
+        {
+            get { return _login; } 
+            set { Set(() => Login, ref _login, value); }
+        }
 
         private bool _isVisible;
         public bool IsVisible
@@ -35,12 +41,11 @@ namespace ClientWPF.ViewModels.Login
 
         private void Connect()
         {
-            Proxy.RegisterMe(Login);
+            ClientModel.RegisterMe(Login);
         }
 
-        public void Initialize(bool isVisible, IBombermanService proxy)
+        public void Initialize(bool isVisible)
         {
-            Proxy = proxy;
             IsVisible = isVisible;
         }
 

@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Text;
 using Common.DataContract;
 using Common.Interfaces;
 using Common.Log;
@@ -11,6 +13,8 @@ namespace Server.Model
     {
 
         #region properties
+
+        public int MapSize = 10;
 
         public ServerStatus ServerStatus { get; set; }
 
@@ -74,123 +78,161 @@ namespace Server.Model
             }
         }
 
-        public void StartGame(IBombermanCallbackService callback, string mapPath)
+        public void StartGame(string mapPath)
         {
-            ////create the list of players to pass to client
-            //List<Player> players = PlayersOnline.Select(playerModel => playerModel.Player).ToList();
+            List<Player> players = PlayersOnline.Select(playerModel => playerModel.Player).ToList();
 
-            //Game newGame = new Game
-            //{
-            //    Map = new Map
-            //    {
-            //        MapName = "Custom Map",
-            //        GridPositions = GenerateGrid(players, mapPath)
-            //    },
-            //    CurrentStatus = GameStatus.Started,
-            //};
-            //Server.GameCreated = newGame;
-            ////send the game to all players (only once)
-            //foreach (PlayerModel currentPlayer in Server.PlayersOnline)
-            //{
-            //    currentPlayer.CallbackService.OnGameStarted(newGame);
-            //}
-        }//todo
+            Game newGame = new Game
+            {
+                Map = new Map
+                {
+                    MapName = "Custom Map",
+                    GridPositions = GenerateGrid(players, mapPath)
+                },
+                CurrentStatus = GameStatus.Started,
+            };
+            GameCreated = newGame;
+            //send the game to all players (only once)
+            foreach (PlayerModel currentPlayer in PlayersOnline)
+            {
+                currentPlayer.CallbackService.OnGameStarted(newGame);
+            }
+        }
 
-        public void MoveObjectToLocation(IBombermanCallbackService callback, ActionType actionType)
+        private List<LivingObject> GenerateGrid(List<Player> players, string mapPath)
         {
-            //PlayerModel player = Server.PlayersOnline.FirstOrDefault(x => x.CallbackService == callback);
-            //if (player != null)
-            //{
-            //    switch (actionType)
-            //    {
-            //        case ActionType.MoveUp:
-            //            Move(player.Player, 0, -1);
-            //            break;
-            //        case ActionType.MoveDown:
-            //            Move(player.Player, 0, +1);
-            //            break;
-            //        case ActionType.MoveRight:
-            //            Move(player.Player, +1, 0);
-            //            break;
-            //        case ActionType.MoveLeft:
-            //            Move(player.Player, -1, 0);
-            //            break;
-            //    }
-            //}
-        }//todo
+            List<LivingObject> matrice = new List<LivingObject>();
 
-        //private List<LivingObject> GenerateGrid(List<Player> players, string mapPath)
-        //{
-        //    List<LivingObject> matrice = new List<LivingObject>();
+            using (StreamReader reader = new StreamReader(mapPath, Encoding.UTF8))
+            {
+                string objectsToAdd = reader.ReadToEnd().Replace("\n", "").Replace("\r", "");
 
-        //    //using (StreamReader reader = new StreamReader(mapPath, Encoding.UTF8))
-        //    //{
-        //    //    string objectsToAdd = reader.ReadToEnd().Replace("\n", "").Replace("\r", "");
+                for (int y = 0; y < MapSize; y++)
+                {
+                    for (int x = 0; x < MapSize; x++)
+                    {
+                        LivingObject livingObject = null;
+                        char cell = objectsToAdd[(y * MapSize) + x]; // SinaC: factoring is the key :)   y and x were inverted
+                        switch (cell)
+                        {
+                            case 'u':
+                                livingObject = new Wall
+                                {
+                                    WallType = WallType.Undestructible,
+                                    ObjectPosition = new Position
+                                    {
+                                        PositionX = x,
+                                        PositionY = y
+                                    }
+                                };
+                                break;
+                            case 'd':
+                                livingObject = new Wall
+                                {
+                                    WallType = WallType.Destructible,
+                                    ObjectPosition = new Position
+                                    {
+                                        PositionX = x,
+                                        PositionY = y
+                                    }
+                                };
+                                break;
+                            //case 'b' :
+                            //    currentlivingObject = new Bonus
+                            //    {
 
-        //    //    for (int y = 0; y < MapSize; y++)
-        //    //    {
-        //    //        for (int x = 0; x < MapSize; x++)
-        //    //        {
-        //    //            LivingObject livingObject = null;
-        //    //            char cell = objectsToAdd[(y * MapSize) + x]; // SinaC: factoring is the key :)   y and x were inverted
-        //    //            switch (cell)
-        //    //            {
-        //    //                case 'u':
-        //    //                    livingObject = new Wall
-        //    //                    {
-        //    //                        WallType = WallType.Undestructible,
-        //    //                        ObjectPosition = new Position
-        //    //                        {
-        //    //                            PositionX = x,
-        //    //                            PositionY = y
-        //    //                        }
-        //    //                    };
-        //    //                    break;
-        //    //                case 'd':
-        //    //                    livingObject = new Wall
-        //    //                    {
-        //    //                        WallType = WallType.Destructible,
-        //    //                        ObjectPosition = new Position
-        //    //                        {
-        //    //                            PositionX = x,
-        //    //                            PositionY = y
-        //    //                        }
-        //    //                    };
-        //    //                    break;
-        //    //                //case 'b' :
-        //    //                //    currentlivingObject = new Bonus
-        //    //                //    {
+                            //    };
+                            //    break;
+                            case '0':
+                            case '1':
+                            case '2':
+                            case '3':
+                                if (players.Count > (int)Char.GetNumericValue(cell))
+                                {
+                                    livingObject = players[(int)Char.GetNumericValue(cell)];
+                                    livingObject.ObjectPosition = new Position
+                                    {
+                                        PositionX = x,
+                                        PositionY = y
+                                    };
 
-        //    //                //    };
-        //    //                //    break;
-        //    //                case '0':
-        //    //                case '1':
-        //    //                case '2':
-        //    //                case '3':
-        //    //                    if (players.Count > (int)Char.GetNumericValue(cell))
-        //    //                    {
-        //    //                        livingObject = players[(int)Char.GetNumericValue(cell)];
-        //    //                        livingObject.ObjectPosition = new Position
-        //    //                        {
-        //    //                            PositionX = x,
-        //    //                            PositionY = y
-        //    //                        };
-
-        //    //                    }
-        //    //                    break;
-        //    //            }
-        //    //            if (livingObject != null)
-        //    //                matrice.Add(livingObject);
-        //    //        }
-        //    //    }
-        //    //}
-        //    return matrice;
-        //}
+                                }
+                                break;
+                        }
+                        if (livingObject != null)
+                            matrice.Add(livingObject);
+                    }
+                }
+            }
+            return matrice;
+        }
 
         public void PlayerAction(IBombermanCallbackService callback, ActionType actionType)
         {
-            throw new NotImplementedException();
-        }//todo
+            PlayerModel player = PlayersOnline.FirstOrDefault(x => x.CallbackService == callback);
+
+            if (player != null)
+            {
+                switch (actionType)
+                {
+                    case ActionType.MoveUp:
+                        MovePlayer(player.Player, 0, -1);
+                        break;
+                    case ActionType.MoveDown:
+                        MovePlayer(player.Player, 0, +1);
+                        break;
+                    case ActionType.MoveRight:
+                        MovePlayer(player.Player, +1, 0);
+                        break;
+                    case ActionType.MoveLeft:
+                        MovePlayer(player.Player, -1, 0);
+                        break;
+                }
+            }
+        }
+
+        private void MovePlayer(Player player, int stepX, int stepY)
+        {
+            // Get object at future player location
+            LivingObject collider = GameCreated.Map.GridPositions.FirstOrDefault(x => player.ObjectPosition.PositionY + stepY == x.ObjectPosition.PositionY
+                                                                                             && player.ObjectPosition.PositionX + stepX == x.ObjectPosition.PositionX);
+            // Can't go thru wall ir player
+            if (collider is Wall || collider is Player)
+                return;
+            
+            GameCreated.Map.GridPositions.Remove(player);
+
+            Position newPosition = new Position
+            {
+                PositionX = player.ObjectPosition.PositionX + stepX,
+                PositionY = player.ObjectPosition.PositionY + stepY
+            };
+
+            // Send new player position to players
+            foreach (PlayerModel playerModel in PlayersOnline)
+            {
+                try
+                {
+                    playerModel.CallbackService.OnPlayerMove(player, newPosition);
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine("Connection error with player " + playerModel.Player.Username);
+                    Log.WriteLine(Log.LogLevels.Error, "ConnectUser callback error :" + ex.Message);
+                    PlayersDisconnected.Add(playerModel);
+                }
+            }
+            //withdraw players with problems form players online
+            foreach (PlayerModel playerDisconnected in PlayersDisconnected)
+            {
+                PlayersOnline.Remove(playerDisconnected);
+            }
+
+            player.ObjectPosition.PositionY += stepY;
+            player.ObjectPosition.PositionX += stepX;
+            GameCreated.Map.GridPositions.Add(player);
+        }
+
 
         #endregion Methods
     }

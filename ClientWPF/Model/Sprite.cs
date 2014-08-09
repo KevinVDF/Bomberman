@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Windows.Media;
 
-namespace ClientWPF.ViewModels.StartedGame
+namespace ClientWPF.Model
 {
     public class Sprite
     {

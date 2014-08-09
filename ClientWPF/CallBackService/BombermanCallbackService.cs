@@ -28,22 +28,17 @@ namespace ClientWPF.CallBackService
 
         public void OnGameStarted(Game newGame)
         {
-            //ClientProcessor.OnGameStarted(newGame); todo
+            ClientModel.OnGameStarted(newGame); 
         }
 
-        public void OnPlayerMove(LivingObject objectToMoveBefore, LivingObject objectToMoveAfter)
+        public void OnPlayerMove(Player player, Position newPosition)
         {
-            //ClientProcessor.OnPlayerMove(objectToMoveBefore, objectToMoveAfter);todo
+            ClientModel.OnPlayerMove(player, newPosition);
         }
 
         public void OnBombDropped(Position bombPosition)
         {
             //ClientProcessor.OnBombDropped(bombPosition todo
-        }
-
-        public void OnMove(LivingObject objectToMoveBefore, LivingObject objectToMoveAfter)
-        {
-            //ClientProcessor.OnMove(objectToMoveBefore, objectToMoveAfter);todo
         }
     }
 }

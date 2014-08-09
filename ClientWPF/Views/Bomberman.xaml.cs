@@ -36,16 +36,16 @@ namespace ClientWPF.Views
             switch (e.Key)
             {
                 case Key.Left:
-                    BombermanViewModel.MoveObjectToLocation(ActionType.MoveLeft);
+                    BombermanViewModel.PlayerAction(ActionType.MoveLeft);
                     break;
                 case Key.Right:
-                    BombermanViewModel.MoveObjectToLocation(ActionType.MoveRight);
+                    BombermanViewModel.PlayerAction(ActionType.MoveRight);
                     break;
                 case Key.Up:
-                    BombermanViewModel.MoveObjectToLocation(ActionType.MoveUp);
+                    BombermanViewModel.PlayerAction(ActionType.MoveUp);
                     break;
                 case Key.Down:
-                    BombermanViewModel.MoveObjectToLocation(ActionType.MoveDown);
+                    BombermanViewModel.PlayerAction(ActionType.MoveDown);
                     break;
             }
         }

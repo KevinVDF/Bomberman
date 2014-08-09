@@ -1,21 +1,19 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
-using ClientWPF.CallBackService;
+using ClientWPF.Logic;
+using ClientWPF.Proxies;
 using ClientWPF.ViewModels.GameRoom;
 using ClientWPF.ViewModels.Login;
 using ClientWPF.ViewModels.StartedGame;
 using Common.DataContract;
-using Common.Interfaces;
-using System.ServiceModel;
 
 namespace ClientWPF.ViewModels
 {
     public class BombermanViewModel : ViewModelBase
     {
         #region Properties
-
-        public IBombermanService Proxy { get; set; }
 
         private LoginViewModel _loginViewModel;
         public LoginViewModel LoginViewModel
@@ -40,8 +38,6 @@ namespace ClientWPF.ViewModels
 
         #endregion 
 
-        #region Methods
-
         //Constructor
         public BombermanViewModel()
         {
@@ -50,14 +46,14 @@ namespace ClientWPF.ViewModels
             StartedGameViewModel = new StartedGameViewModel();
         }
 
+        #region Methods
+
         public void Initialize()
         {
-            var context = new InstanceContext(new BombermanCallbackService(this));
-            var factory = new DuplexChannelFactory<IBombermanService>(context, "netTcpBinding_IBombermanService");
-            Proxy = factory.CreateChannel();
-            LoginViewModel.Initialize(true, Proxy);
-            GameRoomViewModel.Initialize(false, Proxy);
-            StartedGameViewModel.Initialize(false, Proxy);
+            LoginViewModel.Initialize(true);
+            GameRoomViewModel.Initialize(false);
+            StartedGameViewModel.Initialize(false);
+            Proxy.SetViewModel(this);
         }
 
         public void OnConnection(string myUsername, List<string> logins, bool isCreator)
@@ -85,47 +81,24 @@ namespace ClientWPF.ViewModels
         public void OnGameStarted(Game newGame)
         {
             ////pass to started game mode
-            //GameRoomViewModel.IsVisible = false;
-            //StartedGameViewModel.IsVisible = true;
+            GameRoomViewModel.IsVisible = false;
+            StartedGameViewModel.IsVisible = true;
             ////set the new game retreive from server
-            //StartedGameViewModel.RegisterGame(newGame);
-            //StartedGameViewModel.InitializePlayer(Player); todo
+            StartedGameViewModel.RegisterGame(newGame);
         }
 
-        public void OnMove(LivingObject objectToMoveBefore, LivingObject objectToMoveAfter)
+        public void PlayerAction(ActionType actionType)
         {
-            ////if before is player and is "me" then update global player
-            //if (objectToMoveBefore is Player && Player.CompareId(objectToMoveBefore))
-            //    Player = objectToMoveAfter as Player;
-            ////Map.GridPositions.Remove(objectToMoveBefore);
-            //PlayerItem objectToMove = StartedGameViewModel.MapViewModel.LivingObjects.FirstOrDefault(player => player.PositionX == (objectToMoveBefore.ObjectPosition.PositionX*50)+100 && player.PositionY == objectToMoveBefore.ObjectPosition.PositionY*50) as PlayerItem;
-            //if (objectToMove != null)
-            //{
-            //    Timer timer; 
-            //    for(int i=3; i>0; i++)
-            //    {
-
-            //        timer = new Timer(MovePlayer(objectToMove, objectToMoveAfter, i));
-                   
-                     
-            //    }
-            //}todo
+            ClientModel.PlayerAction(actionType);
         }
 
-        public void MoveObjectToLocation(ActionType actionType)
+        public void OnPlayerMove(Player player, Position newPosition)
         {
-            //Proxy.MoveObjectToLocation(Player.Id, actionType); todo
-        }
-
-        private TimerCallback MovePlayer(PlayerItem objectToMove, LivingObject objectToMoveAfter, int i)
-        {
-             //objectToMove.PositionX = objectToMoveAfter.ObjectPosition.PositionX/i;
-             //       objectToMove.PositionY = objectToMoveAfter.ObjectPosition.PositionY/i;
-             //       objectToMove.ImageInUse = objectToMove.Down.Images[i - 1];todo
-            return null;
+            StartedGameViewModel.OnPlayerMove(player, newPosition);
         }
 
         #endregion
+
     }
 
     public class BombermanViewModelDesignData : BombermanViewModel

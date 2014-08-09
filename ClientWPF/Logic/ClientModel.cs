@@ -1,6 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Configuration;
+using System.Linq;
+using System.Threading;
+using ClientWPF.Proxies;
 using ClientWPF.ViewModels;
+using ClientWPF.ViewModels.StartedGame;
 using Common.DataContract;
 
 namespace ClientWPF.Logic
@@ -14,6 +19,8 @@ namespace ClientWPF.Logic
 
         public Map Map { get; set; }
 
+        public static string MapPath = ConfigurationManager.AppSettings["MapPath"];
+
         public BombermanViewModel BombermanViewModel { get; set; }
 
         #endregion Properties
@@ -23,7 +30,26 @@ namespace ClientWPF.Logic
             BombermanViewModel = bombermanViewModel;
         }
 
-        #region Methods
+        #region Services Methods
+
+        public static void RegisterMe(string login)
+        {
+            Proxy.Instance.RegisterMe(login);
+        }
+
+        public static void StartGame()
+        {
+            Proxy.Instance.StartGame(MapPath);
+        }
+
+        public static void PlayerAction(ActionType actionType)
+        {
+            Proxy.Instance.PlayerAction(actionType);
+        }
+
+        #endregion Services Methods
+
+        #region Callback Services Methods
 
         public void OnConnection(Player mePlayer, List<string> logins)
         {
@@ -36,15 +62,25 @@ namespace ClientWPF.Logic
         public void OnUserConnected(List<String> logins)
         {
             BombermanViewModel.OnUserConnected(Player.Username, logins , Player.IsCreator);
-            
         }
 
         public void OnGameStarted(Game newGame)
         {
-            //todo
+            BombermanViewModel.OnGameStarted(newGame);
         }
 
-        #endregion Properties
+        public void OnPlayerMove(Player player, Position newPosition)
+        {
+            if (Player.CompareId(player))
+                Player.ObjectPosition = newPosition;
 
+            BombermanViewModel.OnPlayerMove(player, newPosition);
+            
+        }
+        #endregion Callback Services Methods
+
+
+
+       
     }
 }

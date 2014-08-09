@@ -1,4 +1,6 @@
 ﻿using System.Collections.ObjectModel;
+using System.Linq;
+using System.Threading;
 using Common.DataContract;
 using Common.Interfaces;
 
@@ -15,26 +17,31 @@ namespace ClientWPF.ViewModels.StartedGame
             set { Set(() => LivingObjects, ref _livingObjects, value); }
         }
 
-        public static IBombermanService Proxy { get; set; }
-
-        public Player Player { get; set; }
-
         #endregion
 
         #region Methods
 
-        //Constructor
         public void Initialize(IBombermanService proxy)
         {
-            Proxy = proxy;
         }
 
-        public void InitializePlayer(Player player)
+        public void OnPlayerMove(Player player, Position newPosition)
         {
-            Player = player;
+            PlayerItem objectToMove = LivingObjects.FirstOrDefault(x => x.PositionX == (player.ObjectPosition.PositionX * 50) + 100 && x.PositionY == player.ObjectPosition.PositionY * 50) as PlayerItem;
+            if (objectToMove != null)
+            {
+                objectToMove.PositionX = newPosition.PositionX;
+                objectToMove.PositionY = newPosition.PositionY;
+            }
         }
 
+        private static void MovePlayer(PlayerItem objectToMove, Player playerAfter)
+        {
+            objectToMove.PositionX = playerAfter.ObjectPosition.PositionX;
+            objectToMove.PositionY = playerAfter.ObjectPosition.PositionY;
+        }
         #endregion
+        
     }
 
     public class MapViewModelDesignData : MapViewModel

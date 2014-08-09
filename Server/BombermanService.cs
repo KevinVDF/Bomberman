@@ -18,8 +18,7 @@ namespace Server
 
         public void StartGame(string mapPath)
         {
-            IBombermanCallbackService callback = OperationContext.Current.GetCallbackChannel<IBombermanCallbackService>();
-            Server.StartGame(callback, mapPath);
+            Server.StartGame(mapPath);
         }
 
         public void PlayerAction(ActionType actionType)

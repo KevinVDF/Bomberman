@@ -61,8 +61,9 @@
     <Compile Include="Helpers\ExecuteOnUIThread.cs" />
     <Compile Include="Helpers\IOService.cs" />
     <Compile Include="Helpers\UriHelpers.cs" />
+    <Compile Include="Proxies\Proxy.cs" />
     <Compile Include="ViewModels\DebugViewModel.cs" />
-    <Compile Include="ViewModels\StartedGame\Sprite.cs" />
+    <Compile Include="Model\Sprite.cs" />
     <Compile Include="MVVM\AsyncMessenger.cs" />
     <Compile Include="MVVM\ObservableObject.cs" />
     <Compile Include="MVVM\RelayCommand.cs" />
@@ -182,9 +183,7 @@
   <ItemGroup>
     <Resource Include="Images\Player4.png" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Model\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
