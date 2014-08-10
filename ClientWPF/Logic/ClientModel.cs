@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Configuration;
 using System.Linq;
-using System.Threading;
+using System.Windows;
 using ClientWPF.Proxies;
 using ClientWPF.ViewModels;
 using ClientWPF.ViewModels.StartedGame;
@@ -15,13 +15,11 @@ namespace ClientWPF.Logic
 
         #region Properties
 
-        public Player Player { get; set; }
-
-        public Map Map { get; set; }
+        public static Player Player { get; set; }
 
         public static string MapPath = ConfigurationManager.AppSettings["MapPath"];
 
-        public BombermanViewModel BombermanViewModel { get; set; }
+        public static BombermanViewModel BombermanViewModel { get; set; }
 
         #endregion Properties
 
@@ -44,6 +42,10 @@ namespace ClientWPF.Logic
 
         public static void PlayerAction(ActionType actionType)
         {
+            if (actionType == ActionType.DropBomb &&
+                BombermanViewModel.StartedGameViewModel.MapViewModel.LivingObjects.Select(
+                    x => x is BombItem && ((BombItem) x).PlayerId == Player.Id).Count() < Player.BombNumber)
+                return;
             Proxy.Instance.PlayerAction(actionType);
         }
 
@@ -66,21 +68,27 @@ namespace ClientWPF.Logic
 
         public void OnGameStarted(Game newGame)
         {
+            //initialize Bomb power
+            Player.BombPower = 1;
+            //send the new map to the view model 
             BombermanViewModel.OnGameStarted(newGame);
         }
 
-        public void OnPlayerMove(Player player, Position newPosition)
+        public void OnPlayerMove(Player player, Position newPosition, ActionType actionType)
         {
             if (Player.CompareId(player))
                 Player.ObjectPosition = newPosition;
 
-            BombermanViewModel.OnPlayerMove(player, newPosition);
+            BombermanViewModel.OnPlayerMove(player, newPosition, actionType);
             
         }
+
+        public void OnBombDropped(Bomb newBomb)
+        {
+            BombermanViewModel.OnBombDropped(newBomb);
+        }
+
         #endregion Callback Services Methods
 
-
-
-       
     }
 }

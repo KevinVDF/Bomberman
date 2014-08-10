@@ -5,11 +5,20 @@ namespace ClientWPF.Model
 {
     public class Sprite
     {
-        public List<Brush> Images { get; set; }
+        public List<Brush> Down { get; set; }
+
+        public List<Brush> Left { get; set; }
+
+        public List<Brush> Right { get; set; }
+
+        public List<Brush> Up { get; set; }
 
         public Sprite()
         {
-            Images = new List<Brush>();
+            Down = new List<Brush>();
+            Left = new List<Brush>();
+            Right = new List<Brush>();
+            Up = new List<Brush>();
         }
     }
 }

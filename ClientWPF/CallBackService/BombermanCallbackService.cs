@@ -31,14 +31,14 @@ namespace ClientWPF.CallBackService
             ClientModel.OnGameStarted(newGame); 
         }
 
-        public void OnPlayerMove(Player player, Position newPosition)
+        public void OnPlayerMove(Player player, Position newPosition, ActionType actionType)
         {
-            ClientModel.OnPlayerMove(player, newPosition);
+            ClientModel.OnPlayerMove(player, newPosition, actionType);
         }
 
-        public void OnBombDropped(Position bombPosition)
+        public void OnBombDropped(Bomb newBomb)
         {
-            //ClientProcessor.OnBombDropped(bombPosition todo
+            ClientModel.OnBombDropped(newBomb);
         }
     }
 }

@@ -4,11 +4,13 @@ namespace ClientWPF.ViewModels.StartedGame
 {
     public class PlayerItem : LivingObjectItem
     {
-        public Sprite Down { get; set; }
+        public int Id { get; set; }
 
-        public PlayerItem()
+        private Sprite _texture;
+        public Sprite Textures
         {
-            Down = new Sprite();
+            get { return _texture; }
+            set { Set(() => Textures, ref _texture, value); }
         }
     }
 }

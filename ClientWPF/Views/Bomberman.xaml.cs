@@ -47,6 +47,9 @@ namespace ClientWPF.Views
                 case Key.Down:
                     BombermanViewModel.PlayerAction(ActionType.MoveDown);
                     break;
+                case Key.Space:
+                    BombermanViewModel.PlayerAction(ActionType.DropBomb);
+                    break;
             }
         }
     }

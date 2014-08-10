@@ -1,23 +1,12 @@
-﻿using System;
-using System.Collections.ObjectModel;
+﻿using System.Collections.ObjectModel;
 using System.Configuration;
-using System.Windows;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using ClientWPF.Textures;
 using Common.DataContract;
-using Common.Interfaces;
-using Common.Log;
 
 namespace ClientWPF.ViewModels.StartedGame
 {
     public class StartedGameViewModel : ViewModelBase
     {
         #region Properties
-
-        public string GlobalImagePath { get; set; }
-
-        public const int MiddleImage = 2;
 
         private MapViewModel _mapViewModel;
         public MapViewModel MapViewModel
@@ -33,15 +22,17 @@ namespace ClientWPF.ViewModels.StartedGame
             set { Set(() => IsVisible, ref _isVisible, value); }
         }
 
-        #endregion 
+        public string GlobalImagePath { get; set; }
 
-        #region Methods
+        #endregion 
 
         //Constructor
         public StartedGameViewModel()
         {
             MapViewModel = new MapViewModel();
         }
+
+        #region Methods
 
         public void Initialize(bool isVisible)
         {
@@ -52,139 +43,82 @@ namespace ClientWPF.ViewModels.StartedGame
         public void RegisterGame(Game newGame)
         {
             int playerNumber = 0;
+
             ObservableCollection<LivingObjectItem> livingObjectItems = new ObservableCollection<LivingObjectItem>();
+
+            Textures.Textures.InitializeItem();
 
             foreach (LivingObject livingObject in newGame.Map.GridPositions)
             {
                 LivingObjectItem livingObjectItem = null;
-                if (livingObject is Wall)
-                {
-                    livingObjectItem = new WallItem
-                    {
-                        PositionX = livingObject.ObjectPosition.PositionX,
-                        PositionY = livingObject.ObjectPosition.PositionY,
-                        WallType = ((Wall) livingObject).WallType
-                    };
-                    GetSpriteForWall(livingObjectItem);
-                }
-                if (livingObject is Player)
-                {
-                    livingObjectItem = new PlayerItem
-                    {
-                        PositionX = livingObject.ObjectPosition.PositionX,
-                        PositionY = livingObject.ObjectPosition.PositionY,
-                    };
-                    
-                    GetSpriteForPlayer(livingObjectItem as PlayerItem, playerNumber);
-                    playerNumber++;
-                }
-                
+                if(livingObject is Wall)
+                    livingObjectItem = MapToWallItem(livingObject as Wall);
+                if(livingObject is Player)
+                    livingObjectItem = MapToPlayerItem(livingObject as Player, playerNumber++);
                 livingObjectItems.Add(livingObjectItem);
             }
             MapViewModel.LivingObjects = livingObjectItems;
         }
 
-        private void GetSpriteForPlayer(PlayerItem player, int playerNumber)
+        private static LivingObjectItem MapToPlayerItem(Player player, int playerNumber)
         {
-            string playersImagePath = String.Format(@"{0}\13Bomberman.png", GlobalImagePath);
-            BitmapImage imageBmp = new BitmapImage(new Uri(playersImagePath));
 
-            for (int i = 0; i < TexturesPosition.NumberImagesPerSpriteByPlayer; i++)
+            PlayerItem playerItem = new PlayerItem
             {
-                //down
-                ExtractDown(player, playerNumber, imageBmp, i, TexturesPosition.DownImagePosition);
-                ////left TODO
-                //ExtractLeft(playerItem, playerNumber, playersImagePath);
-                ////right
-                //ExtractRight(playerItem, playerNumber, playersImagePath);
-                ////up
-                //ExtractUp(playerItem, playerNumber, playersImagePath);
-            }
-        }
-
-        private void GetSpriteForWall(LivingObjectItem livingObjectItem)
-        {
-            switch (((WallItem)livingObjectItem).WallType)
+                PositionX = player.ObjectPosition.PositionX,
+                PositionY = player.ObjectPosition.PositionY,
+                Id = player.Id
+            };
+            playerNumber++;
+            switch (playerNumber)
             {
-                case WallType.Undestructible:
-                    livingObjectItem.ImageInUse = new ImageBrush(new BitmapImage(new Uri(ConfigurationManager.AppSettings["ImagePath"] + @"\Undestructible.png")));
+                case 1:
+                    playerItem.Textures = Textures.Textures.Player1Item.Textures;
+                    playerItem.ImageInUse = Textures.Textures.Player1Item.ImageInUse;
                     break;
-                case WallType.Destructible:
-                    livingObjectItem.ImageInUse = new ImageBrush(new BitmapImage(new Uri(ConfigurationManager.AppSettings["ImagePath"] + @"\Destructible.png")));
+                case 2:
+                    playerItem.Textures = Textures.Textures.Player2Item.Textures;
+                    playerItem.ImageInUse = Textures.Textures.Player2Item.ImageInUse;
+                    break;
+                case 3:
+                    playerItem.Textures = Textures.Textures.Player3Item.Textures;
+                    playerItem.ImageInUse = Textures.Textures.Player3Item.ImageInUse;
+                    break;
+                case 4:
+                    playerItem.Textures = Textures.Textures.Player4Item.Textures;
+                    playerItem.ImageInUse = Textures.Textures.Player4Item.ImageInUse;
                     break;
             }
+            return playerItem;
         }
 
-        //private void ExtractUp(PlayerItem playerItem, int playerNumber, string playersImagePath)
-        //{
-        //    switch (playerNumber)
-        //    {
-        //        case 1:
-        //            playerItem.Down.Images.Add(ExtractBackground(new BitmapImage(
-        //                new Uri(playersImagePath)), TexturesPosition.Player1StartImageX, TexturesPosition.Player1StartImageY, TexturesPosition.PlayerWidth, TexturesPosition.PlayerHeight));
-        //            break;
-        //    }
-        //}
-
-        //private void ExtractRight(PlayerItem playerItem, int playerNumber, string playersImagePath)
-        //{
-        //    switch (playerNumber)
-        //    {
-        //        case 1:
-        //            playerItem.Down.Images.Add(ExtractBackground(new BitmapImage(
-        //                new Uri(playersImagePath)), TexturesPosition.PlayerStartImageX, TexturesPosition.PlayerStartImageY, TexturesPosition.PlayerWidth, TexturesPosition.PlayerHeight));
-        //            break;
-        //    }
-        //}
-
-        //private void ExtractLeft(PlayerItem playerItem, int playerNumber, string playersImagePath)
-        //{
-        //    switch (playerNumber)
-        //    {
-        //        case 1:
-        //            playerItem.Down.Images.Add(ExtractBackground(new BitmapImage(
-        //                new Uri(playersImagePath)), TexturesPosition.Player1StartImageX, TexturesPosition.Player1StartImageY, TexturesPosition.PlayerWidth, TexturesPosition.PlayerHeight));
-        //            break;
-        //    }
-        //}
-
-        private static void ExtractDown(PlayerItem player, int playerNumber, BitmapImage imageBmp, int imageNumber, int imageDirectionStart)
+        private LivingObjectItem MapToWallItem(Wall wall)
         {
-            //posX = start + Image direction start * number of image * (player width + space between them)
-            int posX = TexturesPosition.PlayerStartImageX + (imageDirectionStart*imageNumber*(TexturesPosition.PlayerWidth + TexturesPosition.SpaceBetweenImages));
-            //posY = start + player number * (playerHeight  + space between them)
-            int posY = TexturesPosition.PlayerStartImageY + playerNumber*(TexturesPosition.PlayerHeight + TexturesPosition.SpaceBetweenImages);
-
-            Brush brush = ExtractBackground(imageBmp, posX, posY, TexturesPosition.PlayerWidth, TexturesPosition.PlayerHeight);
-            player.Down.Images.Add(brush);
-
-            if (imageNumber == TexturesPosition.MiddleImage)
-                player.ImageInUse = player.Down.Images[1];
-
-        }
-
-        private static Brush ExtractBackground(BitmapImage image, int posX, int posY, int width, int height)
-        {
-            Brush background = null;
-            try
+            WallItem wallItem = new WallItem
             {
-                background = new ImageBrush(image)
-                {
-                    ViewboxUnits = BrushMappingMode.Absolute,
-                    Viewbox = new Rect(posX, posY, width, height),
-                    Stretch = Stretch.Fill
-                };
-            }
-            catch (Exception ex)
-            {
-                Log.WriteLine(Log.LogLevels.Error, "Error while extracting background texture. Image {0}. Exception: {1}", image.BaseUri, ex);
-            }
-            return background;
+                PositionX = wall.ObjectPosition.PositionX,
+                PositionY = wall.ObjectPosition.PositionY,
+                WallType = wall.WallType,
+                Textures =
+                    wall.WallType == WallType.Destructible
+                        ? Textures.Textures.DestructibleWallItem.Textures
+                        : Textures.Textures.UndestructibleWallItem.Textures,
+                ImageInUse = 
+                    wall.WallType == WallType.Destructible
+                        ? Textures.Textures.DestructibleWallItem.ImageInUse
+                        : Textures.Textures.UndestructibleWallItem.ImageInUse,
+            };
+            return wallItem;
         }
 
-        public void OnPlayerMove(Player player, Position newPosition)
+        public void OnPlayerMove(Player player, Position newPosition, ActionType actionType)
         {
-            MapViewModel.OnPlayerMove(player, newPosition);
+            MapViewModel.OnPlayerMove(player, newPosition, actionType);
+        }
+
+        public void OnBombDropped(Bomb newBomb)
+        {
+            MapViewModel.OnBombDropped(newBomb);
         }
         
         #endregion

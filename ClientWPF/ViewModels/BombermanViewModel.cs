@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
 using ClientWPF.Logic;
 using ClientWPF.Proxies;
 using ClientWPF.ViewModels.GameRoom;
@@ -92,13 +90,17 @@ namespace ClientWPF.ViewModels
             ClientModel.PlayerAction(actionType);
         }
 
-        public void OnPlayerMove(Player player, Position newPosition)
+        public void OnPlayerMove(Player player, Position newPosition, ActionType actionType)
         {
-            StartedGameViewModel.OnPlayerMove(player, newPosition);
+            StartedGameViewModel.OnPlayerMove(player, newPosition, actionType);
+        }
+
+        public void OnBombDropped(Bomb newBomb)
+        {
+            StartedGameViewModel.OnBombDropped(newBomb);
         }
 
         #endregion
-
     }
 
     public class BombermanViewModelDesignData : BombermanViewModel

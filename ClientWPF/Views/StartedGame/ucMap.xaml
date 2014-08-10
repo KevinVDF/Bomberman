@@ -17,11 +17,7 @@
             <ItemsControl.ItemTemplate>
                 <DataTemplate>
                     <Canvas>
-                        <Rectangle Width="50" Height="50" Canvas.Top="{Binding Path=PositionY}" Canvas.Left="{Binding Path=PositionX}" Fill="{Binding ImageInUse}">
-                            <!--<Rectangle.Fill>
-                                <ImageBrush  ImageSource="{Binding ImageInUse}" />
-                            </Rectangle.Fill>-->
-                        </Rectangle>
+                        <Rectangle Width="50" Height="50" Canvas.Top="{Binding Path=PositionY}" Canvas.Left="{Binding Path=PositionX}" Fill="{Binding ImageInUse}"/>
                     </Canvas>
                 </DataTemplate>
             </ItemsControl.ItemTemplate>

@@ -13,6 +13,11 @@ namespace Common.DataContract
         public int Score { get; set; }
         [DataMember]
         public bool IsCreator { get; set; }
+        [DataMember]
+        public int BombPower { get; set; }
+        [DataMember]
+        public int BombNumber { get; set; }
+
 
         public bool CompareId(LivingObject objectToCompare)
         {

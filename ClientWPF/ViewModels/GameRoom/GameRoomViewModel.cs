@@ -1,10 +1,8 @@
 ﻿using System.Collections.Generic;
-using System.Configuration;
 using System.Linq;
 using System.Windows.Input;
 using ClientWPF.Logic;
 using ClientWPF.MVVM;
-using Common.Interfaces;
 
 namespace ClientWPF.ViewModels.GameRoom
 {

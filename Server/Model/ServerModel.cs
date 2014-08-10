@@ -35,8 +35,15 @@ namespace Server.Model
 
         #region Methods
 
+        private void InitializeDisconnected()
+        {
+            PlayersDisconnected = new List<PlayerModel>();
+        }
+
         public void ConnectUser(IBombermanCallbackService callback, string username)
         {
+            InitializeDisconnected();
+
             //create new Player
             PlayerModel newPlayer = new PlayerModel
             {
@@ -45,7 +52,9 @@ namespace Server.Model
                     Id = Guid.NewGuid().GetHashCode(),
                     Username = username,
                     //Check if its the first user to be connected
-                    IsCreator = PlayersOnline.Count == 0
+                    IsCreator = PlayersOnline.Count == 0,
+                    BombPower = 1,
+                    BombNumber = 1
                 },
                 CallbackService = callback
             };
@@ -71,7 +80,7 @@ namespace Server.Model
                     PlayersDisconnected.Add(player);
                 }
             }
-            //withdraw players with problems form players online
+            //withdraw players with problems from players online
             foreach (PlayerModel playerDisconnected in PlayersDisconnected)
             {
                 PlayersOnline.Remove(playerDisconnected);
@@ -80,6 +89,8 @@ namespace Server.Model
 
         public void StartGame(string mapPath)
         {
+            InitializeDisconnected();
+
             List<Player> players = PlayersOnline.Select(playerModel => playerModel.Player).ToList();
 
             Game newGame = new Game
@@ -93,9 +104,23 @@ namespace Server.Model
             };
             GameCreated = newGame;
             //send the game to all players (only once)
-            foreach (PlayerModel currentPlayer in PlayersOnline)
+            foreach (PlayerModel playerModel in PlayersOnline)
             {
-                currentPlayer.CallbackService.OnGameStarted(newGame);
+                try
+                {
+                    playerModel.CallbackService.OnGameStarted(newGame);
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine("Connection error with player " + playerModel.Player.Username);
+                    Log.WriteLine(Log.LogLevels.Error, "ConnectUser callback error :" + ex.Message);
+                    PlayersDisconnected.Add(playerModel);
+                }
+            }
+            //withdraw players with problems from players online
+            foreach (PlayerModel playerDisconnected in PlayersDisconnected)
+            {
+                PlayersOnline.Remove(playerDisconnected);
             }
         }
 
@@ -176,28 +201,34 @@ namespace Server.Model
                 switch (actionType)
                 {
                     case ActionType.MoveUp:
-                        MovePlayer(player.Player, 0, -1);
+                        MovePlayer(player.Player, 0, -1, actionType);
                         break;
                     case ActionType.MoveDown:
-                        MovePlayer(player.Player, 0, +1);
+                        MovePlayer(player.Player, 0, +1, actionType);
                         break;
                     case ActionType.MoveRight:
-                        MovePlayer(player.Player, +1, 0);
+                        MovePlayer(player.Player, +1, 0, actionType);
                         break;
                     case ActionType.MoveLeft:
-                        MovePlayer(player.Player, -1, 0);
+                        MovePlayer(player.Player, -1, 0, actionType);
+                        break;
+                    case ActionType.DropBomb:
+                        DropBomb(player.Player);
                         break;
                 }
             }
         }
 
-        private void MovePlayer(Player player, int stepX, int stepY)
+        private void MovePlayer(Player player, int stepX, int stepY, ActionType actionType)
         {
-            // Get object at future player location
+            InitializeDisconnected();
+
+            // Get object at future player location TODO
             LivingObject collider = GameCreated.Map.GridPositions.FirstOrDefault(x => player.ObjectPosition.PositionY + stepY == x.ObjectPosition.PositionY
-                                                                                             && player.ObjectPosition.PositionX + stepX == x.ObjectPosition.PositionX);
+                                                                                             && player.ObjectPosition.PositionX + stepX == x.ObjectPosition.PositionX
+                                                                                             );
             // Can't go thru wall ir player
-            if (collider is Wall || collider is Player)
+            if (collider is Wall)
                 return;
             
             GameCreated.Map.GridPositions.Remove(player);
@@ -213,7 +244,7 @@ namespace Server.Model
             {
                 try
                 {
-                    playerModel.CallbackService.OnPlayerMove(player, newPosition);
+                    playerModel.CallbackService.OnPlayerMove(player, newPosition, actionType);
                 }
                 catch (Exception ex)
                 {
@@ -222,7 +253,7 @@ namespace Server.Model
                     PlayersDisconnected.Add(playerModel);
                 }
             }
-            //withdraw players with problems form players online
+            //withdraw players with problems from players online
             foreach (PlayerModel playerDisconnected in PlayersDisconnected)
             {
                 PlayersOnline.Remove(playerDisconnected);
@@ -233,6 +264,35 @@ namespace Server.Model
             GameCreated.Map.GridPositions.Add(player);
         }
 
+        private void DropBomb(Player player)
+        {
+            Bomb newBomb = new Bomb
+            {
+                PlayerId = player.Id,
+                Power = player.BombPower,
+                ObjectPosition = player.ObjectPosition
+            };
+            GameCreated.Map.GridPositions.Add(newBomb);
+
+            foreach (PlayerModel playerModel in PlayersOnline)
+            {
+                try
+                {
+                    playerModel.CallbackService.OnBombDropped(newBomb);
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine("Connection error with player " + playerModel.Player.Username);
+                    Log.WriteLine(Log.LogLevels.Error, "ConnectUser callback error :" + ex.Message);
+                    PlayersDisconnected.Add(playerModel);
+                }
+            }
+            //withdraw players with problems from players online
+            foreach (PlayerModel playerDisconnected in PlayersDisconnected)
+            {
+                PlayersOnline.Remove(playerDisconnected);
+            }
+        }
 
         #endregion Methods
     }

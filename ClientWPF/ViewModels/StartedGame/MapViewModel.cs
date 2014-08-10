@@ -1,6 +1,6 @@
 ﻿using System.Collections.ObjectModel;
+using System.Configuration;
 using System.Linq;
-using System.Threading;
 using Common.DataContract;
 using Common.Interfaces;
 
@@ -25,23 +25,49 @@ namespace ClientWPF.ViewModels.StartedGame
         {
         }
 
-        public void OnPlayerMove(Player player, Position newPosition)
+        public void OnPlayerMove(Player player, Position newPosition, ActionType actionType)
         {
-            PlayerItem objectToMove = LivingObjects.FirstOrDefault(x => x.PositionX == (player.ObjectPosition.PositionX * 50) + 100 && x.PositionY == player.ObjectPosition.PositionY * 50) as PlayerItem;
+            //TODO MODIFY magic number bye constants
+            PlayerItem objectToMove = LivingObjects.FirstOrDefault(x => x.PositionX == (player.ObjectPosition.PositionX * 50) + 100 && x.PositionY == player.ObjectPosition.PositionY * 50
+                && x is PlayerItem && player.Id == ((PlayerItem)x).Id ) as PlayerItem;
             if (objectToMove != null)
             {
                 objectToMove.PositionX = newPosition.PositionX;
                 objectToMove.PositionY = newPosition.PositionY;
+
+                switch (actionType)
+                {
+                    case ActionType.MoveDown:
+                        objectToMove.ImageInUse = objectToMove.Textures.Down[1];
+                        break;
+                    case ActionType.MoveLeft:
+                        objectToMove.ImageInUse = objectToMove.Textures.Left[1];
+                        break;
+                    case ActionType.MoveRight:
+                        objectToMove.ImageInUse = objectToMove.Textures.Right[1];
+                        break;
+                    case ActionType.MoveUp:
+                        objectToMove.ImageInUse = objectToMove.Textures.Up[1];
+                        break;
+                }
             }
         }
 
-        private static void MovePlayer(PlayerItem objectToMove, Player playerAfter)
+        public void OnBombDropped(Bomb newBomb)
         {
-            objectToMove.PositionX = playerAfter.ObjectPosition.PositionX;
-            objectToMove.PositionY = playerAfter.ObjectPosition.PositionY;
+            BombItem bomb = new BombItem
+            {
+                PositionX = newBomb.ObjectPosition.PositionX,
+                PositionY = newBomb.ObjectPosition.PositionY,
+                Power = newBomb.Power,
+                ImageInUse = Textures.Textures.BombItem.ImageInUse
+            };
+
+            LivingObjects.Add(bomb);
         }
-        #endregion
         
+        #endregion
+
     }
 
     public class MapViewModelDesignData : MapViewModel

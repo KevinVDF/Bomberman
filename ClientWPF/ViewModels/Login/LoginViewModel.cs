@@ -2,8 +2,6 @@
 using System.Windows.Input;
 using ClientWPF.Logic;
 using ClientWPF.MVVM;
-using ClientWPF.Proxies;
-using Common.Interfaces;
 
 namespace ClientWPF.ViewModels.Login
 {

@@ -9,8 +9,8 @@ namespace Common.DataContract
         [DataMember]
         public List<LivingObject> GridPositions;
         [DataMember]
-        public string MapName { get; set; }
+        public string MapName;
         [DataMember]
-        public int MapSize { get; set; }
+        public int MapSize;
     }
 }

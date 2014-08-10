@@ -67,10 +67,11 @@
     <Compile Include="MVVM\AsyncMessenger.cs" />
     <Compile Include="MVVM\ObservableObject.cs" />
     <Compile Include="MVVM\RelayCommand.cs" />
-    <Compile Include="Textures\TexturesPosition.cs" />
+    <Compile Include="Textures\Textures.cs" />
     <Compile Include="Util\TextInputToVisibilityConverter.cs" />
     <Compile Include="ViewModels\GameRoom\GameRoomViewModel.cs" />
     <Compile Include="ViewModels\Login\LoginViewModel.cs" />
+    <Compile Include="ViewModels\StartedGame\BombItem.cs" />
     <Compile Include="ViewModels\StartedGame\MapViewModel.cs" />
     <Compile Include="ViewModels\StartedGame\PlayerItem.cs" />
     <Compile Include="ViewModels\StartedGame\StartedGameViewModel.cs" />
@@ -183,7 +184,9 @@
   <ItemGroup>
     <Resource Include="Images\Player4.png" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Resource Include="Images\13bomberman.png" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
