@@ -8,5 +8,7 @@ namespace Server.Model
         public Player Player { get; set; }
 
         public IBombermanCallbackService CallbackService { get; set; } 
+
+        public bool Alife { get; set; }
     }
 }

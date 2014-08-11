@@ -17,13 +17,15 @@ namespace Server.Model
 
         public int MapSize = 10;
 
-        public ServerStatus ServerStatus { get; set; }
+        public ServerStatus ServerStatus;
 
-        public List<PlayerModel> PlayersOnline { get; set; }
+        public List<PlayerModel> PlayersOnline;
 
         public Game GameCreated { get; set; }
 
-        public List<PlayerModel> PlayersDisconnected { get; set; }
+        public List<PlayerModel> PlayersDisconnected;
+
+        public string MapPath;
 
         public int idCount = 1;
 
@@ -59,7 +61,8 @@ namespace Server.Model
                     BombPower = 1,
                     MaxBombCount = 1
                 },
-                CallbackService = callback
+                CallbackService = callback,
+                Alife = true
             };
             Log.WriteLine(Log.LogLevels.Info, "New player connected : " + username);
 
@@ -92,6 +95,9 @@ namespace Server.Model
 
         public void StartGame(string mapPath)
         {
+            if(mapPath != "")
+                MapPath = mapPath;
+
             InitializeDisconnected();
 
             List<Player> players = PlayersOnline.Select(playerModel => playerModel.Player).ToList();
@@ -101,7 +107,7 @@ namespace Server.Model
                 Map = new Map
                 {
                     MapName = "Custom Map",
-                    GridPositions = GenerateGrid(players, mapPath)
+                    GridPositions = GenerateGrid(players)
                 },
                 CurrentStatus = GameStatus.Started,
             };
@@ -112,6 +118,7 @@ namespace Server.Model
                 try
                 {
                     playerModel.CallbackService.OnGameStarted(newGame);
+                    playerModel.Alife = true;
                 }
                 catch (Exception ex)
                 {
@@ -128,11 +135,11 @@ namespace Server.Model
             Log.WriteLine(Log.LogLevels.Info, "The game is started");
         }
 
-        private List<LivingObject> GenerateGrid(List<Player> players, string mapPath)
+        private List<LivingObject> GenerateGrid(List<Player> players)
         {
             List<LivingObject> matrice = new List<LivingObject>();
 
-            using (StreamReader reader = new StreamReader(mapPath, Encoding.UTF8))
+            using (StreamReader reader = new StreamReader(MapPath, Encoding.UTF8))
             {
                 string objectsToAdd = reader.ReadToEnd().Replace("\n", "").Replace("\r", "");
 
@@ -155,7 +162,7 @@ namespace Server.Model
                                     }
                                     , Id = idCount++
                                 };
-                                Log.WriteLine(Log.LogLevels.Info, "New Wall undestructible created");
+                                Log.WriteLine(Log.LogLevels.Warning, "New Wall undestructible created");
                                 break;
                             case 'd':
                                 livingObject = new Wall
@@ -168,7 +175,7 @@ namespace Server.Model
                                     }
                                     , Id = idCount++
                                 };
-                                Log.WriteLine(Log.LogLevels.Info, "New Wall destructible created");
+                                Log.WriteLine(Log.LogLevels.Warning, "New Wall destructible created");
                                 break;
                                 //case 'b' :
                                 //    currentlivingObject = new Bonus
@@ -230,7 +237,7 @@ namespace Server.Model
         {
             InitializeDisconnected();
 
-            // Get object at future player location TODO
+            // Get object at future player location
             LivingObject collider = GameCreated.Map.GridPositions.FirstOrDefault(x => player.Position.Y + stepY == x.Position.Y
                                                                                       && player.Position.X + stepX == x.Position.X
                 );
@@ -293,7 +300,7 @@ namespace Server.Model
             };
             GameCreated.Map.GridPositions.Add(newBomb);
 
-            foreach (PlayerModel playerModel in PlayersOnline)
+            foreach (PlayerModel playerModel in PlayersOnline.Where(x=> x.Alife))
             {
                 try
                 {
@@ -313,6 +320,19 @@ namespace Server.Model
             }
             //make the bomb explode
             Timer t = new Timer(BombExplode, newBomb, 3000, Timeout.Infinite);
+            CheckForRestart();
+
+        }
+
+        private void CheckForRestart()
+        {
+            if (PlayersOnline.Count(x => x.Alife) == 0)
+                PlayersOnline.First(x => x.Player.IsCreator).CallbackService.OnCanRestartGame();
+        }
+
+        public void RestartGame()
+        {
+            StartGame("");
         }
 
         private void BombExplode(object bomb)
@@ -365,32 +385,62 @@ namespace Server.Model
                     impacted.AddRange(tempList);
                 }
             }
+            //check if the players'bomb doesn't move
+            tempList = new List<LivingObject>();
             tempList.AddRange(GameCreated.Map.GridPositions.Where(x => x.Position.X == bombToExplode.Position.X
                                                                                        && x.Position.Y == bombToExplode.Position.Y).ToList());
+            impacted.AddRange(tempList);
+
             GameCreated.Map.GridPositions.Remove(bombToExplode);
             GameCreated.Map.GridPositions.RemoveAll(impacted.Contains);
 
-            //warn all players as usual...
+            //warn all players still alive
             foreach (PlayerModel playerModel in PlayersOnline)
             {
-                
+                try
+                {
+                    //warn all players that a bomb exploded
+                    playerModel.CallbackService.OnBombExploded(bombToExplode, impacted);
 
-                    try
+                    //if the bomb touch all players left 
+                    if (impacted.Count(x => x is Player) == GameCreated.Map.GridPositions.Count(x => x is Player) && playerModel.Alife)
                     {
-                        if (impacted.Count(x => x is Player && ((Player)x).CompareId(playerModel.Player)) > 0)
-                            playerModel.CallbackService.OnPlayerDeath();
-                        playerModel.CallbackService.OnBombExploded(bombToExplode,impacted);
+                        playerModel.CallbackService.OnDraw();
+                        playerModel.Alife = false;
                     }
-                    catch (Exception ex)
+                    else
                     {
-                        Console.WriteLine("Connection error with player " + playerModel.Player.Username);
-                        Log.WriteLine(Log.LogLevels.Error, "ConnectUser callback error :" + ex.Message);
-                        PlayersDisconnected.Add(playerModel);
+                        //if its the last player standing then lets warn him he won
+                        if (impacted.Count(x => x is Player) == 1
+                            && impacted.Count(x => x is Player && ((Player) x).CompareId(playerModel.Player)) > 0
+                            && GameCreated.Map.GridPositions.Count(x => x is Player) == 1)
+                        {
+                            playerModel.CallbackService.OnWin();
+                        }
+                        else
+                        {
+                            //if the bomb touch the current player
+                            if (impacted.Count(x => x is Player && ((Player) x).CompareId(playerModel.Player)) > 0)
+                            {
+                                playerModel.CallbackService.OnMyDeath();
+                                playerModel.Alife = false;
+                            }
+                            //if someone else is dead
+                            if (impacted.Count(x => x is Player && !((Player) x).CompareId(playerModel.Player)) > 0)
+                            {
+                                playerModel.CallbackService.OnPlayerDeath(playerModel.Player);
+                            }
+                        }
                     }
-
-                
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine("Connection error with player " + playerModel.Player.Username);
+                    Log.WriteLine(Log.LogLevels.Error, "ConnectUser callback error :" + ex.Message);
+                    PlayersDisconnected.Add(playerModel);
+                }
             }
-            //withdraw players with problems from players online
+           
             foreach (PlayerModel playerDisconnected in PlayersDisconnected)
             {
                 PlayersOnline.Remove(playerDisconnected);
@@ -403,6 +453,8 @@ namespace Server.Model
         }
 
         #endregion Methods
+
+        
     }
 
     public enum ServerStatus

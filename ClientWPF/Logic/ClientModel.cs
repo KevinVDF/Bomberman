@@ -12,11 +12,14 @@ namespace ClientWPF.Logic
 
         #region Properties
 
-        public static Player Player { get; set; }
+        public static Player Player;
 
         public static string MapPath = ConfigurationManager.AppSettings["MapPath"];
 
-        public static BombermanViewModel BombermanViewModel { get; set; }
+        public static  BombermanViewModel BombermanViewModel;
+
+        public string Message;
+
 
         #endregion Properties
 
@@ -40,6 +43,11 @@ namespace ClientWPF.Logic
         public static void PlayerAction(ActionType actionType)
         {
             Proxy.Instance.PlayerAction(actionType);
+        }
+
+        public static void RestartGame()
+        {
+            Proxy.Instance.RestartGame();
         }
 
         #endregion Services Methods
@@ -85,7 +93,35 @@ namespace ClientWPF.Logic
             BombermanViewModel.OnBombExploded(bomb, impacted);
         }
 
-        #endregion Callback Services Methods
+        public void OnPlayerDeath(Player player)
+        {
+            Message = player.Username + " is dead. GOGO for the win !!";
+            BombermanViewModel.DisplayMessage(Message);
+        }
 
+        public void OnMyDeath()
+        {
+            Message = "You are dead. Please wait for the creator to restart the game";
+            BombermanViewModel.DisplayMessage(Message);
+        }
+
+        public void OnDraw()
+        {
+            Message = "Everybody lost ... :/";
+            BombermanViewModel.DisplayMessage(Message);
+        }
+
+        public void OnWin()
+        {
+            Message = "You are the winner GJ !!.";
+            BombermanViewModel.DisplayMessage(Message);
+        }
+
+        public void OnCanRestartGame()
+        {
+            BombermanViewModel.OnCanRestart();
+        }
+
+        #endregion Callback Services Methods
     }
 }

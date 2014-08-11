@@ -73,10 +73,19 @@ namespace ClientWPF.ViewModels.GameRoom
             richText = loginsList.Aggregate(richText, (current, login) => current + (login + "\n\n"));
             if (isCreator)
             {
-                richText += loginsList.Count() > 1 ? "Click button !!": "Wait for other players...";
+                if (loginsList.Count() > 1)
+                {
+                    IsStartEnabled = true;
+                    richText += "Click button !!";
+                }else
+                    richText += "Wait for other players...";
             }
-            else richText += "Wait until the creator start the game.";
+            else 
+                richText += "Wait until the creator start the game.";
+
             RichText = richText;
+
+            
         }
 
         #endregion Methods

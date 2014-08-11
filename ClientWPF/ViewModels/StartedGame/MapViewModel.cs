@@ -2,9 +2,7 @@
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading;
-using ClientWPF.Logic;
 using Common.DataContract;
-using Common.Interfaces;
 
 namespace ClientWPF.ViewModels.StartedGame
 {
@@ -19,22 +17,12 @@ namespace ClientWPF.ViewModels.StartedGame
             set { Set(() => LivingObjects, ref _livingObjects, value); }
         }
 
-        private string _sentence;
-        public string Sentence
-        {
-            get { return _sentence; }
-            set { Set(() => Sentence, ref _sentence, value); }
-        }
-
         private bool _endFlag;
         public bool EndFlag
         {
             get { return _endFlag; }
             set { Set(() => EndFlag, ref _endFlag, value); }
         }
-        
-
-        private List<LivingObjectItem> OrderList { get; set; }
 
         #endregion
 
@@ -130,6 +118,7 @@ namespace ClientWPF.ViewModels.StartedGame
         }
 
         #endregion
+
     }
 
     public class MapViewModelDesignData : MapViewModel

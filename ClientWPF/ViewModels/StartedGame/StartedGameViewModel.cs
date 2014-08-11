@@ -1,5 +1,9 @@
 ﻿using System.Collections.ObjectModel;
-using System.Configuration;
+using System.ServiceModel.Channels;
+using System.Windows.Input;
+using ClientWPF.Logic;
+using ClientWPF.MVVM;
+using ClientWPF.Proxies;
 using Common.DataContract;
 
 namespace ClientWPF.ViewModels.StartedGame
@@ -22,6 +26,30 @@ namespace ClientWPF.ViewModels.StartedGame
             set { Set(() => IsVisible, ref _isVisible, value); }
         }
 
+        private bool _isRestartVisible;
+        public bool IsRestartVisible
+        {
+            get { return _isRestartVisible; }
+            set { Set(() => IsRestartVisible, ref _isRestartVisible, value); }
+        }
+
+        private string _infoLabel;
+        public string InfoLabel
+        {
+            get { return _infoLabel; }
+            set { Set(() => InfoLabel, ref _infoLabel, value); }
+        }
+
+        private ICommand _restartGameCOmmand;
+        public ICommand RestartGameCommand
+        {
+            get
+            {
+                _restartGameCOmmand = _restartGameCOmmand ?? new RelayCommand(RestartGame);
+                return _restartGameCOmmand;
+            } 
+        }
+
         public string GlobalImagePath { get; set; }
 
         #endregion 
@@ -37,6 +65,7 @@ namespace ClientWPF.ViewModels.StartedGame
         public void Initialize(bool isVisible)
         {
             IsVisible = isVisible;
+            IsRestartVisible = false;
             MapViewModel.Initialize();
         }
 
@@ -133,7 +162,23 @@ namespace ClientWPF.ViewModels.StartedGame
             MapViewModel.OnBombExploded(bomb, impacted);
         }
 
+        public void DisplayMessage(string message)
+        {
+            InfoLabel += "\n" + message;
+        }
+
+        public void OnCanRestart()
+        {
+            IsRestartVisible = true;
+        }
+
+        private void RestartGame()
+        {
+            ClientModel.RestartGame();
+        }
+
         #endregion
+
     }
 
     public class StartedGameViewModelDesignData : StartedGameViewModel

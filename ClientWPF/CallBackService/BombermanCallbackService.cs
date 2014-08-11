@@ -45,5 +45,30 @@ namespace ClientWPF.CallBackService
         {
             ClientModel.OnBombExploded(bomb, impacted);
         }
+
+        public void OnPlayerDeath(Player player)
+        {
+            ClientModel.OnPlayerDeath(player);
+        }
+
+        public void OnMyDeath()
+        {
+            ClientModel.OnMyDeath();
+        }
+
+        public void OnDraw()
+        {
+            ClientModel.OnDraw();
+        }
+
+        public void OnWin()
+        {
+            ClientModel.OnWin();
+        }
+
+        public void OnCanRestartGame()
+        {
+            ClientModel.OnCanRestartGame();
+        }
     }
 }

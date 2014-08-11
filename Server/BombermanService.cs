@@ -26,5 +26,10 @@ namespace Server
             IBombermanCallbackService callback = OperationContext.Current.GetCallbackChannel<IBombermanCallbackService>();
             Server.PlayerAction(callback, actionType);
         }
+
+        public void RestartGame()
+        {
+            Server.RestartGame();
+        }
     }
 }

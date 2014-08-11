@@ -27,6 +27,14 @@ namespace Common.Interfaces
         [OperationContract]
         void OnBombExploded(Bomb bomb, List<LivingObject> impacted);
         [OperationContract]
-        void OnPlayerDeath();
+        void OnPlayerDeath(Player player);
+        [OperationContract]
+        void OnMyDeath();
+        [OperationContract]
+        void OnDraw();
+        [OperationContract]
+        void OnWin();
+        [OperationContract]
+        void OnCanRestartGame();
     }
 }

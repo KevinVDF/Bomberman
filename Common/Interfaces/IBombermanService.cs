@@ -15,5 +15,7 @@ namespace Common.Interfaces
         //on any action
         [OperationContract(IsOneWay = true)]
         void PlayerAction(ActionType actionType);
+        [OperationContract(IsOneWay = true)]
+        void RestartGame();
     }
 }
