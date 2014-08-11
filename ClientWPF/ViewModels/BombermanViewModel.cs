@@ -100,7 +100,13 @@ namespace ClientWPF.ViewModels
             StartedGameViewModel.OnBombDropped(newBomb);
         }
 
+        public void OnBombExploded(Bomb bomb, List<LivingObject> impacted)
+        {
+            StartedGameViewModel.OnBombExploded(bomb, impacted);
+        }
+
         #endregion
+
     }
 
     public class BombermanViewModelDesignData : BombermanViewModel

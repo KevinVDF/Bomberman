@@ -1,11 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Configuration;
-using System.Linq;
-using System.Windows;
 using ClientWPF.Proxies;
 using ClientWPF.ViewModels;
-using ClientWPF.ViewModels.StartedGame;
 using Common.DataContract;
 
 namespace ClientWPF.Logic
@@ -42,10 +39,6 @@ namespace ClientWPF.Logic
 
         public static void PlayerAction(ActionType actionType)
         {
-            if (actionType == ActionType.DropBomb &&
-                BombermanViewModel.StartedGameViewModel.MapViewModel.LivingObjects.Select(
-                    x => x is BombItem && ((BombItem) x).PlayerId == Player.Id).Count() < Player.BombNumber)
-                return;
             Proxy.Instance.PlayerAction(actionType);
         }
 
@@ -77,15 +70,19 @@ namespace ClientWPF.Logic
         public void OnPlayerMove(Player player, Position newPosition, ActionType actionType)
         {
             if (Player.CompareId(player))
-                Player.ObjectPosition = newPosition;
+                Player.Position = newPosition;
 
             BombermanViewModel.OnPlayerMove(player, newPosition, actionType);
-            
         }
 
         public void OnBombDropped(Bomb newBomb)
         {
             BombermanViewModel.OnBombDropped(newBomb);
+        }
+
+        public void OnBombExploded(Bomb bomb, List<LivingObject> impacted)
+        {
+            BombermanViewModel.OnBombExploded(bomb, impacted);
         }
 
         #endregion Callback Services Methods

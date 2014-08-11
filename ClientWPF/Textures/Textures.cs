@@ -57,6 +57,8 @@ namespace ClientWPF.Textures
 
         public static BombItem BombItem;
 
+        public static BombItem ExplodedBombItem;
+
         #endregion Properties
 
         public static void InitializeItem()
@@ -74,6 +76,8 @@ namespace ClientWPF.Textures
                 WallType = WallType.Undestructible
             };
             BombItem = new BombItem();
+            ExplodedBombItem = new BombItem();
+
             GetSpriteForPlayer(Player1Item, 0);
             GetSpriteForPlayer(Player2Item, 1);
             GetSpriteForPlayer(Player3Item, 2);
@@ -81,6 +85,7 @@ namespace ClientWPF.Textures
             GetSpriteForWall(DestructibleWallItem);
             GetSpriteForWall(UndestructibleWallItem);
             GetSpriteForBomb(BombItem);
+            GetSpriteForExplodedBomb(ExplodedBombItem);
         }
 
         private static void GetSpriteForPlayer(PlayerItem player, int playerNumber)
@@ -112,6 +117,12 @@ namespace ClientWPF.Textures
         {
             string imagePath = String.Format(@"{0}\{1}", GlobalImagePath, GlobalImageName);
             bomb.ImageInUse = ExtractBackground(new BitmapImage(new Uri(imagePath)), 20, 258, 12, 14);
+        }
+
+        private static void GetSpriteForExplodedBomb(BombItem bomb)
+        {
+            string imagePath = String.Format(@"{0}\{1}", GlobalImagePath, GlobalImageName);
+            bomb.ImageInUse = ExtractBackground(new BitmapImage(new Uri(imagePath)), 154, 259, 78, 78);
         }
 
         private static void Extract(PlayerItem player, int playerNumber, BitmapImage imageBmp, int imageNumber)

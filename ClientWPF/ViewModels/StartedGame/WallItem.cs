@@ -5,6 +5,8 @@ namespace ClientWPF.ViewModels.StartedGame
 {
     public class WallItem : LivingObjectItem
     {
+        public int Id { get; set; }
+
         private Sprite _texture;
         public Sprite Textures
         {

@@ -40,5 +40,10 @@ namespace ClientWPF.CallBackService
         {
             ClientModel.OnBombDropped(newBomb);
         }
+
+        public void OnBombExploded(Bomb bomb, List<LivingObject> impacted)
+        {
+            ClientModel.OnBombExploded(bomb, impacted);
+        }
     }
 }

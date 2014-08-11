@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using Common.DataContract;
 using Common.Interfaces;
 using Common.Log;
@@ -23,6 +24,8 @@ namespace Server.Model
         public Game GameCreated { get; set; }
 
         public List<PlayerModel> PlayersDisconnected { get; set; }
+
+        public int idCount = 1;
 
         #endregion properties
 
@@ -49,12 +52,12 @@ namespace Server.Model
             {
                 Player = new Player
                 {
-                    Id = Guid.NewGuid().GetHashCode(),
+                    Id = idCount++,
                     Username = username,
                     //Check if its the first user to be connected
                     IsCreator = PlayersOnline.Count == 0,
                     BombPower = 1,
-                    BombNumber = 1
+                    MaxBombCount = 1
                 },
                 CallbackService = callback
             };
@@ -122,6 +125,7 @@ namespace Server.Model
             {
                 PlayersOnline.Remove(playerDisconnected);
             }
+            Log.WriteLine(Log.LogLevels.Info, "The game is started");
         }
 
         private List<LivingObject> GenerateGrid(List<Player> players, string mapPath)
@@ -137,50 +141,53 @@ namespace Server.Model
                     for (int x = 0; x < MapSize; x++)
                     {
                         LivingObject livingObject = null;
-                        char cell = objectsToAdd[(y * MapSize) + x]; // SinaC: factoring is the key :)   y and x were inverted
+                        char cell = objectsToAdd[(y*MapSize) + x]; // SinaC: factoring is the key :)   y and x were inverted
                         switch (cell)
                         {
                             case 'u':
                                 livingObject = new Wall
                                 {
                                     WallType = WallType.Undestructible,
-                                    ObjectPosition = new Position
+                                    Position = new Position
                                     {
-                                        PositionX = x,
-                                        PositionY = y
+                                        X = x,
+                                        Y = y
                                     }
+                                    , Id = idCount++
                                 };
+                                Log.WriteLine(Log.LogLevels.Info, "New Wall undestructible created");
                                 break;
                             case 'd':
                                 livingObject = new Wall
                                 {
                                     WallType = WallType.Destructible,
-                                    ObjectPosition = new Position
+                                    Position = new Position
                                     {
-                                        PositionX = x,
-                                        PositionY = y
+                                        X = x,
+                                        Y = y
                                     }
+                                    , Id = idCount++
                                 };
+                                Log.WriteLine(Log.LogLevels.Info, "New Wall destructible created");
                                 break;
-                            //case 'b' :
-                            //    currentlivingObject = new Bonus
-                            //    {
+                                //case 'b' :
+                                //    currentlivingObject = new Bonus
+                                //    {
 
-                            //    };
-                            //    break;
+                                //    };
+                                //    break;
                             case '0':
                             case '1':
                             case '2':
                             case '3':
-                                if (players.Count > (int)Char.GetNumericValue(cell))
+                                if (players.Count > (int) Char.GetNumericValue(cell))
                                 {
-                                    livingObject = players[(int)Char.GetNumericValue(cell)];
-                                    livingObject.ObjectPosition = new Position
+                                    livingObject = players[(int) Char.GetNumericValue(cell)];
+                                    livingObject.Position = new Position
                                     {
-                                        PositionX = x,
-                                        PositionY = y
+                                        X = x,
+                                        Y = y,
                                     };
-
                                 }
                                 break;
                         }
@@ -224,19 +231,19 @@ namespace Server.Model
             InitializeDisconnected();
 
             // Get object at future player location TODO
-            LivingObject collider = GameCreated.Map.GridPositions.FirstOrDefault(x => player.ObjectPosition.PositionY + stepY == x.ObjectPosition.PositionY
-                                                                                             && player.ObjectPosition.PositionX + stepX == x.ObjectPosition.PositionX
-                                                                                             );
-            // Can't go thru wall ir player
-            if (collider is Wall)
+            LivingObject collider = GameCreated.Map.GridPositions.FirstOrDefault(x => player.Position.Y + stepY == x.Position.Y
+                                                                                      && player.Position.X + stepX == x.Position.X
+                );
+            // Can't go thru wall or bomb
+            if (collider is Wall || collider is Bomb)
                 return;
-            
+
             GameCreated.Map.GridPositions.Remove(player);
 
             Position newPosition = new Position
             {
-                PositionX = player.ObjectPosition.PositionX + stepX,
-                PositionY = player.ObjectPosition.PositionY + stepY
+                X = player.Position.X + stepX,
+                Y = player.Position.Y + stepY
             };
 
             // Send new player position to players
@@ -259,18 +266,30 @@ namespace Server.Model
                 PlayersOnline.Remove(playerDisconnected);
             }
 
-            player.ObjectPosition.PositionY += stepY;
-            player.ObjectPosition.PositionX += stepX;
+            player.Position.Y += stepY;
+            player.Position.X += stepX;
             GameCreated.Map.GridPositions.Add(player);
         }
 
         private void DropBomb(Player player)
         {
+            int count = GameCreated.Map.GridPositions.Count(x => x is Bomb && ((Bomb) x).PlayerId == player.Id);
+            if (count >= player.MaxBombCount)
+            {
+                Log.WriteLine(Log.LogLevels.Error, "player tries to drop a bomb but number of bomb to high");
+                return;
+            }
+                
             Bomb newBomb = new Bomb
             {
+                Id = idCount++,
                 PlayerId = player.Id,
                 Power = player.BombPower,
-                ObjectPosition = player.ObjectPosition
+                Position = new Position
+                {
+                    X = player.Position.X,
+                    Y = player.Position.Y
+                }
             };
             GameCreated.Map.GridPositions.Add(newBomb);
 
@@ -292,6 +311,95 @@ namespace Server.Model
             {
                 PlayersOnline.Remove(playerDisconnected);
             }
+            //make the bomb explode
+            Timer t = new Timer(BombExplode, newBomb, 3000, Timeout.Infinite);
+        }
+
+        private void BombExplode(object bomb)
+        {
+            Bomb bombToExplode = bomb as Bomb;
+
+            if (bombToExplode == null)
+            {
+                Log.WriteLine(Log.LogLevels.Error, "Bomb is null => WTF ??" );
+                return;
+            }
+
+            List<LivingObject> impacted = new List<LivingObject>();
+            List<LivingObject> tempList = new List<LivingObject>();
+            //research impact 
+            for (int direction = 0; direction < 4; direction++)
+            {
+                for (int i = 1; i <= bombToExplode.Power; i++)
+                {
+                    tempList = new List<LivingObject>();
+                    switch (direction)
+                    {
+                            //up
+                        case 0:
+                            tempList.AddRange(GameCreated.Map.GridPositions.Where(x => x.Position.Y == bombToExplode.Position.Y - i
+                                                                                       && x.Position.X == bombToExplode.Position.X).ToList());
+                            break;
+                            //down
+                        case 1:
+                            tempList.AddRange(GameCreated.Map.GridPositions.Where(x => x.Position.Y == bombToExplode.Position.Y + i
+                                                                                       && x.Position.X == bombToExplode.Position.X).ToList());
+                            break;
+                            //left
+                        case 2:
+                            tempList.AddRange(GameCreated.Map.GridPositions.Where(x => x.Position.X == bombToExplode.Position.X - i
+                                                                                       && x.Position.Y == bombToExplode.Position.Y).ToList());
+                            break;
+                            //right
+                        default:
+                            tempList.AddRange(GameCreated.Map.GridPositions.Where(x => x.Position.X == bombToExplode.Position.X + i
+                                                                                       && x.Position.Y == bombToExplode.Position.Y).ToList());
+                            break;
+                    }
+                    //if we encountered an empty space
+                    if (tempList.Count == 0) 
+                        continue;
+                    //if we encountered a wall undestructible don't need to go further
+                    if (!IsImpacted(tempList))
+                        break;
+                    impacted.AddRange(tempList);
+                }
+            }
+            tempList.AddRange(GameCreated.Map.GridPositions.Where(x => x.Position.X == bombToExplode.Position.X
+                                                                                       && x.Position.Y == bombToExplode.Position.Y).ToList());
+            GameCreated.Map.GridPositions.Remove(bombToExplode);
+            GameCreated.Map.GridPositions.RemoveAll(impacted.Contains);
+
+            //warn all players as usual...
+            foreach (PlayerModel playerModel in PlayersOnline)
+            {
+                
+
+                    try
+                    {
+                        if (impacted.Count(x => x is Player && ((Player)x).CompareId(playerModel.Player)) > 0)
+                            playerModel.CallbackService.OnPlayerDeath();
+                        playerModel.CallbackService.OnBombExploded(bombToExplode,impacted);
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine("Connection error with player " + playerModel.Player.Username);
+                        Log.WriteLine(Log.LogLevels.Error, "ConnectUser callback error :" + ex.Message);
+                        PlayersDisconnected.Add(playerModel);
+                    }
+
+                
+            }
+            //withdraw players with problems from players online
+            foreach (PlayerModel playerDisconnected in PlayersDisconnected)
+            {
+                PlayersOnline.Remove(playerDisconnected);
+            }
+        }
+
+        private static bool IsImpacted(List<LivingObject> list)
+        {
+            return list.All(livingObject => !(livingObject is Wall) || ((Wall) livingObject).WallType != WallType.Undestructible);//TODO
         }
 
         #endregion Methods

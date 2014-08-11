@@ -7,21 +7,36 @@
              mc:Ignorable="d" 
              d:DataContext="{d:DesignInstance startedGame:MapViewModelDesignData, IsDesignTimeCreatable=True}"
              d:DesignHeight="300" d:DesignWidth="300">
+    <UserControl.Resources>
+        <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
+    </UserControl.Resources>
+    <Grid>
         <ItemsControl ItemsSource="{Binding Path=LivingObjects}">
-            <ItemsControl.ItemsPanel>
+            <!--<ItemsControl.ItemsPanel>
                 <ItemsPanelTemplate>
-                <Canvas x:Name="MapBackground"  Height="500" Width="800" HorizontalAlignment="Center" VerticalAlignment="Center" FocusManager.IsFocusScope="True">
+                    <Canvas x:Name="MapBackground" Height="500" Width="800" HorizontalAlignment="Center" VerticalAlignment="Center">
                     </Canvas>
                 </ItemsPanelTemplate>
-            </ItemsControl.ItemsPanel>
+            </ItemsControl.ItemsPanel>-->
+            <ItemsControl.ItemContainerStyle>
+                <Style TargetType="ContentPresenter">
+                    <Style.Setters>
+                        <Setter Property="Panel.ZIndex" Value="{Binding ZIndex}"/>
+                    </Style.Setters>
+                </Style>
+        </ItemsControl.ItemContainerStyle>
             <ItemsControl.ItemTemplate>
                 <DataTemplate>
                     <Canvas>
-                        <Rectangle Width="50" Height="50" Canvas.Top="{Binding Path=PositionY}" Canvas.Left="{Binding Path=PositionX}" Fill="{Binding ImageInUse}"/>
+                        <Rectangle Width="{Binding Width}" Height="{Binding Height}" Canvas.Top="{Binding Path=PositionY}" Canvas.Left="{Binding Path=PositionX}" Fill="{Binding ImageInUse}"/>
                     </Canvas>
                 </DataTemplate>
             </ItemsControl.ItemTemplate>
         </ItemsControl>
+        <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" Width="500" Height="70" FontSize="25" FontWeight="Bold" Foreground="Crimson" Background="Lavender"
+                   Text="{Binding Path=Sentence}"  
+                   Visibility="{Binding Path=EndFlag, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+    </Grid>
 </UserControl>
 
 <!--"{Binding PositionX, RelativeSource={RelativeSource AncestorType=startedGame:LivingObjectItem}}"-->

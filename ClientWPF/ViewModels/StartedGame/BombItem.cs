@@ -4,6 +4,8 @@ namespace ClientWPF.ViewModels.StartedGame
 {
     public class BombItem : LivingObjectItem
     {
+        public int Id { get; set; }
+
         private Sprite _texture;
         public Sprite Textures
         {
@@ -11,12 +13,7 @@ namespace ClientWPF.ViewModels.StartedGame
             set { Set(() => Textures, ref _texture, value); }
         }
 
-        private int _playerId;
-        public int PlayerId
-        {
-            get { return _playerId; }
-            set { Set(() => PlayerId, ref _playerId, value); }
-        }
+        public int PlayerId { get; set; }
 
         private int _power;
         public int Power

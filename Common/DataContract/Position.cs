@@ -6,8 +6,8 @@ namespace Common.DataContract
     public class Position
     {
         [DataMember]
-        public int PositionX { get; set; }
+        public int X { get; set; }
         [DataMember]
-        public int PositionY { get; set; }
+        public int Y { get; set; }
     }
 }

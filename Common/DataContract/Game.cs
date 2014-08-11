@@ -4,12 +4,9 @@ namespace Common.DataContract
 {
     [DataContract]
     [KnownType(typeof(Wall))]
-    [KnownType(typeof(Map))]
-    [KnownType(typeof(GameStatus))]
-    [KnownType(typeof(Player))]
-    [KnownType(typeof(LivingObject))]
+    [KnownType(typeof(Bomb))]
     [KnownType(typeof(Bonus))]
-    [KnownType(typeof(Position))]    
+    [KnownType(typeof(Player))]
     public class Game
     {
         [DataMember]

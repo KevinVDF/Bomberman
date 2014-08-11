@@ -37,7 +37,7 @@ namespace ClientWPF.ViewModels.StartedGame
         public void Initialize(bool isVisible)
         {
             IsVisible = isVisible;
-            GlobalImagePath = ConfigurationManager.AppSettings["ImagePath"];
+            MapViewModel.Initialize();
         }
 
         public void RegisterGame(Game newGame)
@@ -65,9 +65,12 @@ namespace ClientWPF.ViewModels.StartedGame
 
             PlayerItem playerItem = new PlayerItem
             {
-                PositionX = player.ObjectPosition.PositionX,
-                PositionY = player.ObjectPosition.PositionY,
-                Id = player.Id
+                X = player.Position.X,
+                Y = player.Position.Y,
+                Id = player.Id,
+                ZIndex = 500,
+                Width = 30,
+                Height = 35
             };
             playerNumber++;
             switch (playerNumber)
@@ -96,17 +99,21 @@ namespace ClientWPF.ViewModels.StartedGame
         {
             WallItem wallItem = new WallItem
             {
-                PositionX = wall.ObjectPosition.PositionX,
-                PositionY = wall.ObjectPosition.PositionY,
+                X = wall.Position.X,
+                Y = wall.Position.Y,
                 WallType = wall.WallType,
                 Textures =
                     wall.WallType == WallType.Destructible
                         ? Textures.Textures.DestructibleWallItem.Textures
                         : Textures.Textures.UndestructibleWallItem.Textures,
-                ImageInUse = 
+                ImageInUse =
                     wall.WallType == WallType.Destructible
                         ? Textures.Textures.DestructibleWallItem.ImageInUse
                         : Textures.Textures.UndestructibleWallItem.ImageInUse,
+                ZIndex = 200,
+                Height = 50,
+                Width = 50,
+                Id = wall.Id
             };
             return wallItem;
         }
@@ -120,9 +127,13 @@ namespace ClientWPF.ViewModels.StartedGame
         {
             MapViewModel.OnBombDropped(newBomb);
         }
-        
-        #endregion
 
+        public void OnBombExploded(Bomb bomb, System.Collections.Generic.List<LivingObject> impacted)
+        {
+            MapViewModel.OnBombExploded(bomb, impacted);
+        }
+
+        #endregion
     }
 
     public class StartedGameViewModelDesignData : StartedGameViewModel

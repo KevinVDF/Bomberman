@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel;
 using System.Configuration;
 using System.Windows.Controls;
 using System.Windows.Media;
@@ -18,8 +19,13 @@ namespace ClientWPF.Views.StartedGame
         {
             InitializeComponent();
 
-            ImageBrush ib = new ImageBrush {ImageSource = new BitmapImage(new Uri(ConfigurationManager.AppSettings["ImagePath"] + @"\Empty.png", UriKind.Relative))};
-            Background = ib;
+            if (DesignerProperties.GetIsInDesignMode(this))
+                Background = new SolidColorBrush(Colors.Green);
+            else
+            {
+                ImageBrush ib = new ImageBrush {ImageSource = new BitmapImage(new Uri(ConfigurationManager.AppSettings["ImagePath"] + @"\Empty.png", UriKind.Relative))};
+                Background = ib;
+            }
         }
     }
 }

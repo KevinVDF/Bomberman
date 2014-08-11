@@ -23,5 +23,10 @@ namespace Common.Interfaces
         //when an user drop a bomb
         [OperationContract(IsOneWay = true)]
         void OnBombDropped(Bomb newBomb);
+        //when a bomb explode
+        [OperationContract]
+        void OnBombExploded(Bomb bomb, List<LivingObject> impacted);
+        [OperationContract]
+        void OnPlayerDeath();
     }
 }

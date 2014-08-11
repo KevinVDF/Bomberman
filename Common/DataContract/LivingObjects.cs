@@ -3,18 +3,19 @@
 namespace Common.DataContract
 {
     [DataContract]
+    [KnownType(typeof(Wall))]
+    [KnownType(typeof(Bomb))]
+    [KnownType(typeof(Bonus))]
     [KnownType(typeof(Player))]
-    [KnownType(typeof(LivingObject))]
-    [KnownType(typeof(Position))]   
     public abstract class LivingObject
     {
         [DataMember]
-        public Position ObjectPosition { get; set; }
+        public Position Position { get; set; }
 
         public bool ComparePosition(LivingObject objectToCompare)
         {
-            return ObjectPosition.PositionX == objectToCompare.ObjectPosition.PositionX &&
-                 ObjectPosition.PositionY == objectToCompare.ObjectPosition.PositionY;
+            return Position.X == objectToCompare.Position.X &&
+                 Position.Y == objectToCompare.Position.Y;
         }
     }
 }
