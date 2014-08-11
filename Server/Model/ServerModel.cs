@@ -319,7 +319,7 @@ namespace Server.Model
                 PlayersOnline.Remove(playerDisconnected);
             }
             //make the bomb explode
-            Timer t = new Timer(BombExplode, newBomb, 3000, Timeout.Infinite);
+            Timer t = new Timer(BombExplode, newBomb, 1500, Timeout.Infinite);
             CheckForRestart();
 
         }
