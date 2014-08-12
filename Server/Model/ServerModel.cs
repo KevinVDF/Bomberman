@@ -23,6 +23,8 @@ namespace Server.Model
 
         public Game GameCreated;
 
+        private List<Timer> _timers = new List<Timer>(); // SinaC: should learn what GC is :)
+
         public string MapPath;
 
         public int IdCount = 1;
@@ -243,7 +245,8 @@ namespace Server.Model
             GameCreated.Map.GridPositions.Add(player);
         }
 
-        private List<Timer> _timers = new List<Timer>(); // SinaC: should learn what GC is :)
+        
+
         private void DropBomb(Player player)
         {
             Log.WriteLine(Log.LogLevels.Debug, "Player {0} wants to drop a bomb.", player.Username);
