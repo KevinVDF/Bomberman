@@ -112,11 +112,13 @@ namespace Server.Model
                 CurrentStatus = GameStatus.Started,
             };
             GameCreated = newGame;
+            Log.WriteLine(Log.LogLevels.Debug, "New Game created");
             //send the game to all players (only once)
             foreach (PlayerModel playerModel in PlayersOnline)
             {
                 try
                 {
+                    Log.WriteLine(Log.LogLevels.Debug, "OnGameStarted send to player :" + playerModel.Player.Username);
                     playerModel.CallbackService.OnGameStarted(newGame);
                     playerModel.Alife = true;
                 }
@@ -132,7 +134,7 @@ namespace Server.Model
             {
                 PlayersOnline.Remove(playerDisconnected);
             }
-            Log.WriteLine(Log.LogLevels.Info, "The game is started");
+            Log.WriteLine(Log.LogLevels.Info, "Game started");
         }
 
         private List<LivingObject> GenerateGrid(List<Player> players)
@@ -162,7 +164,7 @@ namespace Server.Model
                                     }
                                     , Id = idCount++
                                 };
-                                Log.WriteLine(Log.LogLevels.Warning, "New Wall undestructible created");
+                                Log.WriteLine(Log.LogLevels.Debug, "New Wall undestructible created");
                                 break;
                             case 'd':
                                 livingObject = new Wall
@@ -175,7 +177,7 @@ namespace Server.Model
                                     }
                                     , Id = idCount++
                                 };
-                                Log.WriteLine(Log.LogLevels.Warning, "New Wall destructible created");
+                                Log.WriteLine(Log.LogLevels.Debug, "New Wall destructible created");
                                 break;
                                 //case 'b' :
                                 //    currentlivingObject = new Bonus
@@ -210,26 +212,26 @@ namespace Server.Model
         {
             PlayerModel player = PlayersOnline.FirstOrDefault(x => x.CallbackService == callback);
 
-            if (player != null)
+            if (player == null) 
+                return;
+            Log.WriteLine(Log.LogLevels.Debug, "Player " + player.Player.Username + " make " + actionType);
+            switch (actionType)
             {
-                switch (actionType)
-                {
-                    case ActionType.MoveUp:
-                        MovePlayer(player.Player, 0, -1, actionType);
-                        break;
-                    case ActionType.MoveDown:
-                        MovePlayer(player.Player, 0, +1, actionType);
-                        break;
-                    case ActionType.MoveRight:
-                        MovePlayer(player.Player, +1, 0, actionType);
-                        break;
-                    case ActionType.MoveLeft:
-                        MovePlayer(player.Player, -1, 0, actionType);
-                        break;
-                    case ActionType.DropBomb:
-                        DropBomb(player.Player);
-                        break;
-                }
+                case ActionType.MoveUp:
+                    MovePlayer(player.Player, 0, -1, actionType);
+                    break;
+                case ActionType.MoveDown:
+                    MovePlayer(player.Player, 0, +1, actionType);
+                    break;
+                case ActionType.MoveRight:
+                    MovePlayer(player.Player, +1, 0, actionType);
+                    break;
+                case ActionType.MoveLeft:
+                    MovePlayer(player.Player, -1, 0, actionType);
+                    break;
+                case ActionType.DropBomb:
+                    DropBomb(player.Player);
+                    break;
             }
         }
 
@@ -252,7 +254,7 @@ namespace Server.Model
                 X = player.Position.X + stepX,
                 Y = player.Position.Y + stepY
             };
-
+            Log.WriteLine(Log.LogLevels.Debug, "Player " + player.Username + " move from " + player.Position.X + "," + player.Position.Y + " to " + newPosition.X + "," + newPosition.Y);
             // Send new player position to players
             foreach (PlayerModel playerModel in PlayersOnline)
             {
@@ -280,10 +282,11 @@ namespace Server.Model
 
         private void DropBomb(Player player)
         {
+            Log.WriteLine(Log.LogLevels.Debug, "Player " + player.Username + " wants to drop a bomb.");
             int count = GameCreated.Map.GridPositions.Count(x => x is Bomb && ((Bomb) x).PlayerId == player.Id);
             if (count >= player.MaxBombCount)
             {
-                Log.WriteLine(Log.LogLevels.Error, "player tries to drop a bomb but number of bomb to high");
+                Log.WriteLine(Log.LogLevels.Warning, "Player's current bomb on field : " + count + ". Max authorized is " + player.MaxBombCount);
                 return;
             }
                 
@@ -298,6 +301,7 @@ namespace Server.Model
                     Y = player.Position.Y
                 }
             };
+            Log.WriteLine(Log.LogLevels.Debug, "Bomb dropped by " + player.Username);
             GameCreated.Map.GridPositions.Add(newBomb);
 
             foreach (PlayerModel playerModel in PlayersOnline.Where(x=> x.Alife))
@@ -327,11 +331,16 @@ namespace Server.Model
         private void CheckForRestart()
         {
             if (PlayersOnline.Count(x => x.Alife) == 0)
+            {
                 PlayersOnline.First(x => x.Player.IsCreator).CallbackService.OnCanRestartGame();
+                Log.WriteLine(Log.LogLevels.Debug, "Nobody still alive");
+            }
+                
         }
 
         public void RestartGame()
         {
+            Log.WriteLine(Log.LogLevels.Info, "Game restarted");
             StartGame("");
         }
 
@@ -391,6 +400,11 @@ namespace Server.Model
                                                                                        && x.Position.Y == bombToExplode.Position.Y).ToList());
             impacted.AddRange(tempList);
 
+            foreach (LivingObject livingObject in impacted)
+            {
+                Log.WriteLine(Log.LogLevels.Debug, "Object destroyed : " + livingObject);
+            }
+            
             GameCreated.Map.GridPositions.Remove(bombToExplode);
             GameCreated.Map.GridPositions.RemoveAll(impacted.Contains);
 
@@ -405,6 +419,7 @@ namespace Server.Model
                     //if the bomb touch all players left 
                     if (impacted.Count(x => x is Player) == GameCreated.Map.GridPositions.Count(x => x is Player) && playerModel.Alife)
                     {
+                        Log.WriteLine(Log.LogLevels.Debug, "Player had a draw : " + playerModel.Player.Username);
                         playerModel.CallbackService.OnDraw();
                         playerModel.Alife = false;
                     }
@@ -415,6 +430,7 @@ namespace Server.Model
                             && impacted.Count(x => x is Player && ((Player) x).CompareId(playerModel.Player)) > 0
                             && GameCreated.Map.GridPositions.Count(x => x is Player) == 1)
                         {
+                            Log.WriteLine(Log.LogLevels.Debug, "Player win : " + playerModel.Player.Username);
                             playerModel.CallbackService.OnWin();
                         }
                         else
@@ -422,6 +438,7 @@ namespace Server.Model
                             //if the bomb touch the current player
                             if (impacted.Count(x => x is Player && ((Player) x).CompareId(playerModel.Player)) > 0)
                             {
+                                Log.WriteLine(Log.LogLevels.Debug, "Player is dead : " + playerModel.Player.Username);
                                 playerModel.CallbackService.OnMyDeath();
                                 playerModel.Alife = false;
                             }
