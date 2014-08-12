@@ -118,14 +118,14 @@ namespace Server.Model
             {
                 try
                 {
-                    Log.WriteLine(Log.LogLevels.Debug, "OnGameStarted send to player :" + playerModel.Player.Username);
+                    Log.WriteLine(Log.LogLevels.Debug, "OnGameStarted send to player :{0}", playerModel.Player.Username);
                     playerModel.CallbackService.OnGameStarted(newGame);
                     playerModel.Alife = true;
                 }
                 catch (Exception ex)
                 {
                     Console.WriteLine("Connection error with player " + playerModel.Player.Username);
-                    Log.WriteLine(Log.LogLevels.Error, "ConnectUser callback error :" + ex.Message);
+                    Log.WriteLine(Log.LogLevels.Error, "ConnectUser callback error : {0}", ex.Message);
                     PlayersDisconnected.Add(playerModel);
                 }
             }
@@ -212,9 +212,14 @@ namespace Server.Model
         {
             PlayerModel player = PlayersOnline.FirstOrDefault(x => x.CallbackService == callback);
 
-            if (player == null) 
-                return;
-            Log.WriteLine(Log.LogLevels.Debug, "Player " + player.Player.Username + " make " + actionType);
+            if (player == null)
+            {
+                Log.WriteLine(Log.LogLevels.Error, "Player who made the action is null... shouldn't be !!!");
+                return; 
+
+            }
+                
+            Log.WriteLine(Log.LogLevels.Debug, "Player {0} make {1}", player.Player.Username, actionType);
             switch (actionType)
             {
                 case ActionType.MoveUp:
@@ -243,9 +248,15 @@ namespace Server.Model
             LivingObject collider = GameCreated.Map.GridPositions.FirstOrDefault(x => player.Position.Y + stepY == x.Position.Y
                                                                                       && player.Position.X + stepX == x.Position.X
                 );
+            
+            
             // Can't go thru wall or bomb
-            if (collider is Wall || collider is Bomb)
+            if (collider != null && (collider is Wall || collider is Bomb))
+            {
+                Log.WriteLine(Log.LogLevels.Debug, "Collider found : {0}, {1} type {2}",collider.Position.X, collider.Position.Y, collider);
                 return;
+            }
+                
 
             GameCreated.Map.GridPositions.Remove(player);
 
@@ -254,7 +265,7 @@ namespace Server.Model
                 X = player.Position.X + stepX,
                 Y = player.Position.Y + stepY
             };
-            Log.WriteLine(Log.LogLevels.Debug, "Player " + player.Username + " move from " + player.Position.X + "," + player.Position.Y + " to " + newPosition.X + "," + newPosition.Y);
+            Log.WriteLine(Log.LogLevels.Debug, "Player {0} move from {1},{2} to {3},{4}", player.Username, player.Position.X, player.Position.Y, newPosition.X,newPosition.Y);
             // Send new player position to players
             foreach (PlayerModel playerModel in PlayersOnline)
             {
@@ -264,8 +275,8 @@ namespace Server.Model
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine("Connection error with player " + playerModel.Player.Username);
-                    Log.WriteLine(Log.LogLevels.Error, "ConnectUser callback error :" + ex.Message);
+                    Console.WriteLine("Connection error with player {0}", playerModel.Player.Username);
+                    Log.WriteLine(Log.LogLevels.Error, "ConnectUser callback error :{0}", ex.Message);
                     PlayersDisconnected.Add(playerModel);
                 }
             }
@@ -282,11 +293,11 @@ namespace Server.Model
 
         private void DropBomb(Player player)
         {
-            Log.WriteLine(Log.LogLevels.Debug, "Player " + player.Username + " wants to drop a bomb.");
+            Log.WriteLine(Log.LogLevels.Debug, "Player {0} wants to drop a bomb.", player.Username);
             int count = GameCreated.Map.GridPositions.Count(x => x is Bomb && ((Bomb) x).PlayerId == player.Id);
             if (count >= player.MaxBombCount)
             {
-                Log.WriteLine(Log.LogLevels.Warning, "Player's current bomb on field : " + count + ". Max authorized is " + player.MaxBombCount);
+                Log.WriteLine(Log.LogLevels.Warning, "Player's current bomb on field : {0}. Max authorized is {1}", count , player.MaxBombCount);
                 return;
             }
                 
@@ -301,7 +312,7 @@ namespace Server.Model
                     Y = player.Position.Y
                 }
             };
-            Log.WriteLine(Log.LogLevels.Debug, "Bomb dropped by " + player.Username);
+            Log.WriteLine(Log.LogLevels.Debug, "Bomb dropped by {0}",player.Username);
             GameCreated.Map.GridPositions.Add(newBomb);
 
             foreach (PlayerModel playerModel in PlayersOnline.Where(x=> x.Alife))
@@ -313,7 +324,7 @@ namespace Server.Model
                 catch (Exception ex)
                 {
                     Console.WriteLine("Connection error with player " + playerModel.Player.Username);
-                    Log.WriteLine(Log.LogLevels.Error, "ConnectUser callback error :" + ex.Message);
+                    Log.WriteLine(Log.LogLevels.Error, "ConnectUser callback error : {0}", ex.Message);
                     PlayersDisconnected.Add(playerModel);
                 }
             }
@@ -402,7 +413,7 @@ namespace Server.Model
 
             foreach (LivingObject livingObject in impacted)
             {
-                Log.WriteLine(Log.LogLevels.Debug, "Object destroyed : " + livingObject);
+                Log.WriteLine(Log.LogLevels.Debug, "Object destroyed : {0}", livingObject);
             }
             
             GameCreated.Map.GridPositions.Remove(bombToExplode);
@@ -419,7 +430,7 @@ namespace Server.Model
                     //if the bomb touch all players left 
                     if (impacted.Count(x => x is Player) == GameCreated.Map.GridPositions.Count(x => x is Player) && playerModel.Alife)
                     {
-                        Log.WriteLine(Log.LogLevels.Debug, "Player had a draw : " + playerModel.Player.Username);
+                        Log.WriteLine(Log.LogLevels.Debug, "Player had a draw : {0}",playerModel.Player.Username);
                         playerModel.CallbackService.OnDraw();
                         playerModel.Alife = false;
                     }
@@ -430,7 +441,7 @@ namespace Server.Model
                             && impacted.Count(x => x is Player && ((Player) x).CompareId(playerModel.Player)) > 0
                             && GameCreated.Map.GridPositions.Count(x => x is Player) == 1)
                         {
-                            Log.WriteLine(Log.LogLevels.Debug, "Player win : " + playerModel.Player.Username);
+                            Log.WriteLine(Log.LogLevels.Debug, "Player win : {0}", playerModel.Player.Username);
                             playerModel.CallbackService.OnWin();
                         }
                         else
@@ -438,7 +449,7 @@ namespace Server.Model
                             //if the bomb touch the current player
                             if (impacted.Count(x => x is Player && ((Player) x).CompareId(playerModel.Player)) > 0)
                             {
-                                Log.WriteLine(Log.LogLevels.Debug, "Player is dead : " + playerModel.Player.Username);
+                                Log.WriteLine(Log.LogLevels.Debug, "Player is dead : {0}", playerModel.Player.Username);
                                 playerModel.CallbackService.OnMyDeath();
                                 playerModel.Alife = false;
                             }
@@ -452,8 +463,8 @@ namespace Server.Model
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine("Connection error with player " + playerModel.Player.Username);
-                    Log.WriteLine(Log.LogLevels.Error, "ConnectUser callback error :" + ex.Message);
+                    Console.WriteLine("Connection error with player {0}", playerModel.Player.Username);
+                    Log.WriteLine(Log.LogLevels.Error, "ConnectUser callback error : {0}", ex.Message);
                     PlayersDisconnected.Add(playerModel);
                 }
             }
