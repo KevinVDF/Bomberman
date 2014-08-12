@@ -101,7 +101,7 @@ namespace ClientWPF.Logic
 
         public void OnMyDeath()
         {
-            Message = "You are dead. Please wait for the creator to restart the game";
+            Message = Player.IsCreator ? "You are dead. Please wait for the end to restart the game" : "You are dead. Please wait for the creator to restart the game";
             BombermanViewModel.DisplayMessage(Message);
         }
 

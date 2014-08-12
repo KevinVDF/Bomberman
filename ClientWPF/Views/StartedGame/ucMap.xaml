@@ -8,12 +8,6 @@
              d:DataContext="{d:DesignInstance startedGame:MapViewModelDesignData, IsDesignTimeCreatable=True}"
              d:DesignHeight="300" d:DesignWidth="300">
     <ItemsControl ItemsSource="{Binding Path=LivingObjects}">
-        <!--<ItemsControl.ItemsPanel>
-                <ItemsPanelTemplate>
-                    <Canvas x:Name="MapBackground" Height="500" Width="800" HorizontalAlignment="Center" VerticalAlignment="Center">
-                    </Canvas>
-                </ItemsPanelTemplate>
-            </ItemsControl.ItemsPanel>-->
         <ItemsControl.ItemContainerStyle>
             <Style TargetType="ContentPresenter">
                 <Style.Setters>
@@ -23,7 +17,7 @@
         </ItemsControl.ItemContainerStyle>
         <ItemsControl.ItemTemplate>
             <DataTemplate>
-                <Canvas>
+                <Canvas x:Name="canva">
                     <Rectangle Width="{Binding Width}" Height="{Binding Height}" Canvas.Top="{Binding Path=PositionY}" Canvas.Left="{Binding Path=PositionX}" Fill="{Binding ImageInUse}"/>
                 </Canvas>
             </DataTemplate>

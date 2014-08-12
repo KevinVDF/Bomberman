@@ -8,7 +8,19 @@ namespace Server
     [ServiceBehavior(InstanceContextMode = InstanceContextMode.Single, ConcurrencyMode = ConcurrencyMode.Reentrant)]
     public class BombermanService : IBombermanService
     {
-        public ServerModel Server = new ServerModel();
+        //public ServerModel Server = new ServerModel();
+        public ServerModel Server { get; private set; }
+
+        private readonly ServiceHost _serviceHost;
+
+        public BombermanService(ServerModel server)
+        {
+            Server = server;
+
+            _serviceHost = new ServiceHost(this);
+            _serviceHost.Open();
+        }
+
 
         public void RegisterMe(string username)
         {

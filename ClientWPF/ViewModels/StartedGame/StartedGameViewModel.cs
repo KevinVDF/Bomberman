@@ -1,4 +1,5 @@
 ﻿using System.Collections.ObjectModel;
+using System.Linq;
 using System.ServiceModel.Channels;
 using System.Windows.Input;
 using ClientWPF.Logic;
@@ -39,6 +40,22 @@ namespace ClientWPF.ViewModels.StartedGame
             get { return _infoLabel; }
             set { Set(() => InfoLabel, ref _infoLabel, value); }
         }
+
+        private int _width;
+        public int Width
+        {
+            get { return _width; }
+            set { Set(() => Width, ref _width, value); }
+        }
+
+        private int _height;
+        public int Height
+        {
+            get { return _height; }
+            set { Set(() => Height, ref _height, value); }
+        }
+        
+        
 
         private ICommand _restartGameCOmmand;
         public ICommand RestartGameCommand
@@ -87,6 +104,8 @@ namespace ClientWPF.ViewModels.StartedGame
                 livingObjectItems.Add(livingObjectItem);
             }
             MapViewModel.LivingObjects = livingObjectItems;
+            Width = livingObjectItems.Sum(p => p.Width);
+            Height = livingObjectItems.Sum(p => p.Height);
         }
 
         private static LivingObjectItem MapToPlayerItem(Player player, int playerNumber)

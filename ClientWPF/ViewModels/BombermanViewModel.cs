@@ -82,6 +82,7 @@ namespace ClientWPF.ViewModels
             ////pass to started game mode
             GameRoomViewModel.IsVisible = false;
             StartedGameViewModel.IsVisible = true;
+            StartedGameViewModel.IsRestartVisible = false;
             ////set the new game retreive from server
             StartedGameViewModel.RegisterGame(newGame);
         }
