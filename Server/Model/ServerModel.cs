@@ -245,8 +245,6 @@ namespace Server.Model
             GameCreated.Map.GridPositions.Add(player);
         }
 
-        
-
         private void DropBomb(Player player)
         {
             Log.WriteLine(Log.LogLevels.Debug, "Player {0} wants to drop a bomb.", player.Username);
@@ -283,19 +281,16 @@ namespace Server.Model
 
         private void CheckForRestart()
         {
-            if (PlayersOnline.Count(x => x.Alife) <= 0)
+            if (PlayersOnline.Count(x => x.Alife) > 1) return;
+            PlayerModel creator = PlayersOnline.FirstOrDefault(x => x.Player.IsCreator);
+            if (creator == null)
             {
-                PlayerModel creator = PlayersOnline.FirstOrDefault(x => x.Player.IsCreator);
-                if (creator == null)
-                {
-                    Log.WriteLine(Log.LogLevels.Error, "No creator found => maybe disconnected ?");//todo back to gameroom with new creator assigned
-                    return;
-                }
-
-                ExceptionFreeAction(creator, playerOnline => playerOnline.CallbackService.OnCanRestartGame());
-                Log.WriteLine(Log.LogLevels.Debug, "Nobody still alive");
+                Log.WriteLine(Log.LogLevels.Error, "No creator found => maybe disconnected ?");//todo back to gameroom with new creator assigned
+                return;
             }
-                
+
+            ExceptionFreeAction(creator, playerOnline => playerOnline.CallbackService.OnCanRestartGame());
+            Log.WriteLine(Log.LogLevels.Debug, "Nobody still alive");
         }
 
         public void RestartGame()
@@ -365,11 +360,13 @@ namespace Server.Model
             {
                 Log.WriteLine(Log.LogLevels.Debug, "Object destroyed : {0}", livingObject);
             }
-            
+
+            //remove impacted object at the end
             GameCreated.Map.GridPositions.RemoveAll(impacted.Contains);
 
             //warn all players
             ExceptionFreeAction(PlayersOnline, playerModel => ImpactHandling(playerModel, bombToExplode, impacted));
+            
         }
 
         private void ImpactHandling(PlayerModel playerModel, Bomb bombToExplode, List<LivingObject> impacted)
@@ -378,7 +375,7 @@ namespace Server.Model
             playerModel.CallbackService.OnBombExploded(bombToExplode, impacted);
 
             //if the bomb touch all players left 
-            if (impacted.Count(x => x is Player) == GameCreated.Map.GridPositions.Count(x => x is Player) && playerModel.Alife)
+            if (GameCreated.Map.GridPositions.Count(x => x is Player) == 0 && playerModel.Alife)
             {
                 Log.WriteLine(Log.LogLevels.Debug, "Player had a draw : {0}", playerModel.Player.Username);
                 playerModel.CallbackService.OnDraw();
@@ -387,9 +384,8 @@ namespace Server.Model
             else
             {
                 //if its the last player standing then lets warn him he won
-                if (impacted.Count(x => x is Player) == 1
-                    && impacted.Count(x => x is Player && ((Player)x).CompareId(playerModel.Player)) > 0
-                    && GameCreated.Map.GridPositions.Count(x => x is Player) == 1)
+                if (GameCreated.Map.GridPositions.Count(x => x is Player) == 1
+                    && impacted.Count(x => x is Player && ((Player)x).CompareId(playerModel.Player)) == 0)
                 {
                     Log.WriteLine(Log.LogLevels.Debug, "Player win : {0}", playerModel.Player.Username);
                     playerModel.CallbackService.OnWin();
@@ -413,7 +409,7 @@ namespace Server.Model
             CheckForRestart();
         }
 
-        private static bool IsImpacted(List<LivingObject> list)
+        private static bool IsImpacted(IEnumerable<LivingObject> list)
         {
             return list.All(livingObject => !(livingObject is Wall) || ((Wall) livingObject).WallType != WallType.Undestructible);//TODO
         }
