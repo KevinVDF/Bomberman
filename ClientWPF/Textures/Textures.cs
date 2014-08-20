@@ -61,6 +61,8 @@ namespace ClientWPF.Textures
 
         #endregion Properties
 
+        #region Methods
+
         public static void InitializeItem()
         {
             Player1Item = new PlayerItem();
@@ -177,5 +179,7 @@ namespace ClientWPF.Textures
             }
             return background;
         }
+
+        #endregion Methods
     }
 }

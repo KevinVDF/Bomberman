@@ -39,23 +39,7 @@ namespace ClientWPF.ViewModels.StartedGame
         {
             get { return _infoLabel; }
             set { Set(() => InfoLabel, ref _infoLabel, value); }
-        }
-
-        private int _width;
-        public int Width
-        {
-            get { return _width; }
-            set { Set(() => Width, ref _width, value); }
-        }
-
-        private int _height;
-        public int Height
-        {
-            get { return _height; }
-            set { Set(() => Height, ref _height, value); }
-        }
-        
-        
+        }        
 
         private ICommand _restartGameCOmmand;
         public ICommand RestartGameCommand
@@ -104,8 +88,8 @@ namespace ClientWPF.ViewModels.StartedGame
                 livingObjectItems.Add(livingObjectItem);
             }
             MapViewModel.LivingObjects = livingObjectItems;
-            Width = livingObjectItems.Sum(p => p.Width);
-            Height = livingObjectItems.Sum(p => p.Height);
+            MapViewModel.Width = 50*newGame.Map.MapSize;
+            MapViewModel.Height = 50 * newGame.Map.MapSize;
         }
 
         private static LivingObjectItem MapToPlayerItem(Player player, int playerNumber)
@@ -189,6 +173,7 @@ namespace ClientWPF.ViewModels.StartedGame
         public void OnCanRestart()
         {
             IsRestartVisible = true;
+            MapViewModel.IsEnabled = false;
         }
 
         private void RestartGame()

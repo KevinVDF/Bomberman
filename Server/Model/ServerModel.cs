@@ -29,6 +29,8 @@ namespace Server.Model
 
         public int IdCount = 1;
 
+        public bool WeHaveAWinner = false;
+
         #endregion properties
 
         public ServerModel()
@@ -51,7 +53,7 @@ namespace Server.Model
                     //Check if its the first user to be connected
                     IsCreator = PlayersOnline.Count == 0,
                     BombPower = 1,
-                    MaxBombCount = 1
+                    MaxBombCount = 3
                 },
                 CallbackService = callback,
                 Alife = true
@@ -72,7 +74,7 @@ namespace Server.Model
         {
             if (mapPath != "")
                 MapPath = mapPath;
-
+            WeHaveAWinner = false;
             List<Player> players = PlayersOnline.Select(playerModel => playerModel.Player).ToList();
 
             Map map = GenerateMap(players);
@@ -275,7 +277,7 @@ namespace Server.Model
             //make the bomb explode after 1,5 sec
             // OLD CODE: new Timer(BombExplode, newBomb, 1500, Timeout.Infinite);
             // NEW CODE: it's just a POC
-            Timer t = new Timer(BombExplode, newBomb, 1500, Timeout.Infinite);
+            Timer t = new Timer(BombExplode, newBomb, 3000, Timeout.Infinite);
             _timers.Add(t);
         }
 
@@ -290,7 +292,8 @@ namespace Server.Model
             }
 
             ExceptionFreeAction(creator, playerOnline => playerOnline.CallbackService.OnCanRestartGame());
-            Log.WriteLine(Log.LogLevels.Debug, "Nobody still alive");
+            if (PlayersOnline.Count(x => x.Alife) == 0)
+                Log.WriteLine(Log.LogLevels.Debug, "Nobody still alive");
         }
 
         public void RestartGame()
@@ -301,6 +304,8 @@ namespace Server.Model
 
         private void BombExplode(object bomb)
         {
+            if(_timers.Any())
+            _timers.RemoveAt(0);//maybe better way
             Log.WriteLine(Log.LogLevels.Debug, "Bomb xplode {0}", bomb);
             Bomb bombToExplode = bomb as Bomb;
 
@@ -318,36 +323,50 @@ namespace Server.Model
                 for (int i = 1; i <= bombToExplode.Power; i++)
                 {
                     tempList = new List<LivingObject>();
+
                     switch (direction)
                     {
                             //up
                         case 0:
-                            tempList.AddRange(GameCreated.Map.GridPositions.Where(x => x.Position.Y == bombToExplode.Position.Y - i
-                                                                                       && x.Position.X == bombToExplode.Position.X).ToList());
+                            tempList.AddRange(
+                                GameCreated.Map.GridPositions.Where(
+                                    x => x.Position.Y == bombToExplode.Position.Y - i
+                                         && x.Position.X == bombToExplode.Position.X).ToList());
+                            CheckBomb(tempList);
                             break;
                             //down
                         case 1:
-                            tempList.AddRange(GameCreated.Map.GridPositions.Where(x => x.Position.Y == bombToExplode.Position.Y + i
-                                                                                       && x.Position.X == bombToExplode.Position.X).ToList());
+                            tempList.AddRange(
+                                GameCreated.Map.GridPositions.Where(
+                                    x => x.Position.Y == bombToExplode.Position.Y + i
+                                         && x.Position.X == bombToExplode.Position.X).ToList());
+                            CheckBomb(tempList);
                             break;
                             //left
                         case 2:
-                            tempList.AddRange(GameCreated.Map.GridPositions.Where(x => x.Position.X == bombToExplode.Position.X - i
-                                                                                       && x.Position.Y == bombToExplode.Position.Y).ToList());
+                            tempList.AddRange(
+                                GameCreated.Map.GridPositions.Where(
+                                    x => x.Position.X == bombToExplode.Position.X - i
+                                         && x.Position.Y == bombToExplode.Position.Y).ToList());
+                            CheckBomb(tempList);
                             break;
                             //right
                         default:
-                            tempList.AddRange(GameCreated.Map.GridPositions.Where(x => x.Position.X == bombToExplode.Position.X + i
-                                                                                       && x.Position.Y == bombToExplode.Position.Y).ToList());
+                            tempList.AddRange(
+                                GameCreated.Map.GridPositions.Where(
+                                    x => x.Position.X == bombToExplode.Position.X + i
+                                         && x.Position.Y == bombToExplode.Position.Y).ToList());
+                            CheckBomb(tempList);
                             break;
                     }
                     //if we encountered an empty space
-                    if (tempList.Count == 0) 
+                    if (tempList.Count == 0)
                         continue;
                     //if we encountered a wall undestructible don't need to go further
                     if (!IsImpacted(tempList))
                         break;
                     impacted.AddRange(tempList);
+
                 }
             }
             //check if the players'bomb doesn't move
@@ -361,16 +380,37 @@ namespace Server.Model
                 Log.WriteLine(Log.LogLevels.Debug, "Object destroyed : {0}", livingObject);
             }
 
-            //remove impacted object at the end
-            GameCreated.Map.GridPositions.RemoveAll(impacted.Contains);
+            if (impacted.Any())
+            {
+                //remove impacted object at the end
+                GameCreated.Map.GridPositions.RemoveAll(impacted.Contains);
 
-            //warn all players
-            ExceptionFreeAction(PlayersOnline, playerModel => ImpactHandling(playerModel, bombToExplode, impacted));
-            
+                //warn all players
+                ExceptionFreeAction(PlayersOnline, playerModel => ImpactHandling(playerModel, bombToExplode, impacted));
+            }
+        }
+
+        private void CheckBomb(List<LivingObject> tempList)
+        {
+            foreach (LivingObject livingObject in tempList)
+            {
+                if (livingObject is Bomb)
+                {
+                    LivingObject o = livingObject;
+                    foreach (LivingObject o2 in tempList)
+                    {
+                        if (o.Position.X == o2.Position.X && o.Position.Y == o2.Position.Y)
+                        GameCreated.Map.GridPositions.Remove(o2);
+                    }
+                    
+                    BombExplode(livingObject);
+                }
+            }
         }
 
         private void ImpactHandling(PlayerModel playerModel, Bomb bombToExplode, List<LivingObject> impacted)
         {
+            //TODO MORE TESTS 
             //warn all players that a bomb exploded
             playerModel.CallbackService.OnBombExploded(bombToExplode, impacted);
 
@@ -385,33 +425,35 @@ namespace Server.Model
             {
                 //if its the last player standing then lets warn him he won
                 if (GameCreated.Map.GridPositions.Count(x => x is Player) == 1
-                    && impacted.Count(x => x is Player && ((Player)x).CompareId(playerModel.Player)) == 0)
+                    && impacted.Count(x => x is Player && ((Player)x).CompareId(playerModel.Player)) == 0 && playerModel.Alife && !WeHaveAWinner)
                 {
                     Log.WriteLine(Log.LogLevels.Debug, "Player win : {0}", playerModel.Player.Username);
                     playerModel.CallbackService.OnWin();
+                    WeHaveAWinner = true;
                 }
                 else
                 {
                     //if the bomb touch the current player
-                    if (impacted.Count(x => x is Player && ((Player)x).CompareId(playerModel.Player)) > 0)
+                    if (impacted.Count(x => x is Player && ((Player)x).CompareId(playerModel.Player)) > 0 && playerModel.Alife)
                     {
                         Log.WriteLine(Log.LogLevels.Debug, "Player is dead : {0}", playerModel.Player.Username);
                         playerModel.CallbackService.OnMyDeath();
                         playerModel.Alife = false;
                     }
                     //if someone else is dead
-                    if (impacted.Count(x => x is Player && !((Player)x).CompareId(playerModel.Player)) > 0)
+                    if (impacted.Count(x => x is Player && !((Player)x).CompareId(playerModel.Player)) > 0 && !WeHaveAWinner)
                     {
                         playerModel.CallbackService.OnPlayerDeath(playerModel.Player);
                     }
                 }
             }
+
             CheckForRestart();
         }
 
         private static bool IsImpacted(IEnumerable<LivingObject> list)
         {
-            return list.All(livingObject => !(livingObject is Wall) || ((Wall) livingObject).WallType != WallType.Undestructible);//TODO
+            return list.All(livingObject => !(livingObject is Wall) || ((Wall) livingObject).WallType != WallType.Undestructible);
         }
 
         public void ExceptionFreeAction(PlayerModel player, Action<PlayerModel> action)
