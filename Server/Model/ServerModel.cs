@@ -380,14 +380,12 @@ namespace Server.Model
                 Log.WriteLine(Log.LogLevels.Debug, "Object destroyed : {0}", livingObject);
             }
 
-            if (impacted.Any())
-            {
-                //remove impacted object at the end
-                GameCreated.Map.GridPositions.RemoveAll(impacted.Contains);
+            if (!impacted.Any()) return;
+            //remove impacted object at the end
+            GameCreated.Map.GridPositions.RemoveAll(impacted.Contains);
 
-                //warn all players
-                ExceptionFreeAction(PlayersOnline, playerModel => ImpactHandling(playerModel, bombToExplode, impacted));
-            }
+            //warn all players
+            ExceptionFreeAction(PlayersOnline, playerModel => ImpactHandling(playerModel, bombToExplode, impacted));
         }
 
         private void CheckBomb(List<LivingObject> tempList)
@@ -407,10 +405,10 @@ namespace Server.Model
                 }
             }
         }
-
+        //TODO MORE TESTS 
         private void ImpactHandling(PlayerModel playerModel, Bomb bombToExplode, List<LivingObject> impacted)
         {
-            //TODO MORE TESTS 
+            
             //warn all players that a bomb exploded
             playerModel.CallbackService.OnBombExploded(bombToExplode, impacted);
 

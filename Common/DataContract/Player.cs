@@ -17,6 +17,8 @@ namespace Common.DataContract
         public int BombPower { get; set; }
         [DataMember]
         public int MaxBombCount { get; set; }
+        [DataMember]
+        public bool CanShootBomb { get; set; }
 
 
         public bool CompareId(LivingObject objectToCompare)
