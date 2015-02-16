@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Configuration;
 using System.Text;
 using System.Threading;
 using Common.DataContract;
@@ -18,17 +17,15 @@ namespace Server.Model
 
         public int MapSize = 10;
 
-        public BombermanService Service;
-
         public ServerStatus ServerStatus;
 
         public List<PlayerModel> PlayersOnline;
 
         public Game GameCreated;
 
-        private readonly List<Timer> _timers = new List<Timer>(); // SinaC: should learn what GC is :)
+        private List<Timer> _timers = new List<Timer>(); // SinaC: should learn what GC is :)
 
-        public string MapName;
+        public string MapPath;
 
         public int IdCount = 1;
 
@@ -38,13 +35,12 @@ namespace Server.Model
 
         public ServerModel()
         {
-            Service = new BombermanService(this);
-            ServerStatus = ServerStatus.Started;
             PlayersOnline = new List<PlayerModel>();
+            ServerStatus = ServerStatus.Started;
         }
 
         #region Methods
-        //OKAY
+
         public void ConnectUser(IBombermanCallbackService callback, string username)
         {
             //create new Player
@@ -52,11 +48,12 @@ namespace Server.Model
             {
                 Player = new Player
                 {
-                    ID = IdCount++,
+                    Id = IdCount++,
                     Username = username,
                     //Check if its the first user to be connected
                     IsCreator = PlayersOnline.Count == 0,
                     BombPower = 1,
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
                     BombNumber = 2
@@ -66,24 +63,28 @@ namespace Server.Model
 =======
                     MaxBombCount = 3
 >>>>>>> origin/master
+=======
+                    MaxBombCount = 1
+>>>>>>> parent of eeb1811... rewrite model objects
                 },
                 CallbackService = callback,
-                Alive = true
+                Alife = true
             };
 
             Log.WriteLine(Log.LogLevels.Info, "New player connected : " + username);
             //register user to the server
             PlayersOnline.Add(newPlayer);
             //create a list of login to send to client
-            var playersNamesList = PlayersOnline.Select(x => x.Player.Username).ToList();
+            List<string> playersNamesList = PlayersOnline.Select(x => x.Player.Username).ToList();
             //Send a success connection to the new user connected with all players online
-            ExceptionFreeAction(newPlayer, player => player.CallbackService.OnConnection(newPlayer.Player, playersNamesList));
+            newPlayer.CallbackService.OnConnection(newPlayer.Player, playersNamesList);
             //Warning players that a new player is connected by sending them the list of all players online
             ExceptionFreeAction(PlayersOnline.Where(player => player != newPlayer), player => player.CallbackService.OnUserConnected(playersNamesList));
         }
-        //OKAY
-        public void StartNewGame(string mapName)
+
+        public void StartGame(string mapPath)
         {
+<<<<<<< HEAD
 <<<<<<< HEAD
             if (mapName != "")
                 MapName = mapName;
@@ -95,11 +96,16 @@ namespace Server.Model
 >>>>>>> origin/master
 =======
 >>>>>>> origin/master
+=======
+            if (mapPath != "")
+                MapPath = mapPath;
+
+>>>>>>> parent of eeb1811... rewrite model objects
             List<Player> players = PlayersOnline.Select(playerModel => playerModel.Player).ToList();
 
             Map map = GenerateMap(players);
             if (map == null)
-                Log.WriteLine(Log.LogLevels.Error, "Error while reading map {0} -> game not started", mapName);
+                Log.WriteLine(Log.LogLevels.Error, "Error while reading map {0} -> game not started", mapPath);
             else
             {
                 Game newGame = new Game
@@ -113,18 +119,18 @@ namespace Server.Model
                 ExceptionFreeAction(PlayersOnline, player =>
                 {
                     player.CallbackService.OnGameStarted(newGame);
-                    player.Alive = true;
+                    player.Alife = true;
                 });
             }
         }
-        //OKAY but TODO for bonuses
+
         private Map GenerateMap(List<Player> players)
         {
             int mapSize;
             Map map = new Map();
             List<LivingObject> matrice = new List<LivingObject>();
 
-            using (StreamReader reader = new StreamReader(Path.Combine(ConfigurationManager.AppSettings["MapPath"],MapName), Encoding.UTF8))
+            using (StreamReader reader = new StreamReader(MapPath, Encoding.UTF8))
             {
                 // Read size
                 string size = reader.ReadLine();
@@ -156,9 +162,9 @@ namespace Server.Model
                                         Y = y
                                     }
                                     ,
-                                    ID = IdCount++
+                                    Id = IdCount++
                                 };
-                                Log.WriteLine(Log.LogLevels.Debug, "New undestructible wall created");
+                                Log.WriteLine(Log.LogLevels.Debug, "New Wall undestructible created");
                                 break;
                             case 'd':
                                 livingObject = new Wall
@@ -170,9 +176,9 @@ namespace Server.Model
                                         Y = y
                                     }
                                     ,
-                                    ID = IdCount++
+                                    Id = IdCount++
                                 };
-                                Log.WriteLine(Log.LogLevels.Debug, "New destructible wall created");
+                                Log.WriteLine(Log.LogLevels.Debug, "New Wall destructible created");
                                 break;
                             //case 'b' :
                             //    currentlivingObject = new Bonus
@@ -206,29 +212,15 @@ namespace Server.Model
 
             return map;
         }
-        //OKAY
+
         public void PlayerAction(IBombermanCallbackService callback, ActionType actionType)
         {
-            //retreive the player who made the action
             PlayerModel player = PlayersOnline.FirstOrDefault(x => x.CallbackService == callback);
 
-            //not supposed to happend but okay
-            if (GameCreated.CurrentStatus == GameStatus.Stopped)
-            {
-                Log.WriteLine(Log.LogLevels.Warning, "Game stopped -> no request from client !!!");
-                return;
-            }
-            //not supposed to happend not okay at all
             if (player == null)
             {
                 Log.WriteLine(Log.LogLevels.Error, "Player who made the action is null... shouldn't be !!!");
                 return; 
-            }
-            //not supposed to happend but okay
-            if (!player.Alive)
-            {
-                Log.WriteLine(Log.LogLevels.Warning, "Player should be dead -> no request from client !!!");
-                return;
             }
                 
             Log.WriteLine(Log.LogLevels.Debug, "Player {0} make {1}", player.Player.Username, actionType);
@@ -251,7 +243,7 @@ namespace Server.Model
                     break;
             }
         }
-        //OKAY
+
         private void MovePlayer(Player player, int stepX, int stepY, ActionType actionType)
         {
             // Get object at future player location
@@ -281,6 +273,7 @@ namespace Server.Model
             GameCreated.Map.GridPositions.Add(player);
         }
 <<<<<<< HEAD
+<<<<<<< HEAD
         //OKAY
 =======
 
@@ -288,28 +281,26 @@ namespace Server.Model
 >>>>>>> origin/master
 =======
 >>>>>>> origin/master
+=======
+
+        
+
+>>>>>>> parent of eeb1811... rewrite model objects
         private void DropBomb(Player player)
         {
-            if (player == null)
-            {
-                Log.WriteLine(Log.LogLevels.Error, "player is null => WTF ??");
-                return;
-            }
-                
             Log.WriteLine(Log.LogLevels.Debug, "Player {0} wants to drop a bomb.", player.Username);
-            
-            int count = GameCreated.Map.GridPositions.Count(x => x is Bomb && ((Bomb) x).PlayerId == player.ID);
-            //if player already have the max bomb number on the battle field
-            if (count >= player.BombNumber)
+            //if player already have the max bomb number on the battle field => OUT
+            int count = GameCreated.Map.GridPositions.Count(x => x is Bomb && ((Bomb) x).PlayerId == player.Id);
+            if (count >= player.MaxBombCount)
             {
-                Log.WriteLine(Log.LogLevels.Warning, "Player's current bomb on field : {0}. Max authorized is {1}", count , player.BombNumber);
+                Log.WriteLine(Log.LogLevels.Warning, "Player's current bomb on field : {0}. Max authorized is {1}", count , player.MaxBombCount);
                 return;
             }
             //otherwise create a new bomb
             Bomb newBomb = new Bomb
             {
-                ID = IdCount++,
-                PlayerId = player.ID,
+                Id = IdCount++,
+                PlayerId = player.Id,
                 Power = player.BombPower,
                 Position = new Position
                 {
@@ -329,6 +320,7 @@ namespace Server.Model
             _timers.Add(t);
         }
 
+<<<<<<< HEAD
 <<<<<<< HEAD
         private void BombExplode(object bomb)
         {
@@ -361,8 +353,36 @@ namespace Server.Model
             _timers.RemoveAt(0);//maybe better way
             Log.WriteLine(Log.LogLevels.Debug, "Bomb xplode {0}", bomb);
 >>>>>>> origin/master
+=======
+        private void CheckForRestart()
+        {
+            if (PlayersOnline.Count(x => x.Alife) <= 0)
+            {
+                PlayerModel creator = PlayersOnline.FirstOrDefault(x => x.Player.IsCreator);
+                if (creator == null)
+                {
+                    Log.WriteLine(Log.LogLevels.Error, "No creator found => maybe disconnected ?");//todo back to gameroom with new creator assigned
+                    return;
+                }
+
+                ExceptionFreeAction(creator, playerOnline => playerOnline.CallbackService.OnCanRestartGame());
+                Log.WriteLine(Log.LogLevels.Debug, "Nobody still alive");
+            }
+                
+        }
+
+        public void RestartGame()
+        {
+            Log.WriteLine(Log.LogLevels.Info, "Game restarted");
+            StartGame("");
+        }
+
+        private void BombExplode(object bomb)
+        {
+            Log.WriteLine(Log.LogLevels.Debug, "Bomb xplode {0}", bomb);
+>>>>>>> parent of eeb1811... rewrite model objects
             Bomb bombToExplode = bomb as Bomb;
-            //Not supposed to happen
+
             if (bombToExplode == null)
             {
                 Log.WriteLine(Log.LogLevels.Error, "Bomb is null => WTF ??" );
@@ -371,7 +391,7 @@ namespace Server.Model
 
             List<LivingObject> impacted = new List<LivingObject>();
             List<LivingObject> tempList;
-            //research impacted objects
+            //research impact 
             for (int direction = 0; direction < 4; direction++)
             {
                 for (int i = 1; i <= bombToExplode.Power; i++)
@@ -416,20 +436,17 @@ namespace Server.Model
                     //if we encountered an empty space
                     if (tempList.Count == 0)
                         continue;
-                    //if we encountered a wall undestructible don't need to go further in the current direction
-                    if (IsUndestructible(tempList))
+                    //if we encountered a wall undestructible don't need to go further
+                    if (!IsImpacted(tempList))
                         break;
                     impacted.AddRange(tempList);
 
                 }
             }
-            //todo:check if the players'bomb move
+            //check if the players'bomb doesn't move
             tempList = new List<LivingObject>();
-            //objects at the same place than the bomb
-            tempList.AddRange(GameCreated.Map.GridPositions
-                .Where(x => x.ID == bombToExplode.ID
-                            && x.Position.X == bombToExplode.Position.X
-                            && x.Position.Y == bombToExplode.Position.Y).ToList());
+            tempList.AddRange(GameCreated.Map.GridPositions.Where(x => x.Position.X == bombToExplode.Position.X
+                                                                                       && x.Position.Y == bombToExplode.Position.Y).ToList());
             impacted.AddRange(tempList);
 
             foreach (LivingObject livingObject in impacted)
@@ -447,6 +464,7 @@ namespace Server.Model
             if (!impacted.Any()) return;
             //remove impacted object at the end
             GameCreated.Map.GridPositions.RemoveAll(impacted.Contains);
+<<<<<<< HEAD
             //handle all objects
             HandleImpact(bombToExplode, impacted);
         }
@@ -502,36 +520,52 @@ namespace Server.Model
         private static bool IsUndestructible(IEnumerable<LivingObject> list)
         {
             return list.Any(livingObject => (livingObject is Wall) && ((Wall) livingObject).WallType == WallType.Undestructible);
+=======
+
+            //warn all players
+            ExceptionFreeAction(PlayersOnline, playerModel => ImpactHandling(playerModel, bombToExplode, impacted));
+>>>>>>> parent of eeb1811... rewrite model objects
         }
 
-        private void HandleImpactedPlayer(Player impactedPlayer)
+        private void ImpactHandling(PlayerModel playerModel, Bomb bombToExplode, List<LivingObject> impacted)
         {
-            var player = PlayersOnline.First(x => x.Player.ID == (impactedPlayer).ID);
+            //warn all players that a bomb exploded
+            playerModel.CallbackService.OnBombExploded(bombToExplode, impacted);
 
-            if (player == null)
+            //if the bomb touch all players left 
+            if (impacted.Count(x => x is Player) == GameCreated.Map.GridPositions.Count(x => x is Player) && playerModel.Alife)
             {
-                Log.WriteLine(Log.LogLevels.Error, "Player impacted not found in players online disco Maybe ?");
-                return;
+                Log.WriteLine(Log.LogLevels.Debug, "Player had a draw : {0}", playerModel.Player.Username);
+                playerModel.CallbackService.OnDraw();
+                playerModel.Alife = false;
             }
-
-            //  set alive to false
-            player.Alive = false;
-            //  send LOST
-            player.CallbackService.OnMyDeath();
-            // if one player alive left, send WON to winner + RESTART + change status of the game
-            if (PlayersOnline.Count(x => x.Alive) == 1)
+            else
             {
-                GameCreated.CurrentStatus = GameStatus.Stopped;
-                ExceptionFreeAction(PlayersOnline.FirstOrDefault(x => x.Alive), playerModel => playerModel.CallbackService.OnWin());
-                ExceptionFreeAction(PlayersOnline.FirstOrDefault(x => x.Player.IsCreator), playerModel => playerModel.CallbackService.OnCanRestartGame());
+                //if its the last player standing then lets warn him he won
+                if (impacted.Count(x => x is Player) == 1
+                    && impacted.Count(x => x is Player && ((Player)x).CompareId(playerModel.Player)) > 0
+                    && GameCreated.Map.GridPositions.Count(x => x is Player) == 1)
+                {
+                    Log.WriteLine(Log.LogLevels.Debug, "Player win : {0}", playerModel.Player.Username);
+                    playerModel.CallbackService.OnWin();
+                }
+                else
+                {
+                    //if the bomb touch the current player
+                    if (impacted.Count(x => x is Player && ((Player)x).CompareId(playerModel.Player)) > 0)
+                    {
+                        Log.WriteLine(Log.LogLevels.Debug, "Player is dead : {0}", playerModel.Player.Username);
+                        playerModel.CallbackService.OnMyDeath();
+                        playerModel.Alife = false;
+                    }
+                    //if someone else is dead
+                    if (impacted.Count(x => x is Player && !((Player)x).CompareId(playerModel.Player)) > 0)
+                    {
+                        playerModel.CallbackService.OnPlayerDeath(playerModel.Player);
+                    }
+                }
             }
-            // if no player alive left, send DRAW to everyone + RESTART + change status of the game
-            if (PlayersOnline.All(x => !x.Alive))
-            {
-                GameCreated.CurrentStatus = GameStatus.Stopped;
-                ExceptionFreeAction(PlayersOnline, playerModel => playerModel.CallbackService.OnDraw());
-                ExceptionFreeAction(PlayersOnline.FirstOrDefault(x => x.Player.IsCreator), playerModel => playerModel.CallbackService.OnCanRestartGame());
-            }
+<<<<<<< HEAD
 =======
             //if the bomb touch all players left 
             if (GameCreated.Map.GridPositions.Count(x => x is Player) == 0 && playerModel.Alife)
@@ -577,9 +611,17 @@ namespace Server.Model
 >>>>>>> origin/master
 =======
 >>>>>>> origin/master
+=======
+            CheckForRestart();
+>>>>>>> parent of eeb1811... rewrite model objects
         }
 
-        private void ExceptionFreeAction(PlayerModel player, Action<PlayerModel> action)
+        private static bool IsImpacted(List<LivingObject> list)
+        {
+            return list.All(livingObject => !(livingObject is Wall) || ((Wall) livingObject).WallType != WallType.Undestructible);//TODO
+        }
+
+        public void ExceptionFreeAction(PlayerModel player, Action<PlayerModel> action)
         {
             try
             {
@@ -594,13 +636,10 @@ namespace Server.Model
             }
         }
 
-        private void ExceptionFreeAction(IEnumerable<PlayerModel> players, Action<PlayerModel> action)
+        public void ExceptionFreeAction(IEnumerable<PlayerModel> players, Action<PlayerModel> action)
         {
             List<PlayerModel> disconnected = new List<PlayerModel>();
-            var playerModels = players as PlayerModel[] ?? players.ToArray();
-            if (players == null || !playerModels.Any())
-                return;
-            foreach (PlayerModel player in playerModels)
+            foreach (PlayerModel player in players)
             {
                 try
                 {

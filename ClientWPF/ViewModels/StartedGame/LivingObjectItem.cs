@@ -5,8 +5,6 @@ namespace ClientWPF.ViewModels.StartedGame
 {
     public abstract class LivingObjectItem : ObservableObject
     {
-        public int ID { get; set; }
-
         private Brush _imageInUse;
         public Brush ImageInUse
         {

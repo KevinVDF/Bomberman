@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Configuration;
 using System.ServiceModel;
-using System.ServiceModel.Channels;
 using Common.DataContract;
 using Common.Interfaces;
 using Common.Log;
@@ -11,33 +9,27 @@ namespace Client
     //TODO !! var/params names
     class Program
     {
+        public static IBombermanService Proxy { get; private set; }
 
         public const string MapPath = @"F:\\Bomberman\Server\map.dat";
 
         static void Main()
         {
-            string username = "Console_"+Guid.NewGuid().ToString().Substring(0,5);
+            string username = "";
+            int id;
+            var context = new InstanceContext(new BombermanCallbackService());
+            var factory = new DuplexChannelFactory<IBombermanService>(context, "netTcpBinding_IBombermanService");
+            Proxy = factory.CreateChannel();
 
-            Log.Initialize(@"D:\Temp\BombermanLogs", "Client_" + username + ".log");
-            Log.WriteLine(Log.LogLevels.Info, "Logged at " + DateTime.Now.ToShortTimeString());
-
-            //
-            Binding binding = new NetTcpBinding(SecurityMode.None);
-            InstanceContext instanceContext = new InstanceContext(new BombermanCallbackService());//WP0483
-            DuplexChannelFactory<IBombermanService> factory = new DuplexChannelFactory<IBombermanService>(instanceContext, binding, new EndpointAddress(
-                new Uri(string.Concat("net.tcp://", ConfigurationManager.AppSettings["MachineName"], ":7900/BombermanCallbackService"))));
-            Proxy.Instance = factory.CreateChannel();
-           
-            //
             Console.WriteLine("--------------------------------------");
             Console.WriteLine("-------- Welcome to Bomberman --------");
             Console.WriteLine("--------------------------------------\n\n");
-            //Console.WriteLine("Type your player name :\n");
-            //string login = Console.ReadLine();
-            //username = login;
+            Console.WriteLine("Type your player name :\n");
+            string login = Console.ReadLine();
+            username = login;
             ConnectPlayer(username);
-            //Log.Initialize(@"D:\Temp\BombermanLogs", "Client_" + login +".log");
-            //Log.WriteLine(Log.LogLevels.Info, "Logged at " + DateTime.Now.ToShortTimeString());
+            Log.Initialize(@"D:\Temp\BombermanLogs", "Client_" + login +".log");
+            Log.WriteLine(Log.LogLevels.Info, "Logged at " + DateTime.Now.ToShortTimeString());
 
             bool stop = false;
             while (!stop)
@@ -61,35 +53,38 @@ namespace Client
                     case ConsoleKey.DownArrow:
                         MoveTo(ActionType.MoveDown);
                         break;
-                    case ConsoleKey.Spacebar:
-                        DropBomb();
-                        break;
                     case ConsoleKey.X: // SinaC: never leave a while(true) without an exit condition
                         stop = true;
                         break;
                 }
+            }
+
+            // SinaC: Clean properly factory
+            try
+            {
+                factory.Close();
+            }
+            catch (Exception ex)
+            {
+                Log.WriteLine(Log.LogLevels.Warning, "Exception:{0}", ex);
+                factory.Abort();
             }
         }
 
         //todo replace playername by an id ...
         private static void ConnectPlayer(string username)
         {
-            Proxy.Instance.RegisterMe(username);
+            Proxy.ConnectUser(username);
         }
 
         private static void StartGame()
         {
-            Proxy.Instance.StartGame("TEST.DAT");
+            Proxy.StartGame(MapPath);
         }
 
-        private static void MoveTo(ActionType actionType)
+        private static void MoveTo(int playerID, ActionType actionType)
         {
-            Proxy.Instance.PlayerAction(actionType);
-        }
-
-        private static void DropBomb()
-        {
-            Proxy.Instance.PlayerAction(ActionType.DropBomb);
+            Proxy.MoveObjectToLocation(playerID, actionType);
         }
     }
 }

@@ -17,10 +17,10 @@
         
         <login:ucLogin Visibility="{Binding IsVisible, Converter={StaticResource BooleanToVisibilityConverter}}"
                        DataContext="{Binding Path=LoginViewModel}"/>
-        <gameroom:ucGameRoom Visibility="{Binding IsVisible, Converter={StaticResource BooleanToVisibilityConverter}}"
+        <gameroom:ucGameRoom  Visibility="{Binding IsVisible, Converter={StaticResource BooleanToVisibilityConverter}}"
                              DataContext="{Binding Path=GameRoomViewModel}"/>
-        <startedgame:ucStartedGame x:Name="StartedGame" 
-                                   Visibility="{Binding IsVisible, Converter={StaticResource BooleanToVisibilityConverter}}"
-                                   DataContext="{Binding Path=StartedGameViewModel}"/>
+        <startedgame:ucStartedGame x:Name="StartedGame" Visibility="{Binding IsVisible, Converter={StaticResource BooleanToVisibilityConverter}}"
+                             DataContext="{Binding Path=StartedGameViewModel}"
+                             />
     </Grid>
 </Window>

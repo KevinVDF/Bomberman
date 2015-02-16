@@ -9,6 +9,6 @@ namespace Server.Model
 
         public IBombermanCallbackService CallbackService { get; set; } 
 
-        public bool Alive { get; set; }
+        public bool Alife { get; set; }
     }
 }

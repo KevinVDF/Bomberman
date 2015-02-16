@@ -11,8 +11,6 @@ namespace Common.DataContract
     {
         [DataMember]
         public Position Position { get; set; }
-        [DataMember]
-        public int ID { get; set; }
 
         public bool ComparePosition(LivingObject objectToCompare)
         {

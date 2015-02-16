@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Configuration;
-using System.IO;
 using ClientWPF.Proxies;
 using ClientWPF.ViewModels;
 using Common.DataContract;
@@ -15,7 +14,7 @@ namespace ClientWPF.Logic
 
         public static Player Player;
 
-        public static string MapName = ConfigurationManager.AppSettings["MapName"];
+        public static string MapPath = ConfigurationManager.AppSettings["MapPath"];
 
         public static  BombermanViewModel BombermanViewModel;
 
@@ -38,7 +37,7 @@ namespace ClientWPF.Logic
 
         public static void StartGame()
         {
-            Proxy.Instance.StartGame(Path.GetFileName(MapName));
+            Proxy.Instance.StartGame(MapPath);
         }
 
         public static void PlayerAction(ActionType actionType)
@@ -48,7 +47,7 @@ namespace ClientWPF.Logic
 
         public static void RestartGame()
         {
-            Proxy.Instance.StartGame("");
+            Proxy.Instance.RestartGame();
         }
 
         #endregion Services Methods
@@ -78,7 +77,7 @@ namespace ClientWPF.Logic
 
         public void OnPlayerMove(Player player, Position newPosition, ActionType actionType)
         {
-            if (Player.ID == player.ID)
+            if (Player.CompareId(player))
                 Player.Position = newPosition;
 
             BombermanViewModel.OnPlayerMove(player, newPosition, actionType);

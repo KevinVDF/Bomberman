@@ -11,9 +11,11 @@ namespace Common.Interfaces
         void RegisterMe(string username);
         //on button start
         [OperationContract(IsOneWay = true)]
-        void StartGame(string mapName);
+        void StartGame(string mapPath);
         //on any action
         [OperationContract(IsOneWay = true)]
         void PlayerAction(ActionType actionType);
+        [OperationContract(IsOneWay = true)]
+        void RestartGame();
     }
 }

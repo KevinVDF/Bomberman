@@ -20,6 +20,9 @@ namespace Server
 
             DumpHelp();
 
+            BombermanService service = new BombermanService(server);
+            //var svcHost = new ServiceHost(typeof (BombermanService));
+            //svcHost.Open();
             bool stop = false;
             while (!stop)
             {
@@ -46,6 +49,7 @@ namespace Server
                     }
                 }
             }
+            //svcHost.Close();
         }
 
         static void DumpHelp()
@@ -59,8 +63,11 @@ namespace Server
         {
             Console.WriteLine("Connected: {0}", server.PlayersOnline.Count);
             foreach(PlayerModel player in server.PlayersOnline)
-                Console.WriteLine("{0}:{1} alive:{2} iscreator:{3} maxbomb:{4}", player.Player.ID, player.Player.Username, player.Alive, player.Player.IsCreator, player.Player.BombNumber);
-            }
+                Console.WriteLine("{0}:{1} alive:{2} iscreator:{3} maxbomb:{4}", player.Player.Id, player.Player.Username, player.Alife, player.Player.IsCreator, player.Player.MaxBombCount);
+            //Console.WriteLine("Disconnected: {0}", server.PlayersDisconnected.Count);
+            //foreach (PlayerModel player in server.PlayersDisconnected)
+            //    Console.WriteLine("{0}:{1} alive:{2} iscreator:{3} maxbomb:{4}", player.Player.Id, player.Player.Username, player.Alife, player.Player.IsCreator, player.Player.MaxBombCount);
+        }
 
         static void DumpMap(Map map)
         {
@@ -94,5 +101,7 @@ namespace Server
                 return '=';
             return '?';
         }
+    
+
     }
 }

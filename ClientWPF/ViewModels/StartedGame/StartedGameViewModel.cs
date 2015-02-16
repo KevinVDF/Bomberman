@@ -56,12 +56,17 @@ namespace ClientWPF.ViewModels.StartedGame
             get { return _height; }
             set { Set(() => Height, ref _height, value); }
         }
+<<<<<<< HEAD
 =======
         }        
 >>>>>>> origin/master
 =======
         }        
 >>>>>>> origin/master
+=======
+        
+        
+>>>>>>> parent of eeb1811... rewrite model objects
 
         private ICommand _restartGameCOmmand;
         public ICommand RestartGameCommand
@@ -109,12 +114,12 @@ namespace ClientWPF.ViewModels.StartedGame
                     livingObjectItem = MapToPlayerItem(livingObject as Player, playerNumber++);
                 livingObjectItems.Add(livingObjectItem);
             }
-
             MapViewModel.LivingObjects = livingObjectItems;
 <<<<<<< HEAD
 <<<<<<< HEAD
             Width = livingObjectItems.Sum(p => p.Width);
             Height = livingObjectItems.Sum(p => p.Height);
+<<<<<<< HEAD
         
 =======
             MapViewModel.Width = 50*newGame.Map.MapSize;
@@ -124,6 +129,8 @@ namespace ClientWPF.ViewModels.StartedGame
             MapViewModel.Width = 50*newGame.Map.MapSize;
             MapViewModel.Height = 50 * newGame.Map.MapSize;
 >>>>>>> origin/master
+=======
+>>>>>>> parent of eeb1811... rewrite model objects
         }
 
         private static LivingObjectItem MapToPlayerItem(Player player, int playerNumber)
@@ -133,7 +140,7 @@ namespace ClientWPF.ViewModels.StartedGame
             {
                 X = player.Position.X,
                 Y = player.Position.Y,
-                ID = player.ID,
+                Id = player.Id,
                 ZIndex = 500,
                 Width = 30,
                 Height = 35
@@ -179,7 +186,7 @@ namespace ClientWPF.ViewModels.StartedGame
                 ZIndex = 200,
                 Height = 50,
                 Width = 50,
-                ID = wall.ID
+                Id = wall.Id
             };
             return wallItem;
         }
@@ -224,8 +231,6 @@ namespace ClientWPF.ViewModels.StartedGame
         public StartedGameViewModelDesignData()
         {
             MapViewModel = new MapViewModelDesignData();
-            IsVisible = false;
-            IsRestartVisible = true;
         }
     }
 }

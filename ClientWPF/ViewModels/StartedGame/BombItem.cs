@@ -4,6 +4,8 @@ namespace ClientWPF.ViewModels.StartedGame
 {
     public class BombItem : LivingObjectItem
     {
+        public int Id { get; set; }
+
         private Sprite _texture;
         public Sprite Textures
         {
