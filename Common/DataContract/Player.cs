@@ -19,11 +19,15 @@ namespace Common.DataContract
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
         public int BombNumber { get; set; }
 =======
         public int MaxBombCount { get; set; }
         [DataMember]
         public bool CanShootBomb { get; set; }
+=======
+        public int MaxBombCount { get; set; }
+>>>>>>> parent of eeb1811... rewrite model objects
 =======
         public int MaxBombCount { get; set; }
 >>>>>>> parent of eeb1811... rewrite model objects
@@ -40,7 +44,10 @@ namespace Common.DataContract
         }
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 >>>>>>> origin/master
+=======
+>>>>>>> parent of eeb1811... rewrite model objects
 =======
 >>>>>>> parent of eeb1811... rewrite model objects
 =======
