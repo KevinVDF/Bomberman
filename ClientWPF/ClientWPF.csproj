@@ -72,6 +72,7 @@
     <Compile Include="ViewModels\GameRoom\GameRoomViewModel.cs" />
     <Compile Include="ViewModels\Login\LoginViewModel.cs" />
     <Compile Include="ViewModels\StartedGame\BombItem.cs" />
+    <Compile Include="ViewModels\StartedGame\BonusItem.cs" />
     <Compile Include="ViewModels\StartedGame\MapViewModel.cs" />
     <Compile Include="ViewModels\StartedGame\PlayerItem.cs" />
     <Compile Include="ViewModels\StartedGame\StartedGameViewModel.cs" />

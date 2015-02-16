@@ -14,6 +14,20 @@ namespace Common.DataContract
         [DataMember]
         public int BombPower { get; set; }
         [DataMember]
+<<<<<<< HEAD
         public int BombNumber { get; set; }
+=======
+        public int MaxBombCount { get; set; }
+        [DataMember]
+        public bool CanShootBomb { get; set; }
+
+
+        public bool CompareId(LivingObject objectToCompare)
+        {
+            if (GetType() == objectToCompare.GetType())
+                return Id == ((Player) objectToCompare).Id;
+            return false;
+        }
+>>>>>>> origin/master
     }
 }
