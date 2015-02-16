@@ -45,9 +45,22 @@ namespace Server.Model
         }
 
         #region Methods
-
+        //OKAY
         public void ConnectUser(IBombermanCallbackService callback, string username)
         {
+            //if callback is null => big problem
+            if (callback == null)
+            {
+                Log.WriteLine(Log.LogLevels.Error, "Problem with callback for the new player {0}", username);
+                return;
+            }
+            //if username already taken then refuse.
+            if (PlayersOnline.Any(x => x.Player.Username == username))
+            {
+                Log.WriteLine(Log.LogLevels.Info, "Username {0} is already Taken.", username);
+                return;
+            }
+
             //create new Player
             PlayerModel newPlayer = new PlayerModel
             {
@@ -64,7 +77,7 @@ namespace Server.Model
                 Alive = true
             };
 
-            Log.WriteLine(Log.LogLevels.Info, "New player connected : " + username);
+            Log.WriteLine(Log.LogLevels.Info, "New player connected : {0}", username);
             //register user to the server
             PlayersOnline.Add(newPlayer);
             //create a list of login to send to client
@@ -74,11 +87,17 @@ namespace Server.Model
             //Warning players that a new player is connected by sending them the list of all players online
             ExceptionFreeAction(PlayersOnline.Where(player => player != newPlayer), player => player.CallbackService.OnUserConnected(playersNamesList));
         }
-
+        //OKAY
         public void StartNewGame(string mapName)
         {
-            if (mapName != "")
-                MapName = mapName;
+            //check on map name
+            if (mapName == "")
+            {
+                Log.WriteLine(Log.LogLevels.Error, "Map name can't be empty");
+                return;
+            }
+
+            MapName = mapName;
 
             List<Player> players = PlayersOnline.Select(playerModel => playerModel.Player).ToList();
 
@@ -186,8 +205,8 @@ namespace Server.Model
                     }
                 }
             }
-            map.GridPositions = matrice;
-            map.MapName = "Dummy map"; // TODO
+            map.LivingObjects = matrice;
+            map.MapName = MapName;
             map.MapSize = mapSize;
 
             return map;
@@ -236,13 +255,17 @@ namespace Server.Model
                 case ActionType.DropBomb:
                     DropBomb(player.Player);
                     break;
+                //todo 
+                //case ActionType.ShootBomb:
+                //    ShootBomb(player.player);
+                //    break;
             }
         }
         //OKAY
         private void MovePlayer(Player player, int stepX, int stepY, ActionType actionType)
         {
             // Get object at future player location
-            LivingObject collider = GameCreated.Map.GridPositions.FirstOrDefault(x => player.Position.Y + stepY == x.Position.Y
+            LivingObject collider = GameCreated.Map.LivingObjects.FirstOrDefault(x => player.Position.Y + stepY == x.Position.Y
                                                                                       && player.Position.X + stepX == x.Position.X);
             // Can't go thru wall or bomb
             if (collider != null && (collider is Wall || collider is Bomb))
@@ -251,7 +274,7 @@ namespace Server.Model
                 return;
             }
             //remove player from the map
-            GameCreated.Map.GridPositions.Remove(player);
+            GameCreated.Map.LivingObjects.Remove(player);
 
             Position newPosition = new Position
             {
@@ -265,7 +288,7 @@ namespace Server.Model
             player.Position.Y += stepY;
             player.Position.X += stepX;
             //add player to the global map
-            GameCreated.Map.GridPositions.Add(player);
+            GameCreated.Map.LivingObjects.Add(player);
         }
         //OKAY
         private void DropBomb(Player player)
@@ -277,7 +300,7 @@ namespace Server.Model
             }
                
             Log.WriteLine(Log.LogLevels.Debug, "Player {0} wants to drop a bomb.", player.Username);
-            int count = GameCreated.Map.GridPositions.Count(x => x is Bomb && ((Bomb) x).PlayerId == player.ID);
+            int count = GameCreated.Map.LivingObjects.Count(x => x is Bomb && ((Bomb) x).PlayerId == player.ID);
             //if player already have the max bomb number on the battle field
             if (count >= player.BombNumber)
             {
@@ -298,7 +321,7 @@ namespace Server.Model
             };
             //add the new bomb created into the map
             Log.WriteLine(Log.LogLevels.Debug, "Bomb dropped by {0}",player.Username);
-            GameCreated.Map.GridPositions.Add(newBomb);
+            GameCreated.Map.LivingObjects.Add(newBomb);
             //warn players to be aware ofthat new bomb
             ExceptionFreeAction(PlayersOnline, playerModel => playerModel.CallbackService.OnBombDropped(newBomb));
             //make the bomb explode after 1,5 sec
@@ -323,9 +346,10 @@ namespace Server.Model
 
             List<LivingObject> impacted = new List<LivingObject>();
             List<LivingObject> tempList;
-            //research impact de objects
+            //research impact of objects in 4 directions
             for (int direction = 0; direction < 4; direction++)
             {
+                //handle bomb power
                 for (int i = 1; i <= bombToExplode.Power; i++)
                 {
                     tempList = new List<LivingObject>();
@@ -335,33 +359,33 @@ namespace Server.Model
                             //up
                         case 0:
                             tempList.AddRange(
-                                GameCreated.Map.GridPositions.Where(
-                                    x => x.Position.Y == bombToExplode.Position.Y - i
-                                         && x.Position.X == bombToExplode.Position.X).ToList());
+                                GameCreated.Map.LivingObjects.Where(
+                                    livingObject => livingObject.Position.Y == bombToExplode.Position.Y - i
+                                         && livingObject.Position.X == bombToExplode.Position.X).ToList());
                             CheckBomb(tempList);
                             break;
                             //down
                         case 1:
                             tempList.AddRange(
-                                GameCreated.Map.GridPositions.Where(
-                                    x => x.Position.Y == bombToExplode.Position.Y + i
-                                         && x.Position.X == bombToExplode.Position.X).ToList());
+                                GameCreated.Map.LivingObjects.Where(
+                                    livingObject => livingObject.Position.Y == bombToExplode.Position.Y + i
+                                         && livingObject.Position.X == bombToExplode.Position.X).ToList());
                             CheckBomb(tempList);
                             break;
                             //left
                         case 2:
                             tempList.AddRange(
-                                GameCreated.Map.GridPositions.Where(
-                                    x => x.Position.X == bombToExplode.Position.X - i
-                                         && x.Position.Y == bombToExplode.Position.Y).ToList());
+                                GameCreated.Map.LivingObjects.Where(
+                                    livingObject => livingObject.Position.X == bombToExplode.Position.X - i
+                                         && livingObject.Position.Y == bombToExplode.Position.Y).ToList());
                             CheckBomb(tempList);
                             break;
                             //right
                         default:
                             tempList.AddRange(
-                                GameCreated.Map.GridPositions.Where(
-                                    x => x.Position.X == bombToExplode.Position.X + i
-                                         && x.Position.Y == bombToExplode.Position.Y).ToList());
+                                GameCreated.Map.LivingObjects.Where(
+                                    livingObject => livingObject.Position.X == bombToExplode.Position.X + i
+                                         && livingObject.Position.Y == bombToExplode.Position.Y).ToList());
                             CheckBomb(tempList);
                             break;
                     }
@@ -379,7 +403,7 @@ namespace Server.Model
             tempList = new List<LivingObject>();
 
             //objects at the same place than the bomb
-            tempList.AddRange(GameCreated.Map.GridPositions
+            tempList.AddRange(GameCreated.Map.LivingObjects
                 .Where(x => x.ID == bombToExplode.ID
                             && x.Position.X == bombToExplode.Position.X
                             && x.Position.Y == bombToExplode.Position.Y).ToList());
@@ -393,7 +417,7 @@ namespace Server.Model
 
             if (!impacted.Any()) return;
             //remove impacted object at the end
-            GameCreated.Map.GridPositions.RemoveAll(impacted.Contains);
+            GameCreated.Map.LivingObjects.RemoveAll(impacted.Contains);
             //handle all objects
             HandleImpact(bombToExplode, impacted);
         }
@@ -413,25 +437,23 @@ namespace Server.Model
                     BombExplode(impactedObject as Bomb);
             }   
         }
-
+        //todo check real use of this method
         private void CheckBomb(List<LivingObject> tempList)
         {
             foreach (LivingObject livingObject in tempList)
             {
-                if (livingObject is Bomb)
+                if (!(livingObject is Bomb)) 
+                    continue;
+                LivingObject o = livingObject;
+                foreach (LivingObject o2 in tempList)
                 {
-                    LivingObject o = livingObject;
-                    foreach (LivingObject o2 in tempList)
-                    {
-                        if (o.Position.X == o2.Position.X && o.Position.Y == o2.Position.Y)
-                        GameCreated.Map.GridPositions.Remove(o2);
-                    }
-                    
-                    BombExplode(livingObject);
+                    if (o.Position.X == o2.Position.X && o.Position.Y == o2.Position.Y)
+                        GameCreated.Map.LivingObjects.Remove(o2);
                 }
+                    
+                BombExplode(livingObject);
             }
         }
-
         //todo test more deeply (Question : if wall destructible => check or not if there is someone behind ?)
         private static bool IsUndestructible(IEnumerable<LivingObject> list)
         {

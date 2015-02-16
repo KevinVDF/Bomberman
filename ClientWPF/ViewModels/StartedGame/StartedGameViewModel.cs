@@ -91,7 +91,7 @@ namespace ClientWPF.ViewModels.StartedGame
 
             Textures.Textures.InitializeItem();
 
-            foreach (LivingObject livingObject in newGame.Map.GridPositions)
+            foreach (LivingObject livingObject in newGame.Map.LivingObjects)
             {
                 LivingObjectItem livingObjectItem = null;
                 if(livingObject is Wall)

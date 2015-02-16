@@ -76,7 +76,7 @@ namespace Server
                 for (int x = 0; x < map.MapSize; x++)
                 {
                     // search object at this position
-                    LivingObject item = map.GridPositions.FirstOrDefault(o => o.Position.X == x && o.Position.Y == y);
+                    LivingObject item = map.LivingObjects.FirstOrDefault(o => o.Position.X == x && o.Position.Y == y);
                     char c = MapLivingObjectToChar(item);
                     line.Append(c);
                 }
