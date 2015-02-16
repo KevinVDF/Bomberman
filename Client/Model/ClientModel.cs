@@ -2,32 +2,24 @@
 using System.Collections.Generic;
 using System.Configuration;
 using System.IO;
-using ClientWPF.Proxies;
-using ClientWPF.ViewModels;
+using Client.Logic;
 using Common.DataContract;
 
-namespace ClientWPF.Logic
+namespace Client.Model
 {
     public class ClientModel
     {
-
         #region Properties
 
         public static Player Player;
 
         public static string MapName = ConfigurationManager.AppSettings["MapName"];
 
-        public static  BombermanViewModel BombermanViewModel;
+        private static ClientProcessor _clientProcessor = new ClientProcessor();
 
         public string Message;
 
-
         #endregion Properties
-
-        public ClientModel(BombermanViewModel bombermanViewModel)
-        {
-            BombermanViewModel = bombermanViewModel;
-        }
 
         #region Services Methods
 
@@ -46,11 +38,6 @@ namespace ClientWPF.Logic
             Proxy.Instance.PlayerAction(actionType);
         }
 
-        public static void RestartGame()
-        {
-            Proxy.Instance.StartGame("");
-        }
-
         #endregion Services Methods
 
         #region Callback Services Methods
@@ -60,12 +47,12 @@ namespace ClientWPF.Logic
             //Register myself
             Player = mePlayer;
             //warn viewmodel to change the wiew with the list of player connected
-            BombermanViewModel.OnConnection(Player.Username, logins, Player.IsCreator);
+            _clientProcessor.OnConnected(Player, logins, Player.IsCreator);
         }
 
         public void OnUserConnected(List<String> logins)
         {
-            BombermanViewModel.OnUserConnected(Player.Username, logins , Player.IsCreator);
+            _clientProcessor.OnUserConnected(logins);
         }
 
         public void OnGameStarted(Game newGame)
@@ -73,7 +60,7 @@ namespace ClientWPF.Logic
             //initialize Bomb power
             Player.BombPower = 1;
             //send the new map to the view model 
-            BombermanViewModel.OnGameStarted(newGame);
+            _clientProcessor.OnGameStarted(newGame);
         }
 
         public void OnPlayerMove(Player player, Position newPosition, ActionType actionType)
@@ -81,46 +68,48 @@ namespace ClientWPF.Logic
             if (Player.ID == player.ID)
                 Player.Position = newPosition;
 
-            BombermanViewModel.OnPlayerMove(player, newPosition, actionType);
+            _clientProcessor.OnPlayerMove(player, newPosition, actionType);
         }
 
         public void OnBombDropped(Bomb newBomb)
         {
-            BombermanViewModel.OnBombDropped(newBomb);
+            _clientProcessor.OnBombDropped(newBomb);
         }
 
         public void OnBombExploded(Bomb bomb, List<LivingObject> impacted)
         {
-            BombermanViewModel.OnBombExploded(bomb, impacted);
+            _clientProcessor.OnBombExploded(bomb, impacted);
         }
 
         public void OnPlayerDeath(Player player)
         {
             Message = player.Username + " is dead. GOGO for the win !!";
-            BombermanViewModel.DisplayMessage(Message);
+            _clientProcessor.DisplayMessage(Message);
+            _clientProcessor.OnPlayerDeath(player);
         }
 
         public void OnMyDeath()
         {
             Message = Player.IsCreator ? "You are dead. Please wait for the end to restart the game" : "You are dead. Please wait for the creator to restart the game";
-            BombermanViewModel.DisplayMessage(Message);
+            _clientProcessor.DisplayMessage(Message);
+            _clientProcessor.OnMyDeath();
         }
 
         public void OnDraw()
         {
             Message = "Everybody lost ... :/";
-            BombermanViewModel.DisplayMessage(Message);
+            _clientProcessor.DisplayMessage(Message);
         }
 
         public void OnWin()
         {
             Message = "You are the winner GJ !!.";
-            BombermanViewModel.DisplayMessage(Message);
+            _clientProcessor.DisplayMessage(Message);
         }
 
         public void OnCanRestartGame()
         {
-            BombermanViewModel.OnCanRestart();
+            // TODO
         }
 
         #endregion Callback Services Methods

@@ -65,7 +65,7 @@ namespace ClientWPF.ViewModels.GameRoom
 
         public void GenerateTextOnConnection(string myUsername, List<string> loginsList, bool isCreator)
         {
-            string richText = "------------------------------------------------\n";
+            var richText = "------------------------------------------------\n";
             richText += "---------- Welcome to Bomberman ----------\n";
             richText += "-----------------" + myUsername + "---------------\n\n\n";
             richText += "           List of players online\n\n";
@@ -84,8 +84,6 @@ namespace ClientWPF.ViewModels.GameRoom
                 richText += "Wait until the creator start the game.";
 
             RichText = richText;
-
-            
         }
 
         #endregion Methods

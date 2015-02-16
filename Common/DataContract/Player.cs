@@ -6,8 +6,6 @@ namespace Common.DataContract
     public class Player : LivingObject
     {
         [DataMember]
-        public int Id { get; set; }
-        [DataMember]
         public string Username { get; set; }
         [DataMember]
         public int Score { get; set; }
@@ -16,14 +14,6 @@ namespace Common.DataContract
         [DataMember]
         public int BombPower { get; set; }
         [DataMember]
-        public int MaxBombCount { get; set; }
-
-
-        public bool CompareId(LivingObject objectToCompare)
-        {
-            if (GetType() == objectToCompare.GetType())
-                return Id == ((Player) objectToCompare).Id;
-            return false;
-        }
+        public int BombNumber { get; set; }
     }
 }

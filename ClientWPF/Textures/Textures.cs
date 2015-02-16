@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Configuration;
+using System.IO;
 using System.Windows;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
@@ -92,6 +93,7 @@ namespace ClientWPF.Textures
         {
             string imagePath = String.Format(@"{0}\{1}", GlobalImagePath, GlobalImageName);
             BitmapImage imageBmp = new BitmapImage(new Uri(imagePath));
+            
             //initialize textures
             player.Textures = new Sprite();
             for (int i = 0; i < NumberImagesPerPlayer; i++)

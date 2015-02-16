@@ -54,8 +54,6 @@ namespace ClientWPF.ViewModels.StartedGame
             get { return _height; }
             set { Set(() => Height, ref _height, value); }
         }
-        
-        
 
         private ICommand _restartGameCOmmand;
         public ICommand RestartGameCommand
@@ -103,9 +101,11 @@ namespace ClientWPF.ViewModels.StartedGame
                     livingObjectItem = MapToPlayerItem(livingObject as Player, playerNumber++);
                 livingObjectItems.Add(livingObjectItem);
             }
+
             MapViewModel.LivingObjects = livingObjectItems;
             Width = livingObjectItems.Sum(p => p.Width);
             Height = livingObjectItems.Sum(p => p.Height);
+        
         }
 
         private static LivingObjectItem MapToPlayerItem(Player player, int playerNumber)
@@ -115,7 +115,7 @@ namespace ClientWPF.ViewModels.StartedGame
             {
                 X = player.Position.X,
                 Y = player.Position.Y,
-                Id = player.Id,
+                ID = player.ID,
                 ZIndex = 500,
                 Width = 30,
                 Height = 35
@@ -161,7 +161,7 @@ namespace ClientWPF.ViewModels.StartedGame
                 ZIndex = 200,
                 Height = 50,
                 Width = 50,
-                Id = wall.Id
+                ID = wall.ID
             };
             return wallItem;
         }
@@ -205,6 +205,8 @@ namespace ClientWPF.ViewModels.StartedGame
         public StartedGameViewModelDesignData()
         {
             MapViewModel = new MapViewModelDesignData();
+            IsVisible = false;
+            IsRestartVisible = true;
         }
     }
 }

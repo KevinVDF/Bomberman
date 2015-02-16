@@ -65,7 +65,7 @@ namespace ClientWPF.ViewModels
             //warn the room that you join the server and if you can start a game
             GameRoomViewModel.GenerateTextOnConnection(myUsername, logins, isCreator);
 
-            //todo remove
+            ////todo remove
 
             GameRoomViewModel.IsStartVisible = true;
             GameRoomViewModel.IsStartEnabled = true;
