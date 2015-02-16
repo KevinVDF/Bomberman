@@ -39,6 +39,7 @@ namespace ClientWPF.ViewModels.StartedGame
         {
             get { return _infoLabel; }
             set { Set(() => InfoLabel, ref _infoLabel, value); }
+<<<<<<< HEAD
         }
 
         private int _width;
@@ -54,6 +55,9 @@ namespace ClientWPF.ViewModels.StartedGame
             get { return _height; }
             set { Set(() => Height, ref _height, value); }
         }
+=======
+        }        
+>>>>>>> origin/master
 
         private ICommand _restartGameCOmmand;
         public ICommand RestartGameCommand
@@ -103,9 +107,14 @@ namespace ClientWPF.ViewModels.StartedGame
             }
 
             MapViewModel.LivingObjects = livingObjectItems;
+<<<<<<< HEAD
             Width = livingObjectItems.Sum(p => p.Width);
             Height = livingObjectItems.Sum(p => p.Height);
         
+=======
+            MapViewModel.Width = 50*newGame.Map.MapSize;
+            MapViewModel.Height = 50 * newGame.Map.MapSize;
+>>>>>>> origin/master
         }
 
         private static LivingObjectItem MapToPlayerItem(Player player, int playerNumber)
@@ -189,6 +198,7 @@ namespace ClientWPF.ViewModels.StartedGame
         public void OnCanRestart()
         {
             IsRestartVisible = true;
+            MapViewModel.IsEnabled = false;
         }
 
         private void RestartGame()
