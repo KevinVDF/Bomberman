@@ -97,6 +97,7 @@ namespace ClientWPF.ViewModels.StartedGame
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
             //search the bomb associated to the view with the model id
             BombItem bombItem = LivingObjects.First(x => x is BombItem && x.ID == bomb.ID) as BombItem;
 =======
@@ -120,6 +121,11 @@ namespace ClientWPF.ViewModels.StartedGame
 >>>>>>> parent of eeb1811... rewrite model objects
 
             if (bombItem != null)
+=======
+            BombItem bombItem = LivingObjects.First(x => x is BombItem && ((BombItem) x).Id == bomb.Id) as BombItem;
+
+            if (bombItem != null)
+>>>>>>> parent of eeb1811... rewrite model objects
             {
                 bombItem.ImageInUse = Textures.Textures.ExplodedBombItem.ImageInUse;
                 bombItem.Height = 150;

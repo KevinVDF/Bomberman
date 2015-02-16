@@ -56,6 +56,7 @@ namespace Server.Model
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
                     BombNumber = 2
 =======
                     MaxBombCount = 3
@@ -63,6 +64,9 @@ namespace Server.Model
 =======
                     MaxBombCount = 3
 >>>>>>> origin/master
+=======
+                    MaxBombCount = 1
+>>>>>>> parent of eeb1811... rewrite model objects
 =======
                     MaxBombCount = 1
 >>>>>>> parent of eeb1811... rewrite model objects
@@ -86,6 +90,7 @@ namespace Server.Model
         {
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
             if (mapName != "")
                 MapName = mapName;
 =======
@@ -96,6 +101,11 @@ namespace Server.Model
 >>>>>>> origin/master
 =======
 >>>>>>> origin/master
+=======
+            if (mapPath != "")
+                MapPath = mapPath;
+
+>>>>>>> parent of eeb1811... rewrite model objects
 =======
             if (mapPath != "")
                 MapPath = mapPath;
@@ -274,6 +284,7 @@ namespace Server.Model
         }
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
         //OKAY
 =======
 
@@ -281,6 +292,11 @@ namespace Server.Model
 >>>>>>> origin/master
 =======
 >>>>>>> origin/master
+=======
+
+        
+
+>>>>>>> parent of eeb1811... rewrite model objects
 =======
 
         
@@ -322,6 +338,7 @@ namespace Server.Model
 
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
         private void BombExplode(object bomb)
         {
             Log.WriteLine(Log.LogLevels.Debug, "Bomb explode {0}", bomb);
@@ -353,6 +370,34 @@ namespace Server.Model
             _timers.RemoveAt(0);//maybe better way
             Log.WriteLine(Log.LogLevels.Debug, "Bomb xplode {0}", bomb);
 >>>>>>> origin/master
+=======
+        private void CheckForRestart()
+        {
+            if (PlayersOnline.Count(x => x.Alife) <= 0)
+            {
+                PlayerModel creator = PlayersOnline.FirstOrDefault(x => x.Player.IsCreator);
+                if (creator == null)
+                {
+                    Log.WriteLine(Log.LogLevels.Error, "No creator found => maybe disconnected ?");//todo back to gameroom with new creator assigned
+                    return;
+                }
+
+                ExceptionFreeAction(creator, playerOnline => playerOnline.CallbackService.OnCanRestartGame());
+                Log.WriteLine(Log.LogLevels.Debug, "Nobody still alive");
+            }
+                
+        }
+
+        public void RestartGame()
+        {
+            Log.WriteLine(Log.LogLevels.Info, "Game restarted");
+            StartGame("");
+        }
+
+        private void BombExplode(object bomb)
+        {
+            Log.WriteLine(Log.LogLevels.Debug, "Bomb xplode {0}", bomb);
+>>>>>>> parent of eeb1811... rewrite model objects
 =======
         private void CheckForRestart()
         {
@@ -465,6 +510,7 @@ namespace Server.Model
             //remove impacted object at the end
             GameCreated.Map.GridPositions.RemoveAll(impacted.Contains);
 <<<<<<< HEAD
+<<<<<<< HEAD
             //handle all objects
             HandleImpact(bombToExplode, impacted);
         }
@@ -525,6 +571,11 @@ namespace Server.Model
             //warn all players
             ExceptionFreeAction(PlayersOnline, playerModel => ImpactHandling(playerModel, bombToExplode, impacted));
 >>>>>>> parent of eeb1811... rewrite model objects
+=======
+
+            //warn all players
+            ExceptionFreeAction(PlayersOnline, playerModel => ImpactHandling(playerModel, bombToExplode, impacted));
+>>>>>>> parent of eeb1811... rewrite model objects
         }
 
         private void ImpactHandling(PlayerModel playerModel, Bomb bombToExplode, List<LivingObject> impacted)
@@ -534,6 +585,7 @@ namespace Server.Model
 
             //if the bomb touch all players left 
             if (impacted.Count(x => x is Player) == GameCreated.Map.GridPositions.Count(x => x is Player) && playerModel.Alife)
+<<<<<<< HEAD
             {
                 Log.WriteLine(Log.LogLevels.Debug, "Player had a draw : {0}", playerModel.Player.Username);
                 playerModel.CallbackService.OnDraw();
@@ -583,23 +635,48 @@ namespace Server.Model
                     Log.WriteLine(Log.LogLevels.Debug, "Player win : {0}", playerModel.Player.Username);
                     playerModel.CallbackService.OnWin();
                     WeHaveAWinner = true;
+=======
+            {
+                Log.WriteLine(Log.LogLevels.Debug, "Player had a draw : {0}", playerModel.Player.Username);
+                playerModel.CallbackService.OnDraw();
+                playerModel.Alife = false;
+            }
+            else
+            {
+                //if its the last player standing then lets warn him he won
+                if (impacted.Count(x => x is Player) == 1
+                    && impacted.Count(x => x is Player && ((Player)x).CompareId(playerModel.Player)) > 0
+                    && GameCreated.Map.GridPositions.Count(x => x is Player) == 1)
+                {
+                    Log.WriteLine(Log.LogLevels.Debug, "Player win : {0}", playerModel.Player.Username);
+                    playerModel.CallbackService.OnWin();
+>>>>>>> parent of eeb1811... rewrite model objects
                 }
                 else
                 {
                     //if the bomb touch the current player
+<<<<<<< HEAD
                     if (impacted.Count(x => x is Player && ((Player)x).CompareId(playerModel.Player)) > 0 && playerModel.Alife)
+=======
+                    if (impacted.Count(x => x is Player && ((Player)x).CompareId(playerModel.Player)) > 0)
+>>>>>>> parent of eeb1811... rewrite model objects
                     {
                         Log.WriteLine(Log.LogLevels.Debug, "Player is dead : {0}", playerModel.Player.Username);
                         playerModel.CallbackService.OnMyDeath();
                         playerModel.Alife = false;
                     }
                     //if someone else is dead
+<<<<<<< HEAD
                     if (impacted.Count(x => x is Player && !((Player)x).CompareId(playerModel.Player)) > 0 && !WeHaveAWinner)
+=======
+                    if (impacted.Count(x => x is Player && !((Player)x).CompareId(playerModel.Player)) > 0)
+>>>>>>> parent of eeb1811... rewrite model objects
                     {
                         playerModel.CallbackService.OnPlayerDeath(playerModel.Player);
                     }
                 }
             }
+<<<<<<< HEAD
 
             CheckForRestart();
         }
@@ -616,6 +693,11 @@ namespace Server.Model
 >>>>>>> parent of eeb1811... rewrite model objects
         }
 
+=======
+            CheckForRestart();
+        }
+
+>>>>>>> parent of eeb1811... rewrite model objects
         private static bool IsImpacted(List<LivingObject> list)
         {
             return list.All(livingObject => !(livingObject is Wall) || ((Wall) livingObject).WallType != WallType.Undestructible);//TODO

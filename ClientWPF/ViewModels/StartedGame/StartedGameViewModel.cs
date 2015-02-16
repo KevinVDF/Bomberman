@@ -57,12 +57,17 @@ namespace ClientWPF.ViewModels.StartedGame
             set { Set(() => Height, ref _height, value); }
         }
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
         }        
 >>>>>>> origin/master
 =======
         }        
 >>>>>>> origin/master
+=======
+        
+        
+>>>>>>> parent of eeb1811... rewrite model objects
 =======
         
         
@@ -120,6 +125,7 @@ namespace ClientWPF.ViewModels.StartedGame
             Width = livingObjectItems.Sum(p => p.Width);
             Height = livingObjectItems.Sum(p => p.Height);
 <<<<<<< HEAD
+<<<<<<< HEAD
         
 =======
             MapViewModel.Width = 50*newGame.Map.MapSize;
@@ -129,6 +135,8 @@ namespace ClientWPF.ViewModels.StartedGame
             MapViewModel.Width = 50*newGame.Map.MapSize;
             MapViewModel.Height = 50 * newGame.Map.MapSize;
 >>>>>>> origin/master
+=======
+>>>>>>> parent of eeb1811... rewrite model objects
 =======
 >>>>>>> parent of eeb1811... rewrite model objects
         }
