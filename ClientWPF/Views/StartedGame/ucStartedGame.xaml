@@ -14,27 +14,20 @@
     </UserControl.Resources>
     <Grid>
         <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
             <RowDefinition Height="30"/>
         </Grid.RowDefinitions>
        
         <Grid.ColumnDefinitions>
+            <ColumnDefinition/>
             <ColumnDefinition Width="*"/>
-            <ColumnDefinition Width="Auto"/>
         </Grid.ColumnDefinitions>
-        <TextBlock Grid.Row="0" Grid.Column ="1" FontSize="15" Width="300" FontWeight="Bold" Foreground="Crimson" Background="Lavender"
+        <TextBlock Grid.Row="0" Grid.Column ="1" Width="Auto" FontSize="15" FontWeight="Bold" Foreground="Crimson" Background="Lavender"
                    Text="{Binding Path=InfoLabel}"/>
-<<<<<<< HEAD
         <map:ucMap Grid.Row="0" Grid.Column="0" Width="{Binding Width}" Height="{Binding Height}" DataContext="{Binding Path=MapViewModel}" HorizontalAlignment="Left"/>
-=======
-        <map:ucMap Grid.Row="0" Grid.Column="0" HorizontalAlignment="Left"
-                   Width="{Binding Width}" 
-                   Height="{Binding Height}" 
-                   DataContext="{Binding Path=MapViewModel}"
-                   IsEnabled="{Binding IsEnabled}"/>
->>>>>>> origin/master
         <Button Grid.Row="1" Grid.Column="1" Height="30" Width="80" Content="Restart Game"
                 Visibility="{Binding IsRestartVisible, Converter={StaticResource BooleanToVisibilityConverter}}"
                 Command="{Binding RestartGameCommand}"/>
+
     </Grid>
 </UserControl>

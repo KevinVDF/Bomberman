@@ -62,8 +62,6 @@ namespace ClientWPF.Textures
 
         #endregion Properties
 
-        #region Methods
-
         public static void InitializeItem()
         {
             Player1Item = new PlayerItem();
@@ -129,12 +127,6 @@ namespace ClientWPF.Textures
             bomb.ImageInUse = ExtractBackground(new BitmapImage(new Uri(imagePath)), 154, 259, 78, 78);
         }
 
-        public static void GetSpriteForBonusShootBomb(BonusItem bonus)
-        {
-            string imagePath = String.Format(@"{0}\{1}", GlobalImagePath, GlobalImageName);
-            bonus.ImageInUse = ExtractBackground(new BitmapImage(new Uri(imagePath)), 154, 259, 78, 78);
-        }
-
         private static void Extract(PlayerItem player, int playerNumber, BitmapImage imageBmp, int imageNumber)
         {   
             int posX = PlayerStartImageX + imageNumber*(PlayerWidth+SpaceBetweenImages);
@@ -187,7 +179,5 @@ namespace ClientWPF.Textures
             }
             return background;
         }
-
-        #endregion Methods
     }
 }
