@@ -12,7 +12,6 @@ namespace ClientWPF.CallBackService
 
         public BombermanCallbackService(BombermanViewModel bombermanViewModel)
         {
-
             ClientModel = new ClientModel(bombermanViewModel);
         }
 

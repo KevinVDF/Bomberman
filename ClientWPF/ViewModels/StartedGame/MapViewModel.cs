@@ -8,9 +8,13 @@ namespace ClientWPF.ViewModels.StartedGame
 {
     public class MapViewModel : ViewModelBase
     {
-        #region Properties
+        #region Variables
 
-        private List<Timer> _timers; 
+        private readonly List<Timer> _timers = new List<Timer>(); // SinaC: should learn what GC is :)
+
+        #endregion 
+
+        #region Properties
 
         private ObservableCollection<LivingObjectItem> _livingObjects; 
         public ObservableCollection<LivingObjectItem> LivingObjects
@@ -55,34 +59,32 @@ namespace ClientWPF.ViewModels.StartedGame
         {
             EndFlag = false;
             IsEnabled = true;
-            _timers = new List<Timer>();
         }
 
         public void OnPlayerMove(Player player, Position newPosition, ActionType actionType)
         {
 
-            PlayerItem objectToMove = LivingObjects.FirstOrDefault(x => x.X == (player.Position.X) && x.Y == player.Position.Y
-                                                                    && x is PlayerItem && player.Id == ((PlayerItem)x).Id ) as PlayerItem;
-            if (objectToMove != null)
-            {
-                objectToMove.X = newPosition.X;
-                objectToMove.Y = newPosition.Y;
+            PlayerItem objectToMove = LivingObjects.First(x => x.X == (player.Position.X) && x.Y == player.Position.Y
+                                                               && x is PlayerItem && player.ID == x.ID) as PlayerItem;
+            if (objectToMove == null)
+                return;
+            objectToMove.X = newPosition.X;
+            objectToMove.Y = newPosition.Y;
 
-                switch (actionType)
-                {
-                    case ActionType.MoveDown:
-                        objectToMove.ImageInUse = objectToMove.Textures.Down[1];
-                        break;
-                    case ActionType.MoveLeft:
-                        objectToMove.ImageInUse = objectToMove.Textures.Left[1];
-                        break;
-                    case ActionType.MoveRight:
-                        objectToMove.ImageInUse = objectToMove.Textures.Right[1];
-                        break;
-                    case ActionType.MoveUp:
-                        objectToMove.ImageInUse = objectToMove.Textures.Up[1];
-                        break;
-                }
+            switch (actionType)
+            {
+                case ActionType.MoveDown:
+                    objectToMove.ImageInUse = objectToMove.Textures.Down[1];
+                    break;
+                case ActionType.MoveLeft:
+                    objectToMove.ImageInUse = objectToMove.Textures.Left[1];
+                    break;
+                case ActionType.MoveRight:
+                    objectToMove.ImageInUse = objectToMove.Textures.Right[1];
+                    break;
+                case ActionType.MoveUp:
+                    objectToMove.ImageInUse = objectToMove.Textures.Up[1];
+                    break;
             }
         }
 
@@ -94,71 +96,35 @@ namespace ClientWPF.ViewModels.StartedGame
 
         public void OnBombExploded(Bomb bomb, List<LivingObject> impacted)
         {
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
+
             //search the bomb associated to the view with the model id
             BombItem bombItem = LivingObjects.First(x => x is BombItem && x.ID == bomb.ID) as BombItem;
-=======
-=======
->>>>>>> origin/master
-            BombItem bombItem = LivingObjects.FirstOrDefault(x => x is BombItem && ((BombItem) x).Id == bomb.Id) as BombItem;
 
-            if (bombItem != null)
+            if (bombItem == null)
+                return;
+            ExecuteOnUIThread(() =>
             {
-                bombItem.ImageInUse = Textures.Textures.ExplodedBombItem.ImageInUse;
+                //change image to have an exploded bomb 
+                bombItem.ImageInUse = Textures.Textures.DestructibleWallItem.ImageInUse; //Textures.Textures.ExplodedBombItem.ImageInUse;
                 bombItem.Height = 150;
                 bombItem.Width = 150;
-                Timer t = new Timer(BombExploded, bombItem, 500, Timeout.Infinite);
-                _timers.Add(t);
-<<<<<<< HEAD
->>>>>>> origin/master
-=======
->>>>>>> origin/master
-=======
-            BombItem bombItem = LivingObjects.First(x => x is BombItem && ((BombItem) x).Id == bomb.Id) as BombItem;
->>>>>>> parent of eeb1811... rewrite model objects
+                bombItem.ZIndex = 1000;
+            });
 
-            if (bombItem != null)
-=======
-            BombItem bombItem = LivingObjects.First(x => x is BombItem && ((BombItem) x).Id == bomb.Id) as BombItem;
 
-            if (bombItem != null)
->>>>>>> parent of eeb1811... rewrite model objects
-=======
-            BombItem bombItem = LivingObjects.First(x => x is BombItem && ((BombItem) x).Id == bomb.Id) as BombItem;
+            Timer t = new Timer(BombExploded, bombItem, 1500, Timeout.Infinite);
+            _timers.Add(t);
 
-            if (bombItem != null)
->>>>>>> parent of eeb1811... rewrite model objects
-=======
-            BombItem bombItem = LivingObjects.First(x => x is BombItem && ((BombItem) x).Id == bomb.Id) as BombItem;
+            if (impacted == null || !impacted.Any())
+                return;
 
-            if (bombItem != null)
->>>>>>> parent of eeb1811... rewrite model objects
+            //Search all objects associated to the view matching with id's of impacted objects
+            foreach (LivingObject livingObject in impacted)
             {
-                bombItem.ImageInUse = Textures.Textures.ExplodedBombItem.ImageInUse;
-                bombItem.Height = 150;
-                bombItem.Width = 150;
-                Timer t = new Timer(BombExploded, bombItem, 500, Timeout.Infinite);
-
-                foreach (LivingObject livingObject in impacted)
-                {
-                    if (livingObject is Wall)
-                    {
-                        LivingObjectItem wallToRemove = LivingObjects.First(x => x is WallItem && ((WallItem)x).Id == ((Wall)livingObject).Id);
-                        LivingObjects.Remove(wallToRemove);
-                    }
-                        
-                    if (livingObject is Player)
-                    {
-                        LivingObjectItem playerToRemove = LivingObjects.FirstOrDefault(x => x is PlayerItem && ((PlayerItem) x).Id == ((Player) livingObject).Id);
-                        LivingObjects.Remove(playerToRemove);
-                    }
-                }
+                LivingObjectItem objectToRemove = LivingObjects.First(x => x.ID == livingObject.ID);
+                LivingObjects.Remove(objectToRemove);
             }
+            LivingObjects.Remove(bombItem);
         }
 
         private void BombExploded(object bomb)
@@ -170,9 +136,9 @@ namespace ClientWPF.ViewModels.StartedGame
 
         private LivingObjectItem MapToBombItem(Bomb bomb)
         {
-            BombItem bombitem = new BombItem
+            BombItem bombItem = new BombItem
             {
-                Id = bomb.Id,
+                ID = bomb.ID,
                 X = bomb.Position.X,
                 Y = bomb.Position.Y,
                 PlayerId = bomb.PlayerId,
@@ -182,7 +148,7 @@ namespace ClientWPF.ViewModels.StartedGame
                 Width = 20,
                 Height = 25
             };
-            return bombitem;
+            return bombItem;
         }
 
         #endregion

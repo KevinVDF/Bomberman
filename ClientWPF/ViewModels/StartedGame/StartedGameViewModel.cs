@@ -1,11 +1,10 @@
 ﻿using System.Collections.ObjectModel;
 using System.Linq;
-using System.ServiceModel.Channels;
 using System.Windows.Input;
 using ClientWPF.Logic;
 using ClientWPF.MVVM;
-using ClientWPF.Proxies;
 using Common.DataContract;
+using Common.Log;
 
 namespace ClientWPF.ViewModels.StartedGame
 {
@@ -39,8 +38,6 @@ namespace ClientWPF.ViewModels.StartedGame
         {
             get { return _infoLabel; }
             set { Set(() => InfoLabel, ref _infoLabel, value); }
-<<<<<<< HEAD
-<<<<<<< HEAD
         }
 
         private int _width;
@@ -56,32 +53,6 @@ namespace ClientWPF.ViewModels.StartedGame
             get { return _height; }
             set { Set(() => Height, ref _height, value); }
         }
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
-        }        
->>>>>>> origin/master
-=======
-        }        
->>>>>>> origin/master
-=======
-        
-        
->>>>>>> parent of eeb1811... rewrite model objects
-=======
-        
-        
->>>>>>> parent of eeb1811... rewrite model objects
-=======
-        
-        
->>>>>>> parent of eeb1811... rewrite model objects
-=======
-        
-        
->>>>>>> parent of eeb1811... rewrite model objects
 
         private ICommand _restartGameCOmmand;
         public ICommand RestartGameCommand
@@ -130,41 +101,27 @@ namespace ClientWPF.ViewModels.StartedGame
                 livingObjectItems.Add(livingObjectItem);
             }
             MapViewModel.LivingObjects = livingObjectItems;
-<<<<<<< HEAD
-<<<<<<< HEAD
+
             Width = livingObjectItems.Sum(p => p.Width);
             Height = livingObjectItems.Sum(p => p.Height);
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-        
-=======
+
             MapViewModel.Width = 50*newGame.Map.MapSize;
             MapViewModel.Height = 50 * newGame.Map.MapSize;
->>>>>>> origin/master
-=======
-            MapViewModel.Width = 50*newGame.Map.MapSize;
-            MapViewModel.Height = 50 * newGame.Map.MapSize;
->>>>>>> origin/master
-=======
->>>>>>> parent of eeb1811... rewrite model objects
-=======
->>>>>>> parent of eeb1811... rewrite model objects
-=======
->>>>>>> parent of eeb1811... rewrite model objects
-=======
->>>>>>> parent of eeb1811... rewrite model objects
         }
 
         private static LivingObjectItem MapToPlayerItem(Player player, int playerNumber)
         {
-
+            if (player == null)
+            {
+                Log.WriteLine(Log.LogLevels.Error, "Player to map is null ");
+                return null;
+            }
+                
             PlayerItem playerItem = new PlayerItem
             {
                 X = player.Position.X,
                 Y = player.Position.Y,
-                Id = player.Id,
+                ID = player.ID,
                 ZIndex = 500,
                 Width = 30,
                 Height = 35
@@ -210,7 +167,7 @@ namespace ClientWPF.ViewModels.StartedGame
                 ZIndex = 200,
                 Height = 50,
                 Width = 50,
-                Id = wall.Id
+                ID = wall.ID
             };
             return wallItem;
         }

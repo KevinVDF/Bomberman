@@ -10,6 +10,8 @@ namespace Common.DataContract
     public abstract class LivingObject
     {
         [DataMember]
+        public int ID { get; set; }
+        [DataMember]
         public Position Position { get; set; }
 
         public bool ComparePosition(LivingObject objectToCompare)

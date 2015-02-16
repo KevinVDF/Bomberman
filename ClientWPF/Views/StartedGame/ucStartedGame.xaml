@@ -7,8 +7,8 @@
              xmlns:startedGame="clr-namespace:ClientWPF.ViewModels.StartedGame"
              mc:Ignorable="d" 
              d:DataContext="{d:DesignInstance startedGame:StartedGameViewModelDesignData, IsDesignTimeCreatable=True}"
-             d:DesignHeight="300" d:DesignWidth="300"
-             Height="900" Width="1400">
+             d:DesignHeight="300" d:DesignWidth="200"
+             Height="500" Width="1400">
     <UserControl.Resources>
         <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
     </UserControl.Resources>
@@ -24,38 +24,14 @@
         </Grid.ColumnDefinitions>
         <TextBlock Grid.Row="0" Grid.Column ="1" FontSize="15" Width="300" FontWeight="Bold" Foreground="Crimson" Background="Lavender"
                    Text="{Binding Path=InfoLabel}"/>
-<<<<<<< HEAD
-<<<<<<< HEAD
-        <map:ucMap Grid.Row="0" Grid.Column="0" Width="{Binding Width}" Height="{Binding Height}" DataContext="{Binding Path=MapViewModel}" HorizontalAlignment="Left"/>
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
-=======
->>>>>>> origin/master
+
         <map:ucMap Grid.Row="0" Grid.Column="0" HorizontalAlignment="Left"
                    Width="{Binding Width}" 
                    Height="{Binding Height}" 
                    DataContext="{Binding Path=MapViewModel}"
                    IsEnabled="{Binding IsEnabled}"/>
-<<<<<<< HEAD
->>>>>>> origin/master
-=======
->>>>>>> origin/master
+
         <Button Grid.Row="1" Grid.Column="1" Height="30" Width="80" Content="Restart Game"
-=======
-        <Button Grid.Row="1" Grid.Column="0" Height="30" Width="80" Content="Restart Game"
->>>>>>> parent of eeb1811... rewrite model objects
-=======
-        <Button Grid.Row="1" Grid.Column="0" Height="30" Width="80" Content="Restart Game"
->>>>>>> parent of eeb1811... rewrite model objects
-=======
-        <Button Grid.Row="1" Grid.Column="0" Height="30" Width="80" Content="Restart Game"
->>>>>>> parent of eeb1811... rewrite model objects
-=======
-        <Button Grid.Row="1" Grid.Column="0" Height="30" Width="80" Content="Restart Game"
->>>>>>> parent of eeb1811... rewrite model objects
                 Visibility="{Binding IsRestartVisible, Converter={StaticResource BooleanToVisibilityConverter}}"
                 Command="{Binding RestartGameCommand}"/>
     </Grid>

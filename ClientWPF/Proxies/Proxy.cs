@@ -1,4 +1,7 @@
-﻿using System.ServiceModel;
+﻿using System;
+using System.Configuration;
+using System.ServiceModel;
+using System.ServiceModel.Channels;
 using ClientWPF.CallBackService;
 using ClientWPF.ViewModels;
 using Common.Interfaces;
@@ -22,8 +25,12 @@ namespace ClientWPF.Proxies
 
         public static void SetViewModel(BombermanViewModel bombermanViewModel)
         {
-            var context = new InstanceContext(new BombermanCallbackService(bombermanViewModel));
-            var factory = new DuplexChannelFactory<IBombermanService>(context, "netTcpBinding_IBombermanService");
+            Binding binding = new NetTcpBinding(SecurityMode.None);
+
+
+            InstanceContext instanceContext = new InstanceContext(new BombermanCallbackService(bombermanViewModel)); //WP0483
+            DuplexChannelFactory<IBombermanService> factory = new DuplexChannelFactory<IBombermanService>(instanceContext, binding, new EndpointAddress(
+                new Uri(string.Concat("net.tcp://", ConfigurationManager.AppSettings["MachineName"], ":7900/BombermanCallbackService"))));
             _instance = factory.CreateChannel();
         }
     }

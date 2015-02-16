@@ -9,41 +9,41 @@ namespace Client
     //[CallbackBehavior(ConcurrencyMode = ConcurrencyMode.Reentrant)]
     public class BombermanCallbackService : IBombermanCallbackService
     {
-        private static readonly ClientProcessor ClientProcessor = new ClientProcessor();
+        private static readonly ClientModel ClientModel = new ClientModel();
 
         public void OnUserConnected(Player player, List<String> loginsList, bool canStartGame)
         {
-            ClientProcessor.OnUserConnected(player, loginsList, canStartGame);
+            ClientModel.OnUserConnected(player, loginsList, canStartGame);
         }
 
         public void OnConnection(Player mePlayer, List<string> logins)
         {
-            throw new NotImplementedException();
+            ClientModel.OnConnection(mePlayer, logins);
         }
 
         public void OnUserConnected(List<string> logins)
         {
-            throw new NotImplementedException();
+            ClientModel.OnUserConnected(logins);
         }
 
         public void OnGameStarted(Game newGame)
         {
-            ClientProcessor.OnGameStarted(newGame);
+            ClientModel.OnGameStarted(newGame);
         }
 
-        public void OnPlayerMove(LivingObject objectToMoveBefore, LivingObject objectToMoveAfter)
+        public void OnPlayerMove(Player player, Position newPosition, ActionType actionType)
         {
-            throw new NotImplementedException();
+            ClientModel.OnPlayerMove(player, newPosition, actionType);
         }
 
         public void OnBombDropped(Position bombPosition)
         {
-            throw new NotImplementedException();
+            ClientModel.OnBombDropped(newBomb);
         }
 
         public void OnMove(LivingObject objectToMoveBefore, LivingObject objectToMoveAfter)
         {
-            ClientProcessor.OnMove(objectToMoveBefore, objectToMoveAfter);
+            ClientModel.OnMove(objectToMoveBefore, objectToMoveAfter);
         }
     }
 }
