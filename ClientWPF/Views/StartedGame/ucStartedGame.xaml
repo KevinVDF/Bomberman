@@ -30,6 +30,7 @@
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 =======
 >>>>>>> origin/master
@@ -43,6 +44,9 @@
 =======
 >>>>>>> origin/master
         <Button Grid.Row="1" Grid.Column="1" Height="30" Width="80" Content="Restart Game"
+=======
+        <Button Grid.Row="1" Grid.Column="0" Height="30" Width="80" Content="Restart Game"
+>>>>>>> parent of eeb1811... rewrite model objects
 =======
         <Button Grid.Row="1" Grid.Column="0" Height="30" Width="80" Content="Restart Game"
 >>>>>>> parent of eeb1811... rewrite model objects
