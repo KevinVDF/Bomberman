@@ -25,13 +25,19 @@
         <TextBlock Grid.Row="0" Grid.Column ="1" FontSize="15" Width="300" FontWeight="Bold" Foreground="Crimson" Background="Lavender"
                    Text="{Binding Path=InfoLabel}"/>
 <<<<<<< HEAD
+<<<<<<< HEAD
         <map:ucMap Grid.Row="0" Grid.Column="0" Width="{Binding Width}" Height="{Binding Height}" DataContext="{Binding Path=MapViewModel}" HorizontalAlignment="Left"/>
 =======
+=======
+>>>>>>> origin/master
         <map:ucMap Grid.Row="0" Grid.Column="0" HorizontalAlignment="Left"
                    Width="{Binding Width}" 
                    Height="{Binding Height}" 
                    DataContext="{Binding Path=MapViewModel}"
                    IsEnabled="{Binding IsEnabled}"/>
+<<<<<<< HEAD
+>>>>>>> origin/master
+=======
 >>>>>>> origin/master
         <Button Grid.Row="1" Grid.Column="1" Height="30" Width="80" Content="Restart Game"
                 Visibility="{Binding IsRestartVisible, Converter={StaticResource BooleanToVisibilityConverter}}"

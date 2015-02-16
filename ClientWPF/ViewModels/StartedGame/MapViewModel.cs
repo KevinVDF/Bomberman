@@ -100,9 +100,12 @@ namespace ClientWPF.ViewModels.StartedGame
         public void OnBombExploded(Bomb bomb, List<LivingObject> impacted)
         {
 <<<<<<< HEAD
+<<<<<<< HEAD
             //search the bomb associated to the view with the model id
             BombItem bombItem = LivingObjects.First(x => x is BombItem && x.ID == bomb.ID) as BombItem;
 =======
+=======
+>>>>>>> origin/master
             BombItem bombItem = LivingObjects.FirstOrDefault(x => x is BombItem && ((BombItem) x).Id == bomb.Id) as BombItem;
 
             if (bombItem != null)
@@ -112,6 +115,9 @@ namespace ClientWPF.ViewModels.StartedGame
                 bombItem.Width = 150;
                 Timer t = new Timer(BombExploded, bombItem, 500, Timeout.Infinite);
                 _timers.Add(t);
+<<<<<<< HEAD
+>>>>>>> origin/master
+=======
 >>>>>>> origin/master
 
             if (bombItem == null) 

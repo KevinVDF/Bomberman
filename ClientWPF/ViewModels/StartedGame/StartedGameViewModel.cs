@@ -40,6 +40,7 @@ namespace ClientWPF.ViewModels.StartedGame
             get { return _infoLabel; }
             set { Set(() => InfoLabel, ref _infoLabel, value); }
 <<<<<<< HEAD
+<<<<<<< HEAD
         }
 
         private int _width;
@@ -55,6 +56,9 @@ namespace ClientWPF.ViewModels.StartedGame
             get { return _height; }
             set { Set(() => Height, ref _height, value); }
         }
+=======
+        }        
+>>>>>>> origin/master
 =======
         }        
 >>>>>>> origin/master
@@ -108,9 +112,14 @@ namespace ClientWPF.ViewModels.StartedGame
 
             MapViewModel.LivingObjects = livingObjectItems;
 <<<<<<< HEAD
+<<<<<<< HEAD
             Width = livingObjectItems.Sum(p => p.Width);
             Height = livingObjectItems.Sum(p => p.Height);
         
+=======
+            MapViewModel.Width = 50*newGame.Map.MapSize;
+            MapViewModel.Height = 50 * newGame.Map.MapSize;
+>>>>>>> origin/master
 =======
             MapViewModel.Width = 50*newGame.Map.MapSize;
             MapViewModel.Height = 50 * newGame.Map.MapSize;

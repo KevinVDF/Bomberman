@@ -58,7 +58,11 @@ namespace Server.Model
                     IsCreator = PlayersOnline.Count == 0,
                     BombPower = 1,
 <<<<<<< HEAD
+<<<<<<< HEAD
                     BombNumber = 2
+=======
+                    MaxBombCount = 3
+>>>>>>> origin/master
 =======
                     MaxBombCount = 3
 >>>>>>> origin/master
@@ -87,6 +91,9 @@ namespace Server.Model
             if (mapPath != "")
                 MapPath = mapPath;
             WeHaveAWinner = false;
+<<<<<<< HEAD
+>>>>>>> origin/master
+=======
 >>>>>>> origin/master
             List<Player> players = PlayersOnline.Select(playerModel => playerModel.Player).ToList();
 
@@ -277,6 +284,9 @@ namespace Server.Model
         //OKAY
 =======
 
+<<<<<<< HEAD
+>>>>>>> origin/master
+=======
 >>>>>>> origin/master
         private void DropBomb(Player player)
         {
@@ -426,6 +436,13 @@ namespace Server.Model
             {
                 Log.WriteLine(Log.LogLevels.Debug, "Object destroyed : {0}", livingObject);
             }
+<<<<<<< HEAD
+=======
+
+            if (!impacted.Any()) return;
+            //remove impacted object at the end
+            GameCreated.Map.GridPositions.RemoveAll(impacted.Contains);
+>>>>>>> origin/master
 
             if (!impacted.Any()) return;
             //remove impacted object at the end
@@ -435,11 +452,14 @@ namespace Server.Model
         }
 
 <<<<<<< HEAD
+<<<<<<< HEAD
         private void HandleImpact(Bomb bombToExplode, List<LivingObject> impactedObjects)
         {
             if (bombToExplode == null || impactedObjects == null)
                 return;
 =======
+=======
+>>>>>>> origin/master
         private void CheckBomb(List<LivingObject> tempList)
         {
             foreach (LivingObject livingObject in tempList)
@@ -461,6 +481,9 @@ namespace Server.Model
         private void ImpactHandling(PlayerModel playerModel, Bomb bombToExplode, List<LivingObject> impacted)
         {
             
+<<<<<<< HEAD
+>>>>>>> origin/master
+=======
 >>>>>>> origin/master
             //warn all players that a bomb exploded
             ExceptionFreeAction(PlayersOnline, playerModel => playerModel.CallbackService.OnBombExploded(bombToExplode, impactedObjects));
@@ -550,6 +573,9 @@ namespace Server.Model
         private static bool IsImpacted(IEnumerable<LivingObject> list)
         {
             return list.All(livingObject => !(livingObject is Wall) || ((Wall) livingObject).WallType != WallType.Undestructible);
+<<<<<<< HEAD
+>>>>>>> origin/master
+=======
 >>>>>>> origin/master
         }
 
