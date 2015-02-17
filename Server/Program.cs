@@ -20,33 +20,29 @@ namespace Server
 
             DumpHelp();
 
-            //BombermanService service = new BombermanService(server);
-            //var svcHost = new ServiceHost(typeof (BombermanService));
-            //svcHost.Open();
             bool stop = false;
             while (!stop)
             {
-                if (Console.KeyAvailable)
+                if (!Console.KeyAvailable) 
+                    continue;
+                ConsoleKeyInfo read = Console.ReadKey(true);
+                switch (read.Key)
                 {
-                    ConsoleKeyInfo read = Console.ReadKey(true);
-                    switch (read.Key)
-                    {
-                        case ConsoleKey.M:
-                            if (server.GameCreated != null && server.GameCreated.Map != null)
-                                DumpMap(server.GameCreated.Map);
-                            else
-                                Console.WriteLine("No map");
-                            break;
-                        case ConsoleKey.P:
-                            DumpPlayers(server);
-                            break;
-                        case ConsoleKey.X:
-                            stop = true;
-                            break;
-                        default:
-                            DumpHelp();
-                            break;
-                    }
+                    case ConsoleKey.M:
+                        if (server.GameCreated != null && server.GameCreated.Map != null)
+                            DumpMap(server.GameCreated.Map);
+                        else
+                            Console.WriteLine("No map");
+                        break;
+                    case ConsoleKey.P:
+                        DumpPlayers(server);
+                        break;
+                    case ConsoleKey.X:
+                        stop = true;
+                        break;
+                    default:
+                        DumpHelp();
+                        break;
                 }
             }
             //svcHost.Close();
@@ -62,7 +58,7 @@ namespace Server
         static void DumpPlayers(ServerModel server)
         {
             Console.WriteLine("Connected: {0}", server.PlayersOnline.Count);
-            foreach(PlayerModel player in server.PlayersOnline)
+            foreach(UserModel player in server.PlayersOnline)
                 Console.WriteLine("{0}:{1} alive:{2} iscreator:{3} maxbomb:{4}", player.Player.ID, player.Player.Username, player.Alive, player.Player.IsCreator, player.Player.BombNumber);
             //Console.WriteLine("Disconnected: {0}", server.PlayersDisconnected.Count);
             //foreach (PlayerModel player in server.PlayersDisconnected)

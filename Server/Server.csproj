@@ -39,7 +39,10 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BombermanService.cs" />
-    <Compile Include="Model\PlayerModel.cs" />
+    <Compile Include="Manager\CallBackManager.cs" />
+    <Compile Include="Manager\GameManager.cs" />
+    <Compile Include="Manager\MapManager.cs" />
+    <Compile Include="Model\UserModel.cs" />
     <Compile Include="Model\ServerModel.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -58,6 +61,7 @@
       <Name>Common</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

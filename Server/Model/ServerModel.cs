@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Configuration;
 using System.IO;
@@ -9,43 +8,24 @@ using System.Threading;
 using Common.DataContract;
 using Common.Interfaces;
 using Common.Log;
+using Server.Manager;
 
 namespace Server.Model
 {
     public class ServerModel
     {
+        public ServerStatus ServerStatus { get; set; }
 
-        #region properties
+        public Game Game { get; set; }
 
-        public int MapSize = 10;
-
-        public BombermanService Service;
-
-        public ServerStatus ServerStatus;
-
-        public List<PlayerModel> PlayersOnline;
-
-        public Game GameCreated;
-
-        private readonly List<Timer> _timers = new List<Timer>(); // SinaC: should learn what GC is :)
-
-        public string MapName;
-
-        public int IdCount = 1;
-
-        public bool WeHaveAWinner = false;
-
-        #endregion properties
 
         public ServerModel()
         {
-            Service = new BombermanService(this);
-            PlayersOnline = new List<PlayerModel>();
             ServerStatus = ServerStatus.Started;
+            Game = GameManager.CreateNewGame();
         }
 
-        #region Methods
-        //OKAY
+
         public void ConnectUser(IBombermanCallbackService callback, string username)
         {
             //if callback is null => big problem
@@ -60,45 +40,25 @@ namespace Server.Model
                 Log.WriteLine(Log.LogLevels.Info, "Username {0} is already Taken.", username);
                 return;
             }
-
             //create new Player
-            PlayerModel newPlayer = new PlayerModel
+            UserModel newPlayer = new UserModel
             {
-                Player = new Player
-                {
-                    ID = IdCount++,
-                    Username = username,
-                    //Check if its the first user to be connected
-                    IsCreator = PlayersOnline.Count == 0,
-                    BombPower = 1,
-                    BombNumber = 3
-                },
+                ID = Guid.NewGuid(),
                 CallbackService = callback,
-                Alive = true
+                Status = UserStatus.Connected,
             };
 
             Log.WriteLine(Log.LogLevels.Info, "New player connected : {0}", username);
             //register user to the server
             PlayersOnline.Add(newPlayer);
-            //create a list of login to send to client
-            List<string> playersNamesList = PlayersOnline.Select(x => x.Player.Username).ToList();
-            //Send a success connection to the new user connected with all players online
-            newPlayer.CallbackService.OnConnection(newPlayer.Player, playersNamesList);
+            //Send a success connection to the new user connected to all players online
+            CallBackManager.SendUsernameListToNewPlayer(newPlayer, PlayersOnline);
             //Warning players that a new player is connected by sending them the list of all players online
-            ExceptionFreeAction(PlayersOnline.Where(player => player != newPlayer), player => player.CallbackService.OnUserConnected(playersNamesList));
+            CallBackManager.OnUserConnected(PlayersOnline.Where(player => player != newPlayer), PlayersOnline);
         }
         //OKAY
         public void StartNewGame(string mapName)
         {
-            //check on map name
-            if (mapName == "")
-            {
-                Log.WriteLine(Log.LogLevels.Error, "Map name can't be empty");
-                return;
-            }
-
-            MapName = mapName;
-
             List<Player> players = PlayersOnline.Select(playerModel => playerModel.Player).ToList();
 
             Map map = GenerateMap(players);
@@ -215,7 +175,7 @@ namespace Server.Model
         public void PlayerAction(IBombermanCallbackService callback, ActionType actionType)
         {
             //retreive the player who made the action
-            PlayerModel player = PlayersOnline.FirstOrDefault(x => x.CallbackService == callback);
+            UserModel player = PlayersOnline.FirstOrDefault(x => x.CallbackService == callback);
 
             //not supposed to happend but okay
             if (GameCreated.CurrentStatus == GameStatus.Stopped)
@@ -490,49 +450,6 @@ namespace Server.Model
             }
         }
         //OKAY
-        private void ExceptionFreeAction(PlayerModel player, Action<PlayerModel> action)
-        {
-            try
-            {
-                Log.WriteLine(Log.LogLevels.Debug, "ExceptionfreeSingle : {0} : {1} ", player.Player.Username, action.Method.Name);
-                action(player);
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine("Connection error with player " + player.Player.Username);
-                Log.WriteLine(Log.LogLevels.Error, "ConnectUser callback error :" + ex.Message);
-                PlayersOnline.Remove(player);
-            }
-        }
-        //OKAY
-        private void ExceptionFreeAction(IEnumerable<PlayerModel> players, Action<PlayerModel> action)
-        {
-            List<PlayerModel> disconnected = new List<PlayerModel>();
-            var playerModels = players as PlayerModel[] ?? players.ToArray();
-            if (players == null || !playerModels.Any())
-                return;
-            foreach (PlayerModel player in playerModels)
-            {
-                try
-                {
-                    Log.WriteLine(Log.LogLevels.Debug, "ExceptionfreeList : {0} : {1} ", player.Player.Username, action.Method.Name);
-                    action(player);
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine("Connection error with player " + player.Player.Username);
-                    Log.WriteLine(Log.LogLevels.Error, "ConnectUser callback error :" + ex.Message);
-                    disconnected.Add(player);
-                }
-            }
-            foreach (PlayerModel playerDisconnected in disconnected)
-            {
-                PlayersOnline.Remove(playerDisconnected);
-            }
-        }
-
-        #endregion Methods
-
     }
 
     public enum ServerStatus

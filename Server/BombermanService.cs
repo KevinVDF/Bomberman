@@ -10,7 +10,6 @@ namespace Server
     [ServiceBehavior(InstanceContextMode = InstanceContextMode.Single, ConcurrencyMode = ConcurrencyMode.Reentrant)]
     public class BombermanService : IBombermanService
     {
-        //public ServerModel Server = new ServerModel();
         public ServerModel Server { get; private set; }
 
         public BombermanService(ServerModel server)
