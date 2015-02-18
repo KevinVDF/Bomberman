@@ -39,11 +39,16 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BombermanService.cs" />
-    <Compile Include="Manager\CallBackManager.cs" />
+    <Compile Include="Manager\CallbackManager.cs" />
     <Compile Include="Manager\GameManager.cs" />
+    <Compile Include="Manager\Interface\ICallbackManager.cs" />
+    <Compile Include="Manager\Interface\IGameManager.cs" />
+    <Compile Include="Manager\Interface\IMapManager.cs" />
+    <Compile Include="Manager\Interface\IUserManager.cs" />
     <Compile Include="Manager\MapManager.cs" />
-    <Compile Include="Model\UserModel.cs" />
-    <Compile Include="Model\ServerModel.cs" />
+    <Compile Include="Manager\UserManager.cs" />
+    <Compile Include="User.cs" />
+    <Compile Include="Server.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

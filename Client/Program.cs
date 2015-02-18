@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Configuration;
 using System.ServiceModel;
+using System.ServiceModel.Channels;
 using Common.DataContract;
 using Common.Interfaces;
 using Common.Log;
@@ -15,10 +17,10 @@ namespace Client
 
         static void Main()
         {
-            string username = "";
-            int id;
-            var context = new InstanceContext(new BombermanCallbackService());
-            var factory = new DuplexChannelFactory<IBombermanService>(context, "netTcpBinding_IBombermanService");
+            var instanceContext = new InstanceContext(new BombermanCallbackService());
+            Binding binding = new NetTcpBinding(SecurityMode.None);
+            DuplexChannelFactory<IBombermanService> factory = new DuplexChannelFactory<IBombermanService>(instanceContext, binding, new EndpointAddress(
+                new Uri(string.Concat("net.tcp://", ConfigurationManager.AppSettings["MachineName"], ":7900/BombermanCallbackService"))));
             Proxy = factory.CreateChannel();
 
             Console.WriteLine("--------------------------------------");
@@ -26,7 +28,7 @@ namespace Client
             Console.WriteLine("--------------------------------------\n\n");
             Console.WriteLine("Type your player name :\n");
             string login = Console.ReadLine();
-            username = login;
+            string username = login;
             ConnectPlayer(username);
             Log.Initialize(@"D:\Temp\BombermanLogs", "Client_" + login +".log");
             Log.WriteLine(Log.LogLevels.Info, "Logged at " + DateTime.Now.ToShortTimeString());
@@ -74,7 +76,7 @@ namespace Client
         //todo replace playername by an id ...
         private static void ConnectPlayer(string username)
         {
-            Proxy.ConnectUser(username);
+            Proxy.RegisterMe(username);
         }
 
         private static void StartGame()
@@ -82,9 +84,9 @@ namespace Client
             Proxy.StartGame(MapPath);
         }
 
-        private static void MoveTo(int playerID, ActionType actionType)
+        private static void MoveTo(ActionType actionType)
         {
-            Proxy.MoveObjectToLocation(playerID, actionType);
+            Proxy.PlayerAction(actionType);
         }
     }
 }

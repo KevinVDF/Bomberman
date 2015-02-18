@@ -25,12 +25,8 @@ namespace Client.Logic
             {
                 Console.WriteLine(login + "\n\n");
             }
-            if (Player.IsCreator)
-            {
                 //todo don't allow user to click on s if canstartgame is false
                 Console.WriteLine(canStartGame ? "Press S to start the game" : "Wait for other players.");
-            }
-            else Console.WriteLine("Wait until the creator start the game.");
         }
 
         public void OnGameStarted(Game newGame)
@@ -57,27 +53,27 @@ namespace Client.Logic
         {
             if (Map == null) return;
             //check if object to move does exists
-            if (!Map.GridPositions.Any(livingObject => livingObject.ComparePosition(objectToMoveBefore))) return;
+            if (!Map.LivingObjects.Any(livingObject => livingObject.ComparePosition(objectToMoveBefore))) return;
             //if before is player and is "me" then update global player
-            if (objectToMoveBefore is Player && Player.CompareId(objectToMoveBefore))
+            if (objectToMoveBefore is Player && Player.ID == objectToMoveBefore.ID)
                 Player = objectToMoveAfter as Player;
             //handle before
-            Console.SetCursorPosition(objectToMoveBefore.ObjectPosition.PositionX, 10 + objectToMoveBefore.ObjectPosition.PositionY); // 10 should be replaced with map parameters
+            Console.SetCursorPosition(objectToMoveBefore.Position.X, 10 + objectToMoveBefore.Position.Y); // 10 should be replaced with map parameters
             Console.Write(' ');
-            Map.GridPositions.Remove(objectToMoveBefore);
+            Map.LivingObjects.Remove(objectToMoveBefore);
             //handle after
             char toDisplay = ObjectToChar(objectToMoveAfter);
-            Console.SetCursorPosition(objectToMoveAfter.ObjectPosition.PositionX, 10 + objectToMoveAfter.ObjectPosition.PositionY); // 10 should be replaced with map parameters
+            Console.SetCursorPosition(objectToMoveAfter.Position.X, 10 + objectToMoveAfter.Position.Y); // 10 should be replaced with map parameters
             Console.Write(toDisplay);
-            Map.GridPositions.Add(objectToMoveAfter);
+            Map.LivingObjects.Add(objectToMoveAfter);
         }
 
         private void DisplayMap(Game currentGame)
         {
             Map = currentGame.Map;
-            foreach (LivingObject item in currentGame.Map.GridPositions)
+            foreach (LivingObject item in currentGame.Map.LivingObjects)
             {
-                Console.SetCursorPosition(item.ObjectPosition.PositionX, 10 + item.ObjectPosition.PositionY); // 10 should be replaced with map parameters
+                Console.SetCursorPosition(item.Position.X, 10 + item.Position.Y); // 10 should be replaced with map parameters
                 char toDisplay = ObjectToChar(item);
                 
                 Console.Write(toDisplay);
@@ -94,7 +90,7 @@ namespace Client.Logic
             if (item is Player)
             {
                 var player = item as Player;
-                return Player.CompareId(player) ? 'X' : '*';
+                return Player.ID == player.ID ? 'X' : '*';
             }
             return ' ';
         }

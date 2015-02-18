@@ -1,63 +1,73 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Common.Interfaces;
 using Common.Log;
-using Server.Model;
+using Server.Manager.Interface;
 
 namespace Server.Manager
 {
-    public class CallBackManager
+    public class CallbackManager : ICallbackManager
     {
-        public static List<UserModel> PlayersOnline { get; set; }
+        private readonly IUserManager _userManager;
 
-        public static void SendUsernameListToNewPlayer(UserModel newPlayer)
+        public CallbackManager(IUserManager userManager)
         {
-            ExceptionFreeAction(newPlayer, player => newPlayer.CallbackService.OnConnection(newPlayer.Player, PlayersOnline.Select(x => x.Player.Username).ToList()));
+            _userManager = userManager;
         }
 
-        public static void OnUserConnected(UserModel user)
+        public void SendErrorOnConnection(IBombermanCallbackService callback, string errorMessage)
         {
-            ExceptionFreeAction(PlayersOnline.Where(player => player != newPlayer), otherPlayer => otherPlayer.CallbackService.OnUserConnected(playersNamesList));
+            callback.OnErrorConnection(errorMessage);
         }
 
-        private static void ExceptionFreeAction(UserModel player, Action<UserModel> action)
+        public void SendUsernameListToNewPlayer(User newUser, IEnumerable<String> usernames)
+        {
+            ExceptionFreeAction(newUser, player => newUser.CallbackService.OnConnection(newUser.Player, usernames));
+        }
+
+        public void SendUsernameListToAllOtherUser(IEnumerable<User> otherUsers, IEnumerable<String> usernames)
+        {
+            ExceptionFreeAction(otherUsers, otherPlayer => otherPlayer.CallbackService.OnUserConnected(usernames));
+        }
+
+        private void ExceptionFreeAction(User user, Action<User> action)
         {
             try
             {
-                Log.WriteLine(Log.LogLevels.Debug, "ExceptionfreeSingle : {0} : {1} ", player.Player.Username, action.Method.Name);
-                action(player);
+                Log.WriteLine(Log.LogLevels.Debug, "ExceptionfreeSingle : {0} : {1} ", user.Player.Username, action.Method.Name);
+                action(user);
             }
             catch (Exception ex)
             {
-                Console.WriteLine("Connection error with player " + player.Player.Username);
+                Console.WriteLine("Connection error with player " + user.Player.Username);
                 Log.WriteLine(Log.LogLevels.Error, "ConnectUser callback error :" + ex.Message);
-                PlayersOnline.Remove(player);
+                _userManager.DeleteUser(user);
             }
         }
-        //OKAY
-        private static void ExceptionFreeAction(IEnumerable<UserModel> players, Action<UserModel> action)
+
+        private void ExceptionFreeAction(IEnumerable<User> users, Action<User> action)
         {
-            List<UserModel> disconnected = new List<UserModel>();
-            var playerModels = players as UserModel[] ?? players.ToArray();
-            if (players == null || !playerModels.Any())
+            List<User> disconnected = new List<User>();
+            if (users == null)
                 return;
-            foreach (UserModel player in playerModels)
+            foreach (User user in users)
             {
                 try
                 {
-                    Log.WriteLine(Log.LogLevels.Debug, "ExceptionfreeList : {0} : {1} ", player.Player.Username, action.Method.Name);
-                    action(player);
+                    Log.WriteLine(Log.LogLevels.Debug, "ExceptionfreeList : {0} : {1} ", user.Player.Username, action.Method.Name);
+                    action(user);
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine("Connection error with player " + player.Player.Username);
+                    Console.WriteLine("Connection error with player " + user.Player.Username);
                     Log.WriteLine(Log.LogLevels.Error, "ConnectUser callback error :" + ex.Message);
-                    disconnected.Add(player);
+                    disconnected.Add(user);
                 }
             }
-            foreach (UserModel playerDisconnected in disconnected)
+            foreach (User playerDisconnected in disconnected)
             {
-                PlayersOnline.Remove(playerDisconnected);
+                _userManager.DeleteUser(playerDisconnected);
             }
         }
     }

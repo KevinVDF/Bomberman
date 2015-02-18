@@ -1,12 +1,9 @@
-﻿
-using System;
-using System.Collections.Generic;
-using Common.DataContract;
-using Common.Log;
+﻿using Common.DataContract;
+using Server.Manager.Interface;
 
 namespace Server.Manager
 {
-    public class GameManager
+    public class GameManager : IGameManager
     {
         public static Game CreateNewGame()
         {

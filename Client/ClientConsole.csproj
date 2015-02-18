@@ -33,14 +33,13 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
+    <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
     <Reference Include="System.ServiceModel" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BombermanCallbackService.cs" />
     <Compile Include="Logic\ClientProcessor.cs" />
-    <Compile Include="Model\MapModel.cs" />
-    <Compile Include="Model\OpponentModel.cs" />
     <Compile Include="Model\PlayerModel.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

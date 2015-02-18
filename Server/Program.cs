@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Linq;
-using System.ServiceModel;
 using System.Text;
 using Common.DataContract;
 using Common.Log;
-using Server.Model;
+using Server.Manager;
+using Server.Manager.Interface;
 
 namespace Server
 {
@@ -15,8 +15,15 @@ namespace Server
             Console.SetWindowSize(80, 50);
 
             Log.Initialize(@"D:\Temp\BombermanLogs","Server.log");
-            Log.WriteLine(Log.LogLevels.Info,  "Server Started at " + DateTime.Now.ToShortTimeString());
-            ServerModel server = new ServerModel();
+
+            IUserManager userManager = new UserManager();
+            ICallbackManager callbackManager= new CallbackManager(userManager);
+            IMapManager mapManager = new MapManager();
+            IGameManager gameManager = new GameManager();
+
+            Server server = new Server(userManager,callbackManager,gameManager,mapManager);
+
+            Log.WriteLine(Log.LogLevels.Info, "Server Started at " + DateTime.Now.ToShortTimeString());
 
             DumpHelp();
 
@@ -29,9 +36,9 @@ namespace Server
                 switch (read.Key)
                 {
                     case ConsoleKey.M:
-                        if (server.GameCreated != null && server.GameCreated.Map != null)
-                            DumpMap(server.GameCreated.Map);
-                        else
+                        //if (server.GameCreated != null && server.GameCreated.Map != null)
+                        //    DumpMap(server.GameCreated.Map);
+                        //else
                             Console.WriteLine("No map");
                         break;
                     case ConsoleKey.P:
@@ -45,7 +52,6 @@ namespace Server
                         break;
                 }
             }
-            //svcHost.Close();
         }
 
         static void DumpHelp()
@@ -55,11 +61,11 @@ namespace Server
             Console.WriteLine("P: dump player list");
         }
 
-        static void DumpPlayers(ServerModel server)
+        static void DumpPlayers(Server server)
         {
-            Console.WriteLine("Connected: {0}", server.PlayersOnline.Count);
-            foreach(UserModel player in server.PlayersOnline)
-                Console.WriteLine("{0}:{1} alive:{2} iscreator:{3} maxbomb:{4}", player.Player.ID, player.Player.Username, player.Alive, player.Player.IsCreator, player.Player.BombNumber);
+            Console.WriteLine("Connected: {0}", server.UserManager.GetAllUsers().Count());
+            foreach (User user in server.UserManager.GetAllUsers())
+                Console.WriteLine("{0}:{1} alive:{2} maxbomb:{3}", user.Player.ID, user.Player.Username, user.Player.Alive, user.Player.BombNumber);
             //Console.WriteLine("Disconnected: {0}", server.PlayersDisconnected.Count);
             //foreach (PlayerModel player in server.PlayersDisconnected)
             //    Console.WriteLine("{0}:{1} alive:{2} iscreator:{3} maxbomb:{4}", player.Player.Id, player.Player.Username, player.Alife, player.Player.IsCreator, player.Player.MaxBombCount);
@@ -97,7 +103,5 @@ namespace Server
                 return '=';
             return '?';
         }
-    
-
     }
 }

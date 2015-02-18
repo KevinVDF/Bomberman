@@ -6,44 +6,66 @@ using Common.Interfaces;
 
 namespace Client
 {
-    //[CallbackBehavior(ConcurrencyMode = ConcurrencyMode.Reentrant)]
     public class BombermanCallbackService : IBombermanCallbackService
     {
-        private static readonly ClientModel ClientModel = new ClientModel();
-
-        public void OnUserConnected(Player player, List<String> loginsList, bool canStartGame)
+        public void OnErrorConnection(string messageError)
         {
-            ClientModel.OnUserConnected(player, loginsList, canStartGame);
+            throw new NotImplementedException();
         }
 
-        public void OnConnection(Player mePlayer, List<string> logins)
+        public void OnConnection(Player mePlayer, IEnumerable<string> logins)
         {
-            ClientModel.OnConnection(mePlayer, logins);
+            throw new NotImplementedException();
         }
 
-        public void OnUserConnected(List<string> logins)
+        public void OnUserConnected(IEnumerable<string> logins)
         {
-            ClientModel.OnUserConnected(logins);
+            throw new NotImplementedException();
         }
 
         public void OnGameStarted(Game newGame)
         {
-            ClientModel.OnGameStarted(newGame);
+            throw new NotImplementedException();
         }
 
         public void OnPlayerMove(Player player, Position newPosition, ActionType actionType)
         {
-            ClientModel.OnPlayerMove(player, newPosition, actionType);
+            throw new NotImplementedException();
         }
 
-        public void OnBombDropped(Position bombPosition)
+        public void OnBombDropped(Bomb newBomb)
         {
-            ClientModel.OnBombDropped(newBomb);
+            throw new NotImplementedException();
         }
 
-        public void OnMove(LivingObject objectToMoveBefore, LivingObject objectToMoveAfter)
+        public void OnBombExploded(Bomb bomb, List<LivingObject> impacted)
         {
-            ClientModel.OnMove(objectToMoveBefore, objectToMoveAfter);
+            throw new NotImplementedException();
+        }
+
+        public void OnPlayerDeath(Player player)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void OnMyDeath()
+        {
+            throw new NotImplementedException();
+        }
+
+        public void OnDraw()
+        {
+            throw new NotImplementedException();
+        }
+
+        public void OnWin()
+        {
+            throw new NotImplementedException();
+        }
+
+        public void OnCanRestartGame()
+        {
+            throw new NotImplementedException();
         }
     }
 }

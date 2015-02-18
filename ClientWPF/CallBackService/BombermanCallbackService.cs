@@ -15,6 +15,11 @@ namespace ClientWPF.CallBackService
             ClientModel = new ClientModel(bombermanViewModel);
         }
 
+        public void OnErrorConnection(string messageError)
+        {
+            throw new System.NotImplementedException();
+        }
+
         public void OnConnection(Player mePlayer, List<string> logins)
         {
             ClientModel.OnConnection(mePlayer, logins);

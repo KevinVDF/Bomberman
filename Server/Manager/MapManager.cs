@@ -1,13 +1,14 @@
 ﻿
 using Common.DataContract;
+using Server.Manager.Interface;
 
 namespace Server.Manager
 {
-    public class MapManager
+    public class MapManager: IMapManager
     {
         private int _numberOfObjects;
 
-        public static Map GenerateMap(string mapName)
+        public Map GenerateMap(string mapName)
         {
             return null;
         }
