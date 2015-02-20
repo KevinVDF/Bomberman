@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.ServiceModel;
 using Common.DataContract;
 
@@ -13,7 +14,7 @@ namespace Common.Interfaces
         void OnError(string messageError, ErrorType errorType);
         //when i connect myself
         [OperationContract(IsOneWay = true)]
-        void OnConnection(Player mePlayer, IEnumerable<string> logins);
+        void OnConnection(Guid id, IEnumerable<string> logins);
         //when an other player connects
         [OperationContract(IsOneWay = true)]
         void OnUserConnected(IEnumerable<string> logins);

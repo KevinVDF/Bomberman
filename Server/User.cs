@@ -13,6 +13,9 @@ namespace Server
         public UserStatus Status { get; set; }
 
         public Player Player { get; set; }
+
+        public string Username{ get;set; }
+ 
     }
 
     public enum UserStatus

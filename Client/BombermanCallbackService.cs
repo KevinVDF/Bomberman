@@ -9,31 +9,31 @@ namespace Client
     public class BombermanCallbackService : IBombermanCallbackService
     {
 
-        private readonly ClientProcessor ClientProcessor;
+        private readonly ClientProcessor _clientProcessor;
 
-        public BombermanCallbackService()
+        public BombermanCallbackService(ClientProcessor processor)
         {
-            ClientProcessor = new ClientProcessor();
+            _clientProcessor = processor;
         }
 
         public void OnError(string messageError, ErrorType errorType)
         {
-            ClientProcessor.OnError(messageError, errorType);
+            _clientProcessor.OnError(messageError, errorType);
         }
 
-        public void OnConnection(Player mePlayer, IEnumerable<string> logins)
+        public void OnConnection(Guid id, IEnumerable<string> logins)
         {
-            ClientProcessor.OnConnection(mePlayer, logins);
+            _clientProcessor.OnConnection(id, logins);
         }
 
         public void OnUserConnected(IEnumerable<string> logins)
         {
-            ClientProcessor.OnUserConnected(logins);
+            _clientProcessor.OnUserConnected(logins);
         }
 
         public void OnUserDisconnected(IEnumerable<string> logins)
         {
-            ClientProcessor.OnUserDisconnected(logins);
+            _clientProcessor.OnUserDisconnected(logins);
         }
 
         public void OnGameStarted(Game newGame)

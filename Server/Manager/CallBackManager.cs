@@ -21,9 +21,9 @@ namespace Server.Manager
             callback.OnError(errorMessage, errorType);
         }
 
-        public void SendUsernameListToNewPlayer(User newUser, IEnumerable<String> usernames)
+        public void SendUsernameListToNewUser(User newUser, IEnumerable<String> usernames)
         {
-            ExceptionFreeAction(newUser, player => newUser.CallbackService.OnConnection(newUser.Player, usernames));
+            ExceptionFreeAction(newUser, user => user.CallbackService.OnConnection(newUser.ID, usernames));
         }
 
         public void SendUsernameListToAllOtherUserAfterConnection(IEnumerable<User> otherUsers, IEnumerable<String> usernames)
@@ -36,16 +36,21 @@ namespace Server.Manager
             ExceptionFreeAction(otherUsers, otherPlayer => otherPlayer.CallbackService.OnUserDisconnected(usernames));
         }
 
+        public void SendGameToAllUsers(IEnumerable<User> user, Game newGame)
+        {
+            throw new NotImplementedException();
+        }
+
         private void ExceptionFreeAction(User user, Action<User> action)
         {
             try
             {
-                Log.WriteLine(Log.LogLevels.Debug, "ExceptionfreeSingle : {0} : {1} ", user.Player.Username, action.Method.Name);
+                Log.WriteLine(Log.LogLevels.Debug, "ExceptionfreeSingle : {0} : {1} ", user.Username, action.Method.Name);
                 action(user);
             }
             catch (Exception ex)
             {
-                Console.WriteLine("Connection error with player " + user.Player.Username);
+                Console.WriteLine("Connection error with player " + user.Username);
                 Log.WriteLine(Log.LogLevels.Error, "ConnectUser callback error :" + ex.Message);
                 _userManager.DeleteUser(user);
             }
@@ -60,12 +65,12 @@ namespace Server.Manager
             {
                 try
                 {
-                    Log.WriteLine(Log.LogLevels.Debug, "ExceptionfreeList : {0} : {1} ", user.Player.Username, action.Method.Name);
+                    Log.WriteLine(Log.LogLevels.Debug, "ExceptionfreeList : {0} : {1} ", user.Username, action.Method.Name);
                     action(user);
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine("Connection error with player " + user.Player.Username);
+                    Console.WriteLine("Connection error with player " + user.Username);
                     Log.WriteLine(Log.LogLevels.Error, "ConnectUser callback error :" + ex.Message);
                     disconnected.Add(user);
                 }

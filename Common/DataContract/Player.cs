@@ -6,8 +6,6 @@ namespace Common.DataContract
     public class Player : LivingObject
     {
         [DataMember]
-        public string Username { get; set; }
-        [DataMember]
         public int Score { get; set; }
         [DataMember]
         public int BombPower { get; set; }

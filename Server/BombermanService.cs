@@ -35,17 +35,17 @@ namespace Server
             Server.ConnectUser(callback, username);
         }
 
-        public void LeaveGame(string username)
+        public void LeaveGame(Guid ID)
         {
             IBombermanCallbackService callback = OperationContext.Current.GetCallbackChannel<IBombermanCallbackService>();
-            Log.WriteLine(Log.LogLevels.Debug, "LeaveGame:{0}", username);
-            Server.DisconnectUser(callback, username);
+            Log.WriteLine(Log.LogLevels.Debug, "LeaveGame:{0}", ID);
+            Server.DisconnectUser(callback, ID);
         }
 
         public void StartGame(string mapName)
         {
             Log.WriteLine(Log.LogLevels.Debug, "StartGame:{0}", mapName);
-            Server.StartNewGame(mapName);
+            //Server.StartNewGame(mapName);
         }
 
         public void PlayerAction(ActionType actionType)

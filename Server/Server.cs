@@ -1,4 +1,5 @@
 ﻿using System;
+using System.CodeDom.Compiler;
 using System.Collections.Generic;
 using System.Configuration;
 using System.IO;
@@ -63,33 +64,33 @@ namespace Server
             Log.WriteLine(Log.LogLevels.Info, "New user created : {0}", username);
 
             //Send the list of username to the new player created
-            CallbackManager.SendUsernameListToNewPlayer(newUser, UserManager.GetListOfUsername());
+            CallbackManager.SendUsernameListToNewUser(newUser, UserManager.GetListOfUsername());
             //Warning players that a new player is connected by sending them the list of all players online
             CallbackManager.SendUsernameListToAllOtherUserAfterConnection(UserManager.GetAllOtherUsers(newUser), UserManager.GetListOfUsername());
         }
         //OKAY
-        public void DisconnectUser(IBombermanCallbackService callback, string username)
+        public void DisconnectUser(IBombermanCallbackService callback, Guid ID)
         {
             //if callback is null => big problem
             if (callback == null)
             {
-                string errorMessage = string.Format("Problem with callback for the player {0}", username);
+                string errorMessage = string.Format("Problem with callback for the player");
                 Log.WriteLine(Log.LogLevels.Error, errorMessage);
                 return;
             }
             //if username is empty
-            if (string.IsNullOrEmpty(username))
+            if (ID == Guid.Empty)
             {
-                string errorMessage = string.Format("Username is empty.");
+                string errorMessage = string.Format("Empty ID.");
                 Log.WriteLine(Log.LogLevels.Info, errorMessage);
                 CallbackManager.SendError(callback, errorMessage, ErrorType.Connection);
             }
 
-            User userToDelete = UserManager.GetUserByUsername(username);
+            User userToDelete = UserManager.GetUserById(ID);
 
             if (userToDelete == null)
             {
-                string errorMessage = string.Format("Username {0} is unknown.", username);
+                string errorMessage = string.Format("Unknown ID.");
                 Log.WriteLine(Log.LogLevels.Info, errorMessage);
                 CallbackManager.SendError(callback, errorMessage, ErrorType.Connection);
                 return;    
@@ -97,38 +98,44 @@ namespace Server
 
             UserManager.DeleteUser(userToDelete);
 
-            Log.WriteLine(Log.LogLevels.Info, "User deleted : {0}", username);
+            Log.WriteLine(Log.LogLevels.Info, "User deleted : {0}", userToDelete.Username);
 
             //Warning players that a new player is connected by sending them the list of all players online
             CallbackManager.SendUsernameListToAllOtherUserAfterDisconnection(UserManager.GetAllOtherUsers(userToDelete), UserManager.GetListOfUsername());
 
         }
-        ////OKAY
+        //OKAY
         public void StartNewGame(string mapName)
         {
-            List<Player> players = PlayersOnline.Select(playerModel => playerModel.Player).ToList();
-
-            Map map = GenerateMap(players);
+            //generate a new map todo : do it randomly
+            Map map = MapManager.GenerateMap(players);
 
             if (map == null)
-                Log.WriteLine(Log.LogLevels.Error, "Error while reading map {0} -> game not started", mapName);
-            else
             {
-                Game newGame = new Game
-                {
-                    Map = map,
-                    CurrentStatus = GameStatus.Started,
-                };
-                GameCreated = newGame;
-                Log.WriteLine(Log.LogLevels.Debug, "New Game created");
-                //send the game to all players (only once)
-                ExceptionFreeAction(PlayersOnline, player =>
-                {
-                    player.CallbackService.OnGameStarted(newGame);
-                    player.Alive = true;
-                });
+                Log.WriteLine(Log.LogLevels.Error, "Error while reading map {0} -> game not started", mapName);
+                return;
             }
+            //Create a new game with the new map generated
+            Game newGame = new Game
+            {
+                Map = map,
+                CurrentStatus = GameStatus.Started,
+            };
+
+            GameCreated = newGame;
+
+            Log.WriteLine(Log.LogLevels.Debug, "New Game created");
+
+            //send the game to all players (only once)
+
+            CallbackManager.ExceptionFreeAction(PlayersOnline, player =>
+            {
+                player.CallbackService.OnGameStarted(newGame);
+                player.Alive = true;
+            });
+
         }
+
         ////OKAY but TODO for bonuses
         //private Map GenerateMap(List<Player> players)
         //{

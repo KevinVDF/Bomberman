@@ -7,6 +7,10 @@ namespace Client.Logic
 {
     public class ClientProcessor
     {
+        public string Username { get; set; }
+
+        public Guid ID { get; private set; }
+
         public Player Player { get; set; }
 
         public Map Map { get; set; }
@@ -20,14 +24,14 @@ namespace Client.Logic
             Console.WriteLine(errorMessage);
         }
 
-        public void OnConnection(Player player, IEnumerable<String> loginsList)
+        public void OnConnection(Guid id, IEnumerable<String> loginsList)
         {
-            Player = player;
+            ID = id;
 
             InitializeConsole();
             Console.WriteLine("--------------------------------------");
             Console.WriteLine("-------- Welcome to Bomberman --------");
-            Console.WriteLine("-----------" + Player.Username + "--------\n\n");
+            Console.WriteLine("-----------" + Username + "--------\n\n");
 
             Console.WriteLine("List of players online :\n\n");
             foreach (string login in loginsList)
@@ -40,10 +44,10 @@ namespace Client.Logic
         public void OnUserConnected(IEnumerable<String> loginsList)
         {
             
-             InitializeConsole();
+            InitializeConsole();
             Console.WriteLine("--------------------------------------");
             Console.WriteLine("-------- Welcome to Bomberman --------");
-            Console.WriteLine("-----------" + Player.Username + "--------\n\n");
+            Console.WriteLine("-----------" + Username + "--------\n\n");
 
             Console.WriteLine("A new player  joined the room\n\n");
             Console.WriteLine("List of players online :\n\n");
@@ -59,7 +63,7 @@ namespace Client.Logic
             InitializeConsole();
             Console.WriteLine("--------------------------------------");
             Console.WriteLine("-------- Welcome to Bomberman --------");
-            Console.WriteLine("-----------" + Player.Username + "--------\n\n");
+            Console.WriteLine("-----------" + Username + "--------\n\n");
 
             Console.WriteLine("A player leaved the room\n\n");
             Console.WriteLine("List of players online :\n\n");
@@ -90,24 +94,24 @@ namespace Client.Logic
             Console.Clear();
         }
 
-        public void OnMove(LivingObject objectToMoveBefore, LivingObject objectToMoveAfter)
-        {
-            if (Map == null) return;
-            //check if object to move does exists
-            if (!Map.LivingObjects.Any(livingObject => livingObject.ComparePosition(objectToMoveBefore))) return;
-            //if before is player and is "me" then update global player
-            if (objectToMoveBefore is Player && Player.ID == objectToMoveBefore.ID)
-                Player = objectToMoveAfter as Player;
-            //handle before
-            Console.SetCursorPosition(objectToMoveBefore.Position.X, 10 + objectToMoveBefore.Position.Y); // 10 should be replaced with map parameters
-            Console.Write(' ');
-            Map.LivingObjects.Remove(objectToMoveBefore);
-            //handle after
-            char toDisplay = ObjectToChar(objectToMoveAfter);
-            Console.SetCursorPosition(objectToMoveAfter.Position.X, 10 + objectToMoveAfter.Position.Y); // 10 should be replaced with map parameters
-            Console.Write(toDisplay);
-            Map.LivingObjects.Add(objectToMoveAfter);
-        }
+        //public void OnMove(LivingObject objectToMoveBefore, LivingObject objectToMoveAfter)
+        //{
+        //    if (Map == null) return;
+        //    //check if object to move does exists
+        //    if (!Map.LivingObjects.Any(livingObject => livingObject.ComparePosition(objectToMoveBefore))) return;
+        //    //if before is player and is "me" then update global player
+        //    if (objectToMoveBefore is Player && ID == objectToMoveBefore.ID)
+        //        Player = objectToMoveAfter as Player;
+        //    //handle before
+        //    Console.SetCursorPosition(objectToMoveBefore.Position.X, 10 + objectToMoveBefore.Position.Y); // 10 should be replaced with map parameters
+        //    Console.Write(' ');
+        //    Map.LivingObjects.Remove(objectToMoveBefore);
+        //    //handle after
+        //    char toDisplay = ObjectToChar(objectToMoveAfter);
+        //    Console.SetCursorPosition(objectToMoveAfter.Position.X, 10 + objectToMoveAfter.Position.Y); // 10 should be replaced with map parameters
+        //    Console.Write(toDisplay);
+        //    Map.LivingObjects.Add(objectToMoveAfter);
+        //}
 
         private void DisplayMap(Game currentGame)
         {

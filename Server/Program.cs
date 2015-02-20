@@ -68,7 +68,7 @@ namespace Server
         {
             Console.WriteLine("Connected: {0}", server.UserManager.GetAllUsers().Count());
             foreach (User user in server.UserManager.GetAllUsers())
-                Console.WriteLine("{0}:{1} alive:{2} maxbomb:{3}", user.Player.ID, user.Player.Username, user.Player.Alive, user.Player.BombNumber);
+                Console.WriteLine("{0}:{1} alive:{2} maxbomb:{3}", user.Player.ID, user.Username, user.Player.Alive, user.Player.BombNumber);
             //Console.WriteLine("Disconnected: {0}", server.PlayersDisconnected.Count);
             //foreach (PlayerModel player in server.PlayersDisconnected)
             //    Console.WriteLine("{0}:{1} alive:{2} iscreator:{3} maxbomb:{4}", player.Player.Id, player.Player.Username, player.Alife, player.Player.IsCreator, player.Player.MaxBombCount);

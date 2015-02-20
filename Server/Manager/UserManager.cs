@@ -13,8 +13,6 @@ namespace Server.Manager
     {
         private readonly List<User> _users;
 
-        private int _playerCounter;
-
         public UserManager()
         {
             _users = new List<User>();
@@ -33,16 +31,7 @@ namespace Server.Manager
                 ID = Guid.NewGuid(),
                 CallbackService = callback,
                 Status = UserStatus.Connected,
-                Player = new Player
-                {
-                    Alive = true,
-                    BombNumber = 1,
-                    BombPower = 1,
-                    CanShootBomb = false,
-                    ID = ++_playerCounter,
-                    Score = 0,
-                    Username = username,
-                }
+                Username = username
             };
             //add user to collection
             _users.Add(newUser);
@@ -78,7 +67,7 @@ namespace Server.Manager
                 return null;
             }
                 
-            return _users.FirstOrDefault(x => x.Player.Username == username);
+            return _users.FirstOrDefault(x => x.Username == username);
         }
 
         public User GetUserById(Guid id)
@@ -117,7 +106,7 @@ namespace Server.Manager
         {
             if (_users == null || !_users.Any())
                 return null;
-            return _users.Select(x => x.Player.Username).ToList();
+            return _users.Select(x => x.Username).ToList();
         }
 
         public IEnumerable<User> GetAllUsers()
@@ -143,7 +132,7 @@ namespace Server.Manager
         {
             if (_users == null || !_users.Any() || string.IsNullOrEmpty(username))
                 return false;
-            return _users.Any(x => x.Player.Username == username);
+            return _users.Any(x => x.Username == username);
         }
     }
 }

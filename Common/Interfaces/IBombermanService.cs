@@ -1,4 +1,5 @@
-﻿using System.ServiceModel;
+﻿using System;
+using System.ServiceModel;
 using Common.DataContract;
 
 namespace Common.Interfaces
@@ -11,7 +12,7 @@ namespace Common.Interfaces
         void RegisterMe(string username);
         //on window closed
         [OperationContract(IsOneWay = true)] 
-        void LeaveGame (string username);
+        void LeaveGame (Guid ID);
         //on button start
         [OperationContract(IsOneWay = true)]
         void StartGame(string mapName);
