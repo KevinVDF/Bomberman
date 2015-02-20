@@ -8,19 +8,32 @@ namespace Client
 {
     public class BombermanCallbackService : IBombermanCallbackService
     {
-        public void OnErrorConnection(string messageError)
+
+        private readonly ClientProcessor ClientProcessor;
+
+        public BombermanCallbackService()
         {
-            throw new NotImplementedException();
+            ClientProcessor = new ClientProcessor();
+        }
+
+        public void OnError(string messageError, ErrorType errorType)
+        {
+            ClientProcessor.OnError(messageError, errorType);
         }
 
         public void OnConnection(Player mePlayer, IEnumerable<string> logins)
         {
-            throw new NotImplementedException();
+            ClientProcessor.OnConnection(mePlayer, logins);
         }
 
         public void OnUserConnected(IEnumerable<string> logins)
         {
-            throw new NotImplementedException();
+            ClientProcessor.OnUserConnected(logins);
+        }
+
+        public void OnUserDisconnected(IEnumerable<string> logins)
+        {
+            ClientProcessor.OnUserDisconnected(logins);
         }
 
         public void OnGameStarted(Game newGame)

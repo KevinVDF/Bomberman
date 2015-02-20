@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Text;
 using Common.DataContract;
+using Common.Interfaces;
 using Common.Log;
 using Server.Manager;
 using Server.Manager.Interface;
@@ -22,6 +23,8 @@ namespace Server
             IGameManager gameManager = new GameManager();
 
             Server server = new Server(userManager,callbackManager,gameManager,mapManager);
+
+            IBombermanService service = new BombermanService(server);
 
             Log.WriteLine(Log.LogLevels.Info, "Server Started at " + DateTime.Now.ToShortTimeString());
 

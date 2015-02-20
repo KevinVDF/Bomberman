@@ -40,7 +40,6 @@
   <ItemGroup>
     <Compile Include="BombermanCallbackService.cs" />
     <Compile Include="Logic\ClientProcessor.cs" />
-    <Compile Include="Model\PlayerModel.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -57,6 +56,9 @@
       <Project>{a4967047-3eef-403b-91ea-4701357145ca}</Project>
       <Name>Common</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Model\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

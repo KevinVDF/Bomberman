@@ -29,13 +29,14 @@ namespace Server
             GameManager = gameManager;
             MapManager = mapManager;
         }
-
+        //OKAY
         public void ConnectUser(IBombermanCallbackService callback, string username)
         {
             //if callback is null => big problem
             if (callback == null)
             {
-                Log.WriteLine(Log.LogLevels.Error, "Problem with callback for the new player {0}", username);
+                string errorMessage = string.Format("Problem with callback for the player {0}", username);
+                Log.WriteLine(Log.LogLevels.Error, errorMessage);
                 return;
             }
 
@@ -43,8 +44,8 @@ namespace Server
             if (UserManager.IsUsernameAlreadyUsed(username))
             {
                 string errorMessage = string.Format("Username {0} is already Taken.", username);
-                Log.WriteLine(Log.LogLevels.Info,errorMessage);
-                CallbackManager.SendErrorOnConnection(callback, errorMessage);
+                Log.WriteLine(Log.LogLevels.Error,errorMessage);
+                CallbackManager.SendError(callback, errorMessage, ErrorType.Connection);
                 return;
             }
 
@@ -55,7 +56,7 @@ namespace Server
             {
                 string errorMessage = string.Format("Username {0} is empty or already Taken.", username);
                 Log.WriteLine(Log.LogLevels.Info, errorMessage);
-                CallbackManager.SendErrorOnConnection(callback, errorMessage);
+                CallbackManager.SendError(callback, errorMessage, ErrorType.Connection);
                 return;    
             }
 
@@ -64,35 +65,70 @@ namespace Server
             //Send the list of username to the new player created
             CallbackManager.SendUsernameListToNewPlayer(newUser, UserManager.GetListOfUsername());
             //Warning players that a new player is connected by sending them the list of all players online
-            CallbackManager.SendUsernameListToAllOtherUser(UserManager.GetAllOtherUsers(newUser), UserManager.GetListOfUsername());
+            CallbackManager.SendUsernameListToAllOtherUserAfterConnection(UserManager.GetAllOtherUsers(newUser), UserManager.GetListOfUsername());
         }
+        //OKAY
+        public void DisconnectUser(IBombermanCallbackService callback, string username)
+        {
+            //if callback is null => big problem
+            if (callback == null)
+            {
+                string errorMessage = string.Format("Problem with callback for the player {0}", username);
+                Log.WriteLine(Log.LogLevels.Error, errorMessage);
+                return;
+            }
+            //if username is empty
+            if (string.IsNullOrEmpty(username))
+            {
+                string errorMessage = string.Format("Username is empty.");
+                Log.WriteLine(Log.LogLevels.Info, errorMessage);
+                CallbackManager.SendError(callback, errorMessage, ErrorType.Connection);
+            }
 
+            User userToDelete = UserManager.GetUserByUsername(username);
+
+            if (userToDelete == null)
+            {
+                string errorMessage = string.Format("Username {0} is unknown.", username);
+                Log.WriteLine(Log.LogLevels.Info, errorMessage);
+                CallbackManager.SendError(callback, errorMessage, ErrorType.Connection);
+                return;    
+            }
+
+            UserManager.DeleteUser(userToDelete);
+
+            Log.WriteLine(Log.LogLevels.Info, "User deleted : {0}", username);
+
+            //Warning players that a new player is connected by sending them the list of all players online
+            CallbackManager.SendUsernameListToAllOtherUserAfterDisconnection(UserManager.GetAllOtherUsers(userToDelete), UserManager.GetListOfUsername());
+
+        }
         ////OKAY
-        //public void StartNewGame(string mapName)
-        //{
-        //    List<Player> players = PlayersOnline.Select(playerModel => playerModel.Player).ToList();
+        public void StartNewGame(string mapName)
+        {
+            List<Player> players = PlayersOnline.Select(playerModel => playerModel.Player).ToList();
 
-        //    Map map = GenerateMap(players);
+            Map map = GenerateMap(players);
 
-        //    if (map == null)
-        //        Log.WriteLine(Log.LogLevels.Error, "Error while reading map {0} -> game not started", mapName);
-        //    else
-        //    {
-        //        Game newGame = new Game
-        //        {
-        //            Map = map,
-        //            CurrentStatus = GameStatus.Started,
-        //        };
-        //        GameCreated = newGame;
-        //        Log.WriteLine(Log.LogLevels.Debug, "New Game created");
-        //        //send the game to all players (only once)
-        //        ExceptionFreeAction(PlayersOnline, player =>
-        //        {
-        //            player.CallbackService.OnGameStarted(newGame);
-        //            player.Alive = true;
-        //        });
-        //    }
-        //}
+            if (map == null)
+                Log.WriteLine(Log.LogLevels.Error, "Error while reading map {0} -> game not started", mapName);
+            else
+            {
+                Game newGame = new Game
+                {
+                    Map = map,
+                    CurrentStatus = GameStatus.Started,
+                };
+                GameCreated = newGame;
+                Log.WriteLine(Log.LogLevels.Debug, "New Game created");
+                //send the game to all players (only once)
+                ExceptionFreeAction(PlayersOnline, player =>
+                {
+                    player.CallbackService.OnGameStarted(newGame);
+                    player.Alive = true;
+                });
+            }
+        }
         ////OKAY but TODO for bonuses
         //private Map GenerateMap(List<Player> players)
         //{

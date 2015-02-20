@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
+using Common.DataContract;
 using Common.Interfaces;
 using Common.Log;
 using Server.Manager.Interface;
@@ -16,9 +16,9 @@ namespace Server.Manager
             _userManager = userManager;
         }
 
-        public void SendErrorOnConnection(IBombermanCallbackService callback, string errorMessage)
+        public void SendError(IBombermanCallbackService callback, string errorMessage, ErrorType errorType)
         {
-            callback.OnErrorConnection(errorMessage);
+            callback.OnError(errorMessage, errorType);
         }
 
         public void SendUsernameListToNewPlayer(User newUser, IEnumerable<String> usernames)
@@ -26,9 +26,14 @@ namespace Server.Manager
             ExceptionFreeAction(newUser, player => newUser.CallbackService.OnConnection(newUser.Player, usernames));
         }
 
-        public void SendUsernameListToAllOtherUser(IEnumerable<User> otherUsers, IEnumerable<String> usernames)
+        public void SendUsernameListToAllOtherUserAfterConnection(IEnumerable<User> otherUsers, IEnumerable<String> usernames)
         {
             ExceptionFreeAction(otherUsers, otherPlayer => otherPlayer.CallbackService.OnUserConnected(usernames));
+        }
+
+        public void SendUsernameListToAllOtherUserAfterDisconnection(IEnumerable<User> otherUsers, IEnumerable<String> usernames)
+        {
+            ExceptionFreeAction(otherUsers, otherPlayer => otherPlayer.CallbackService.OnUserDisconnected(usernames));
         }
 
         private void ExceptionFreeAction(User user, Action<User> action)

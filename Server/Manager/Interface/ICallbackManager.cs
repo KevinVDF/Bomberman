@@ -1,16 +1,19 @@
 ﻿
 using System;
 using System.Collections.Generic;
+using Common.DataContract;
 using Common.Interfaces;
 
 namespace Server.Manager.Interface
 {
     public interface ICallbackManager
     {
-        void SendErrorOnConnection(IBombermanCallbackService callback, string errorMessage);
+        void SendError(IBombermanCallbackService callback, string errorMessage, ErrorType errorType);
 
         void SendUsernameListToNewPlayer(User newPlayer, IEnumerable<String> usernames);
 
-        void SendUsernameListToAllOtherUser(IEnumerable<User> user, IEnumerable<String> usernames);
+        void SendUsernameListToAllOtherUserAfterConnection(IEnumerable<User> user, IEnumerable<String> usernames);
+
+        void SendUsernameListToAllOtherUserAfterDisconnection(IEnumerable<User> user, IEnumerable<String> usernames);
     }
 }

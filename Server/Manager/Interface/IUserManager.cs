@@ -13,6 +13,8 @@ namespace Server.Manager.Interface
 
         void DeleteUser(User user);
 
+        User GetUserByUsername(string username);
+
         User GetUserById(Guid id);
 
         User GetUserByCallback(IBombermanCallbackService callback);

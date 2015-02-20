@@ -1,7 +1,10 @@
 ﻿using System;
 using System.Configuration;
+using System.Dynamic;
+using System.Runtime.InteropServices;
 using System.ServiceModel;
 using System.ServiceModel.Channels;
+using Client.Logic;
 using Common.DataContract;
 using Common.Interfaces;
 using Common.Log;
@@ -13,24 +16,67 @@ namespace Client
     {
         public static IBombermanService Proxy { get; private set; }
 
+        public static string Username { get; set; }
+
+        public static bool ErrorConnection{ get; set; }
+
         public const string MapPath = @"F:\\Bomberman\Server\map.dat";
+
+        [DllImport("Kernel32")]
+        private static extern void SetConsoleCtrlHandler(EventHandler handler, bool add);
+
+        private delegate void EventHandler(CtrlType sig);
+        static EventHandler _handler;
+
+        enum CtrlType
+        {
+            CTRL_C_EVENT = 0,
+            CTRL_BREAK_EVENT = 1,
+            CTRL_CLOSE_EVENT = 2,
+            CTRL_LOGOFF_EVENT = 5,
+            CTRL_SHUTDOWN_EVENT = 6
+        }
+
+        private static void Handler(CtrlType sig)
+        {
+            switch (sig)
+            {
+                case CtrlType.CTRL_C_EVENT:
+                case CtrlType.CTRL_LOGOFF_EVENT:
+                case CtrlType.CTRL_SHUTDOWN_EVENT:
+                case CtrlType.CTRL_CLOSE_EVENT:
+                    Proxy.LeaveGame(Username);
+                    break;
+                default:
+                    Proxy.LeaveGame(Username);
+                    break;
+
+            }
+        }
+
 
         static void Main()
         {
+            _handler += Handler;
+            SetConsoleCtrlHandler(_handler, true);
+
             var instanceContext = new InstanceContext(new BombermanCallbackService());
             Binding binding = new NetTcpBinding(SecurityMode.None);
             DuplexChannelFactory<IBombermanService> factory = new DuplexChannelFactory<IBombermanService>(instanceContext, binding, new EndpointAddress(
                 new Uri(string.Concat("net.tcp://", ConfigurationManager.AppSettings["MachineName"], ":7900/BombermanCallbackService"))));
             Proxy = factory.CreateChannel();
-
             Console.WriteLine("--------------------------------------");
             Console.WriteLine("-------- Welcome to Bomberman --------");
             Console.WriteLine("--------------------------------------\n\n");
-            Console.WriteLine("Type your player name :\n");
-            string login = Console.ReadLine();
-            string username = login;
-            ConnectPlayer(username);
-            Log.Initialize(@"D:\Temp\BombermanLogs", "Client_" + login +".log");
+            do
+            {
+
+                Console.WriteLine("Type your player name :\n");
+                Username = Console.ReadLine();
+                ConnectPlayer(Username);
+            } while (ErrorConnection);
+
+            Log.Initialize(@"D:\Temp\BombermanLogs", "Client_" + Username + ".log");
             Log.WriteLine(Log.LogLevels.Info, "Logged at " + DateTime.Now.ToShortTimeString());
 
             bool stop = false;
@@ -73,9 +119,14 @@ namespace Client
             }
         }
 
-        //todo replace playername by an id ...
         private static void ConnectPlayer(string username)
         {
+            if (string.IsNullOrEmpty(username))
+            {
+                ErrorConnection = true;
+                return;
+            }
+                
             Proxy.RegisterMe(username);
         }
 
@@ -88,5 +139,7 @@ namespace Client
         {
             Proxy.PlayerAction(actionType);
         }
+
+        
     }
 }

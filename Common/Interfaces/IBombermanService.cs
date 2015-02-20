@@ -9,6 +9,9 @@ namespace Common.Interfaces
         //on button login
         [OperationContract(IsOneWay = true)]
         void RegisterMe(string username);
+        //on window closed
+        [OperationContract(IsOneWay = true)] 
+        void LeaveGame (string username);
         //on button start
         [OperationContract(IsOneWay = true)]
         void StartGame(string mapName);

@@ -39,7 +39,7 @@ namespace Server.Manager
                     BombNumber = 1,
                     BombPower = 1,
                     CanShootBomb = false,
-                    ID = _playerCounter++,
+                    ID = ++_playerCounter,
                     Score = 0,
                     Username = username,
                 }
@@ -63,6 +63,22 @@ namespace Server.Manager
                 return;
             }
             _users.Remove(user);
+        }
+
+        public User GetUserByUsername(string username)
+        {
+            if (_users == null || !_users.Any()) 
+            {
+                Log.WriteLine(Log.LogLevels.Error, "No users connected");
+                return null;
+            }
+            if(string.IsNullOrEmpty(username))
+            {
+                Log.WriteLine(Log.LogLevels.Error, "Problem with username");
+                return null;
+            }
+                
+            return _users.FirstOrDefault(x => x.Player.Username == username);
         }
 
         public User GetUserById(Guid id)

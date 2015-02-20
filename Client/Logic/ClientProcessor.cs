@@ -11,22 +11,63 @@ namespace Client.Logic
 
         public Map Map { get; set; }
 
-        public void OnUserConnected(Player player, List<String> loginsList, bool canStartGame)
+        public void OnError(string errorMessage, ErrorType errorType)
+        {
+            InitializeConsole();
+            Console.WriteLine("--------------------------------------");
+            Console.WriteLine("-------- Welcome to Bomberman --------");
+            Console.WriteLine("----------- ERROR --------\n\n");
+            Console.WriteLine(errorMessage);
+        }
+
+        public void OnConnection(Player player, IEnumerable<String> loginsList)
         {
             Player = player;
 
             InitializeConsole();
             Console.WriteLine("--------------------------------------");
             Console.WriteLine("-------- Welcome to Bomberman --------");
-            Console.WriteLine("--------------------------------------\n\n");
-            Console.WriteLine("New User Joined the server : " + player.Username + "\n");
+            Console.WriteLine("-----------" + Player.Username + "--------\n\n");
+
             Console.WriteLine("List of players online :\n\n");
             foreach (string login in loginsList)
             {
                 Console.WriteLine(login + "\n\n");
             }
-                //todo don't allow user to click on s if canstartgame is false
-                Console.WriteLine(canStartGame ? "Press S to start the game" : "Wait for other players.");
+            Console.WriteLine("Press S to start the game");
+        }
+
+        public void OnUserConnected(IEnumerable<String> loginsList)
+        {
+            
+             InitializeConsole();
+            Console.WriteLine("--------------------------------------");
+            Console.WriteLine("-------- Welcome to Bomberman --------");
+            Console.WriteLine("-----------" + Player.Username + "--------\n\n");
+
+            Console.WriteLine("A new player  joined the room\n\n");
+            Console.WriteLine("List of players online :\n\n");
+            foreach (string login in loginsList)
+            {
+                Console.WriteLine(login + "\n\n");
+            }
+            Console.WriteLine("Press S to start the game");
+        }
+
+        public void OnUserDisconnected(IEnumerable<String> loginsList)
+        {
+            InitializeConsole();
+            Console.WriteLine("--------------------------------------");
+            Console.WriteLine("-------- Welcome to Bomberman --------");
+            Console.WriteLine("-----------" + Player.Username + "--------\n\n");
+
+            Console.WriteLine("A player leaved the room\n\n");
+            Console.WriteLine("List of players online :\n\n");
+            foreach (string login in loginsList)
+            {
+                Console.WriteLine(login + "\n\n");
+            }
+            Console.WriteLine("Press S to start the game");
         }
 
         public void OnGameStarted(Game newGame)

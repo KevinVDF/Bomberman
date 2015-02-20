@@ -10,13 +10,16 @@ namespace Common.Interfaces
     {
         //send error message on fail connection
         [OperationContract(IsOneWay = true)]
-        void OnErrorConnection(string messageError);
+        void OnError(string messageError, ErrorType errorType);
         //when i connect myself
         [OperationContract(IsOneWay = true)]
         void OnConnection(Player mePlayer, IEnumerable<string> logins);
         //when an other player connects
         [OperationContract(IsOneWay = true)]
         void OnUserConnected(IEnumerable<string> logins);
+        //when an other player disconnects
+        [OperationContract(IsOneWay = true)]
+        void OnUserDisconnected(IEnumerable<string> logins);
         //when the creator start the game
         [OperationContract(IsOneWay = true)]
         void OnGameStarted(Game newGame);

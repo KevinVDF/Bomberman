@@ -31,20 +31,27 @@ namespace Server
         public void RegisterMe(string username)
         {
             IBombermanCallbackService callback = OperationContext.Current.GetCallbackChannel<IBombermanCallbackService>();
-            Log.WriteLine(Log.LogLevels.Debug, "Register Me:{0}", username);
+            Log.WriteLine(Log.LogLevels.Debug, "RegisterMe:{0}", username);
             Server.ConnectUser(callback, username);
+        }
+
+        public void LeaveGame(string username)
+        {
+            IBombermanCallbackService callback = OperationContext.Current.GetCallbackChannel<IBombermanCallbackService>();
+            Log.WriteLine(Log.LogLevels.Debug, "LeaveGame:{0}", username);
+            Server.DisconnectUser(callback, username);
         }
 
         public void StartGame(string mapName)
         {
-            Log.WriteLine(Log.LogLevels.Debug, "Start Game:{0}", mapName);
-            //Server.StartNewGame(mapName);
+            Log.WriteLine(Log.LogLevels.Debug, "StartGame:{0}", mapName);
+            Server.StartNewGame(mapName);
         }
 
         public void PlayerAction(ActionType actionType)
         {
             IBombermanCallbackService callback = OperationContext.Current.GetCallbackChannel<IBombermanCallbackService>();
-            Log.WriteLine(Log.LogLevels.Debug, "Player Action :{0}", actionType.ToString());
+            Log.WriteLine(Log.LogLevels.Debug, "PlayerAction :{0}", actionType.ToString());
             //Server.PlayerAction(callback, actionType);
         }
     }
