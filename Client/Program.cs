@@ -47,10 +47,10 @@ namespace Client
                 case CtrlType.CTRL_LOGOFF_EVENT:
                 case CtrlType.CTRL_SHUTDOWN_EVENT:
                 case CtrlType.CTRL_CLOSE_EVENT:
-                    LeaveGame(Username);
+                    LeaveGame();
                     break;
                 default:
-                    LeaveGame(Username);
+                    LeaveGame();
                     break;
             }
         }
@@ -133,7 +133,12 @@ namespace Client
             Proxy.RegisterMe(username);
         }
 
-
+        private static void LeaveGame()
+        {
+            if (ClientProcessor.ID == Guid.Empty)
+                return;
+            Proxy.LeaveGame(ID);
+        }
 
 
         private static void StartGame()
