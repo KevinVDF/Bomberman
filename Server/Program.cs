@@ -19,7 +19,7 @@ namespace Server
 
             IUserManager userManager = new UserManager();
             ICallbackManager callbackManager= new CallbackManager(userManager);
-            IMapManager mapManager = new MapManager();
+            IMapManager mapManager = new MapManager(userManager);
             IGameManager gameManager = new GameManager();
 
             Server server = new Server(userManager,callbackManager,gameManager,mapManager);

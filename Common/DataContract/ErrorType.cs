@@ -7,8 +7,12 @@ namespace Common.DataContract
     public enum ErrorType
     {
         [EnumMember]
+        Callback,
+        [EnumMember]
         Connection,
         [EnumMember]
-        Callback
+        Disconnection,
+        [EnumMember]
+        GameCreation,
     }
 }

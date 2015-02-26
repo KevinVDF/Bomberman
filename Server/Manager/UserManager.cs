@@ -111,7 +111,16 @@ namespace Server.Manager
 
         public IEnumerable<User> GetAllUsers()
         {
+            if (_users == null || !_users.Any())
+                return null;
             return _users;
+        }
+
+        public int GetNumberOfUsers()
+        {
+            if (_users == null || !_users.Any())
+                return 0;
+            return _users.Count;
         }
 
         public IEnumerable<User> GetAllOtherUsers(User user)

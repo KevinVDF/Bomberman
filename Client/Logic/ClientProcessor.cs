@@ -74,8 +74,9 @@ namespace Client.Logic
             Console.WriteLine("Press S to start the game");
         }
 
-        public void OnGameStarted(Game newGame)
+        public void OnGameStarted(Player player, Game newGame)
         {
+            Player = player;
             InitializeConsole();
             Console.WriteLine("--------------------------------------");
             Console.WriteLine("-------- Welcome to Bomberman --------");

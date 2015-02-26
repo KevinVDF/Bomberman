@@ -64,26 +64,20 @@ namespace Server
             Log.WriteLine(Log.LogLevels.Info, "New user created : {0}", username);
 
             //Send the list of username to the new player created
-            CallbackManager.SendUsernameListToNewUser(newUser, UserManager.GetListOfUsername());
-            //Warning players that a new player is connected by sending them the list of all players online
-            CallbackManager.SendUsernameListToAllOtherUserAfterConnection(UserManager.GetAllOtherUsers(newUser), UserManager.GetListOfUsername());
+            CallbackManager.SendUsernameListToNewUser(newUser);
+            if(UserManager.GetNumberOfUsers() > 1)
+                //Warning players that a new player is connected by sending them the list of all players online
+                CallbackManager.SendUsernameListToAllOtherUserAfterConnection(newUser);
         }
         //OKAY
-        public void DisconnectUser(IBombermanCallbackService callback, Guid ID)
+        public void DisconnectUser(Guid ID)
         {
-            //if callback is null => big problem
-            if (callback == null)
-            {
-                string errorMessage = string.Format("Problem with callback for the player");
-                Log.WriteLine(Log.LogLevels.Error, errorMessage);
-                return;
-            }
             //if username is empty
             if (ID == Guid.Empty)
             {
                 string errorMessage = string.Format("Empty ID.");
                 Log.WriteLine(Log.LogLevels.Info, errorMessage);
-                CallbackManager.SendError(callback, errorMessage, ErrorType.Connection);
+                return;
             }
 
             User userToDelete = UserManager.GetUserById(ID);
@@ -92,7 +86,6 @@ namespace Server
             {
                 string errorMessage = string.Format("Unknown ID.");
                 Log.WriteLine(Log.LogLevels.Info, errorMessage);
-                CallbackManager.SendError(callback, errorMessage, ErrorType.Connection);
                 return;    
             }
 
@@ -101,180 +94,101 @@ namespace Server
             Log.WriteLine(Log.LogLevels.Info, "User deleted : {0}", userToDelete.Username);
 
             //Warning players that a new player is connected by sending them the list of all players online
-            CallbackManager.SendUsernameListToAllOtherUserAfterDisconnection(UserManager.GetAllOtherUsers(userToDelete), UserManager.GetListOfUsername());
+            CallbackManager.SendUsernameListToAllOtherUserAfterDisconnection(userToDelete);
 
         }
         //OKAY
-        public void StartNewGame(string mapName)
+        public void StartNewGame(IBombermanCallbackService callback)
         {
+            string mapName = ConfigurationManager.AppSettings["mapName"];
+            //if callback is null => big problem
+            if (callback == null)
+            {
+                string errorMessage = string.Format("Problem with callback for the player");
+                Log.WriteLine(Log.LogLevels.Error, errorMessage);
+                return;
+            }
+            //If map is null or empty
+            if (string.IsNullOrEmpty(mapName))
+            {
+                string errorMessage = "Unknown map name";
+                Log.WriteLine(Log.LogLevels.Error, errorMessage);
+                return;
+            }
             //generate a new map todo : do it randomly
-            Map map = MapManager.GenerateMap(players);
+            Map map = MapManager.GenerateMap(mapName);
 
             if (map == null)
             {
-                Log.WriteLine(Log.LogLevels.Error, "Error while reading map {0} -> game not started", mapName);
+                string errorMessage = String.Format("Error while reading map {0} -> game not started", mapName);
+                Log.WriteLine(Log.LogLevels.Error,errorMessage);
                 return;
             }
             //Create a new game with the new map generated
-            Game newGame = new Game
-            {
-                Map = map,
-                CurrentStatus = GameStatus.Started,
-            };
+            Game newGame = GameManager.CreateNewGame(map);
 
-            GameCreated = newGame;
+            if (newGame == null)
+            {
+                string errorMessage = "Problem creating the new game";
+                Log.WriteLine(Log.LogLevels.Error, errorMessage);
+                return;
+            }
 
             Log.WriteLine(Log.LogLevels.Debug, "New Game created");
 
             //send the game to all players (only once)
-
-            CallbackManager.ExceptionFreeAction(PlayersOnline, player =>
-            {
-                player.CallbackService.OnGameStarted(newGame);
-                player.Alive = true;
-            });
-
+            CallbackManager.SendGameToAllUsers(newGame);
         }
-
         ////OKAY but TODO for bonuses
-        //private Map GenerateMap(List<Player> players)
-        //{
-        //    int mapSize;
-        //    Map map = new Map();
-        //    List<LivingObject> matrice = new List<LivingObject>();
+        public void PlayerAction(Guid ID, ActionType actionType)
+        {
+            //retreive the player who made the action
+            User player = PlayersOnline.FirstOrDefault(x => x.CallbackService == callback);
 
-        //    using (StreamReader reader = new StreamReader(Path.Combine(ConfigurationManager.AppSettings["MapPath"],MapName), Encoding.UTF8))
-        //    {
-        //        // Read size
-        //        string size = reader.ReadLine();
-        //        bool isSizeValid = int.TryParse(size, out mapSize);
+            //not supposed to happend but okay
+            if (GameCreated.CurrentStatus == GameStatus.Stopped)
+            {
+                Log.WriteLine(Log.LogLevels.Warning, "Game stopped -> no request from client !!!");
+                return;
+            }
+            //not supposed to happend not okay at all
+            if (player == null)
+            {
+                Log.WriteLine(Log.LogLevels.Error, "Player who made the action is null... shouldn't be !!!");
+                return;
+            }
 
-        //        if (!isSizeValid)
-        //        {
-        //            Log.WriteLine(Log.LogLevels.Error, "Invalid map size {0}", size);
-        //            return null;
-        //        }
-        //        // Read map
-        //        string objectsToAdd = reader.ReadToEnd().Replace("\n", "").Replace("\r", "");
+            //not supposed to happend but okay
+            if (!player.Alive)
+            {
+                Log.WriteLine(Log.LogLevels.Warning, "Player should be dead -> no request from client !!!");
+                return;
+            }
 
-        //        for (int y = 0; y < mapSize; y++)
-        //        {
-        //            for (int x = 0; x < mapSize; x++)
-        //            {
-        //                LivingObject livingObject = null;
-        //                char cell = objectsToAdd[(y * mapSize) + x];
-        //                switch (cell)
-        //                {
-        //                    case 'u':
-        //                        livingObject = new Wall
-        //                        {
-        //                            WallType = WallType.Undestructible,
-        //                            Position = new Position
-        //                            {
-        //                                X = x,
-        //                                Y = y
-        //                            }
-        //                            ,
-        //                            ID = IdCount++
-        //                        };
-        //                        Log.WriteLine(Log.LogLevels.Debug, "New undestructible wall created");
-        //                        break;
-        //                    case 'd':
-        //                        livingObject = new Wall
-        //                        {
-        //                            WallType = WallType.Destructible,
-        //                            Position = new Position
-        //                            {
-        //                                X = x,
-        //                                Y = y
-        //                            }
-        //                            ,
-        //                            ID = IdCount++
-        //                        };
-        //                        Log.WriteLine(Log.LogLevels.Debug, "New destructible wall created");
-        //                        break;
-        //                    //case 'b' :
-        //                    //    currentlivingObject = new Bonus
-        //                    //    {
-
-        //                    //    };
-        //                    //    break;
-        //                    case '0':
-        //                    case '1':
-        //                    case '2':
-        //                    case '3':
-        //                        if (players.Count > (int)Char.GetNumericValue(cell))
-        //                        {
-        //                            livingObject = players[(int)Char.GetNumericValue(cell)];
-        //                            livingObject.Position = new Position
-        //                            {
-        //                                X = x,
-        //                                Y = y,
-        //                            };
-        //                        }
-        //                        break;
-        //                }
-        //                if (livingObject != null)
-        //                    matrice.Add(livingObject);
-        //            }
-        //        }
-        //    }
-        //    map.LivingObjects = matrice;
-        //    map.MapName = MapName;
-        //    map.MapSize = mapSize;
-
-        //    return map;
-        //}
-        ////OKAY
-        //public void PlayerAction(IBombermanCallbackService callback, ActionType actionType)
-        //{
-        //    //retreive the player who made the action
-        //    User player = PlayersOnline.FirstOrDefault(x => x.CallbackService == callback);
-
-        //    //not supposed to happend but okay
-        //    if (GameCreated.CurrentStatus == GameStatus.Stopped)
-        //    {
-        //        Log.WriteLine(Log.LogLevels.Warning, "Game stopped -> no request from client !!!");
-        //        return;
-        //    }
-        //    //not supposed to happend not okay at all
-        //    if (player == null)
-        //    {
-        //        Log.WriteLine(Log.LogLevels.Error, "Player who made the action is null... shouldn't be !!!");
-        //        return; 
-        //    }
-                
-        //    //not supposed to happend but okay
-        //    if (!player.Alive)
-        //    {
-        //        Log.WriteLine(Log.LogLevels.Warning, "Player should be dead -> no request from client !!!");
-        //        return;
-        //    }
-
-        //    Log.WriteLine(Log.LogLevels.Debug, "Player {0} make {1}", player.Player.Username, actionType);
-        //    switch (actionType)
-        //    {
-        //        case ActionType.MoveUp:
-        //            MovePlayer(player.Player, 0, -1, actionType);
-        //            break;
-        //        case ActionType.MoveDown:
-        //            MovePlayer(player.Player, 0, +1, actionType);
-        //            break;
-        //        case ActionType.MoveRight:
-        //            MovePlayer(player.Player, +1, 0, actionType);
-        //            break;
-        //        case ActionType.MoveLeft:
-        //            MovePlayer(player.Player, -1, 0, actionType);
-        //            break;
-        //        case ActionType.DropBomb:
-        //            DropBomb(player.Player);
-        //            break;
-        //        //todo 
-        //        //case ActionType.ShootBomb:
-        //        //    ShootBomb(player.player);
-        //        //    break;
-        //    }
-        //}
+            Log.WriteLine(Log.LogLevels.Debug, "Player {0} make {1}", player.Player.Username, actionType);
+            switch (actionType)
+            {
+                case ActionType.MoveUp:
+                    MovePlayer(player.Player, 0, -1, actionType);
+                    break;
+                case ActionType.MoveDown:
+                    MovePlayer(player.Player, 0, +1, actionType);
+                    break;
+                case ActionType.MoveRight:
+                    MovePlayer(player.Player, +1, 0, actionType);
+                    break;
+                case ActionType.MoveLeft:
+                    MovePlayer(player.Player, -1, 0, actionType);
+                    break;
+                case ActionType.DropBomb:
+                    DropBomb(player.Player);
+                    break;
+                //todo 
+                //case ActionType.ShootBomb:
+                //    ShootBomb(player.player);
+                //    break;
+            }
+        }
         ////OKAY
         //private void MovePlayer(Player player, int stepX, int stepY, ActionType actionType)
         //{
@@ -284,7 +198,7 @@ namespace Server
         //    // Can't go thru wall or bomb
         //    if (collider != null && (collider is Wall || collider is Bomb))
         //    {
-        //        Log.WriteLine(Log.LogLevels.Debug, "Collider found : {0}, {1} type {2}",collider.Position.X, collider.Position.Y, collider);
+        //        Log.WriteLine(Log.LogLevels.Debug, "Collider found : {0}, {1} type {2}", collider.Position.X, collider.Position.Y, collider);
         //        return;
         //    }
         //    //remove player from the map
@@ -295,7 +209,7 @@ namespace Server
         //        X = player.Position.X + stepX,
         //        Y = player.Position.Y + stepY
         //    };
-        //    Log.WriteLine(Log.LogLevels.Debug, "Player {0} move from {1},{2} to {3},{4}", player.Username, player.Position.X, player.Position.Y, newPosition.X,newPosition.Y);
+        //    Log.WriteLine(Log.LogLevels.Debug, "Player {0} move from {1},{2} to {3},{4}", player.Username, player.Position.X, player.Position.Y, newPosition.X, newPosition.Y);
         //    // Send new player position to players
         //    ExceptionFreeAction(PlayersOnline, playerModel => playerModel.CallbackService.OnPlayerMove(player, newPosition, actionType));
         //    //update position's player

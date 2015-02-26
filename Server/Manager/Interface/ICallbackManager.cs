@@ -10,12 +10,12 @@ namespace Server.Manager.Interface
     {
         void SendError(IBombermanCallbackService callback, string errorMessage, ErrorType errorType);
 
-        void SendUsernameListToNewUser(User newPlayer, IEnumerable<String> usernames);
+        void SendUsernameListToNewUser(User newPlayer);
 
-        void SendUsernameListToAllOtherUserAfterConnection(IEnumerable<User> user, IEnumerable<String> usernames);
+        void SendUsernameListToAllOtherUserAfterConnection(User newUser);
 
-        void SendUsernameListToAllOtherUserAfterDisconnection(IEnumerable<User> user, IEnumerable<String> usernames);
+        void SendUsernameListToAllOtherUserAfterDisconnection(User DisconnectedUser);
 
-        void SendGameToAllUsers(IEnumerable<User> user, Game newGame);
+        void SendGameToAllUsers(Game newGame);
     }
 }

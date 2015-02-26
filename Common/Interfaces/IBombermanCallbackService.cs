@@ -14,7 +14,7 @@ namespace Common.Interfaces
         void OnError(string messageError, ErrorType errorType);
         //when i connect myself
         [OperationContract(IsOneWay = true)]
-        void OnConnection(Guid id, IEnumerable<string> logins);
+        void OnConnection(Guid ID, IEnumerable<string> logins);
         //when an other player connects
         [OperationContract(IsOneWay = true)]
         void OnUserConnected(IEnumerable<string> logins);
@@ -23,7 +23,7 @@ namespace Common.Interfaces
         void OnUserDisconnected(IEnumerable<string> logins);
         //when the creator start the game
         [OperationContract(IsOneWay = true)]
-        void OnGameStarted(Game newGame);
+        void OnGameStarted(Player player, Game newGame);
         //when any player makes a move
         [OperationContract(IsOneWay = true)]
         void OnPlayerMove(Player player, Position newPosition, ActionType actionType);

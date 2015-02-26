@@ -36,9 +36,9 @@ namespace Client
             _clientProcessor.OnUserDisconnected(logins);
         }
 
-        public void OnGameStarted(Game newGame)
+        public void OnGameStarted(Player player, Game newGame)
         {
-            throw new NotImplementedException();
+            _clientProcessor.OnGameStarted(player, newGame);
         }
 
         public void OnPlayerMove(Player player, Position newPosition, ActionType actionType)

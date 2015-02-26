@@ -22,8 +22,6 @@ namespace Client
 
         public static ClientProcessor ClientProcessor { get; set; }
 
-        public const string MapPath = @"F:\\Bomberman\Server\map.dat";
-
         [DllImport("Kernel32")]
         private static extern void SetConsoleCtrlHandler(EventHandler handler, bool add);
 
@@ -137,18 +135,18 @@ namespace Client
         {
             if (ClientProcessor.ID == Guid.Empty)
                 return;
-            Proxy.LeaveGame(ID);
+            Proxy.LeaveGame(ClientProcessor.ID);
         }
 
 
         private static void StartGame()
         {
-            Proxy.StartGame(MapPath);
+            Proxy.StartGame();
         }
 
         private static void MoveTo(ActionType actionType)
         {
-            Proxy.PlayerAction(actionType);
+            Proxy.PlayerAction(ClientProcessor.ID, actionType);
         }
 
         

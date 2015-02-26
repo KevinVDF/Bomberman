@@ -15,9 +15,9 @@ namespace Common.Interfaces
         void LeaveGame (Guid ID);
         //on button start
         [OperationContract(IsOneWay = true)]
-        void StartGame(string mapName);
+        void StartGame();
         //on any action
         [OperationContract(IsOneWay = true)]
-        void PlayerAction(ActionType actionType);
+        void PlayerAction(Guid ID, ActionType actionType);
     }
 }

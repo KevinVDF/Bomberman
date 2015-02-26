@@ -25,7 +25,9 @@ namespace Server.Manager.Interface
 
         IEnumerable<User> GetAllOtherUsers(User user);
 
-        IEnumerable<User> GetAllUsers();  
+        IEnumerable<User> GetAllUsers();
+
+        int GetNumberOfUsers();
 
         bool IsUsernameAlreadyUsed(string username);
     }

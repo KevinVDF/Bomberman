@@ -1,5 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Net.Mail;
+using System.Security.Policy;
 using Common.DataContract;
 using Common.Interfaces;
 using Common.Log;
@@ -18,27 +21,120 @@ namespace Server.Manager
 
         public void SendError(IBombermanCallbackService callback, string errorMessage, ErrorType errorType)
         {
+
             callback.OnError(errorMessage, errorType);
         }
 
-        public void SendUsernameListToNewUser(User newUser, IEnumerable<String> usernames)
+        public void SendUsernameListToNewUser(User newUser)
         {
+            if (newUser == null)
+            {
+                Log.WriteLine(Log.LogLevels.Error, "User unknown");
+                return;
+            }
+
+            IEnumerable<string> usernames = _userManager.GetListOfUsername();
+
+            if (usernames == null || !usernames.Any())
+            {
+                Log.WriteLine(Log.LogLevels.Error, "Problem getting listOfUsername");
+                return;
+            }
+
+            Log.WriteLine(Log.LogLevels.Info, "usernames List Send to new user");
+
             ExceptionFreeAction(newUser, user => user.CallbackService.OnConnection(newUser.ID, usernames));
         }
 
-        public void SendUsernameListToAllOtherUserAfterConnection(IEnumerable<User> otherUsers, IEnumerable<String> usernames)
+        public void SendUsernameListToAllOtherUserAfterConnection(User newUser)
         {
+            if (newUser == null)
+            {
+                Log.WriteLine(Log.LogLevels.Error, "User unknown");
+                return;
+            }
+
+            IEnumerable<User> otherUsers = _userManager.GetAllOtherUsers(newUser);
+
+            if (otherUsers == null)
+            {
+                Log.WriteLine(Log.LogLevels.Error, "Problem getting AllOtherUser list");
+                return;
+            }
+
+            if (!otherUsers.Any())
+            {
+                Log.WriteLine(Log.LogLevels.Error, "Not supposed to be called");
+                return;
+            }
+
+            IEnumerable<string> usernames = _userManager.GetListOfUsername();
+
+            if (usernames == null || !usernames.Any())
+            {
+                Log.WriteLine(Log.LogLevels.Error, "Problem getting listOfUsername");
+                return;
+            }
+
+            Log.WriteLine(Log.LogLevels.Info, "usernames List Send to other users after connection");
+
             ExceptionFreeAction(otherUsers, otherPlayer => otherPlayer.CallbackService.OnUserConnected(usernames));
         }
 
-        public void SendUsernameListToAllOtherUserAfterDisconnection(IEnumerable<User> otherUsers, IEnumerable<String> usernames)
+        public void SendUsernameListToAllOtherUserAfterDisconnection(User user)
         {
+            if (user == null)
+            {
+                Log.WriteLine(Log.LogLevels.Error, "User unknown");
+                return;
+            }
+
+            IEnumerable<User> otherUsers = _userManager.GetAllOtherUsers(user);
+
+            if (otherUsers == null)
+            {
+                Log.WriteLine(Log.LogLevels.Error, "Problem getting AllOtherUser list");
+                return;
+            }
+
+            if (!otherUsers.Any())
+            {
+                Log.WriteLine(Log.LogLevels.Error, "Not supposed to be called");
+                return;
+            }
+
+            IEnumerable<string> usernames = _userManager.GetListOfUsername();
+
+            if (usernames == null || !usernames.Any())
+            {
+                Log.WriteLine(Log.LogLevels.Error, "Problem getting listOfUsername");
+                return;
+            }
+
+            Log.WriteLine(Log.LogLevels.Info, "usernames List Send to other users after disconnection");
+
             ExceptionFreeAction(otherUsers, otherPlayer => otherPlayer.CallbackService.OnUserDisconnected(usernames));
         }
 
-        public void SendGameToAllUsers(IEnumerable<User> user, Game newGame)
+        public void SendGameToAllUsers(Game newGame)
         {
-            throw new NotImplementedException();
+            if (newGame == null)
+            {
+                Log.WriteLine(Log.LogLevels.Error, "game unknown");
+                return;
+            }
+
+            IEnumerable<User> users = _userManager.GetAllUsers();
+
+            if (users == null || !users.Any())
+            {
+                Log.WriteLine(Log.LogLevels.Error, "Problem getting all users");
+                return;
+            }
+
+            Log.WriteLine(Log.LogLevels.Info, "game send to all users");
+
+            ExceptionFreeAction(users, user => user.CallbackService.OnGameStarted(user.Player, newGame));
         }
 
         private void ExceptionFreeAction(User user, Action<User> action)
