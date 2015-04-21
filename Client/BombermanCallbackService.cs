@@ -41,9 +41,9 @@ namespace Client
             _clientProcessor.OnGameStarted(player, newGame);
         }
 
-        public void OnPlayerMove(Player player, Position newPosition, ActionType actionType)
+        public void OnPlayerMove(Player player, Position oldPosition)
         {
-            throw new NotImplementedException();
+            _clientProcessor.OnMove(player, oldPosition);
         }
 
         public void OnBombDropped(Bomb newBomb)

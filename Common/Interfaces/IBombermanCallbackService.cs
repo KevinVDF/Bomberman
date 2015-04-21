@@ -26,7 +26,7 @@ namespace Common.Interfaces
         void OnGameStarted(Player player, Game newGame);
         //when any player makes a move
         [OperationContract(IsOneWay = true)]
-        void OnPlayerMove(Player player, Position newPosition, ActionType actionType);
+        void OnPlayerMove(Player player, Position newPosition);
         //when an user drop a bomb
         [OperationContract(IsOneWay = true)]
         void OnBombDropped(Bomb newBomb);

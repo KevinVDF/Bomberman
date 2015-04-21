@@ -5,6 +5,8 @@ namespace Server.Manager.Interface
 {
     public interface IGameManager
     {
-        Game CreateNewGame(Map map);
+        void CreateNewGame();
+
+        Game GetCurrentGame();
     }
 }

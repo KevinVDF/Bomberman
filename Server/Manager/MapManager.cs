@@ -1,7 +1,6 @@
 ﻿
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Configuration;
 using System.IO;
 using System.Linq;
@@ -15,16 +14,17 @@ namespace Server.Manager
     public class MapManager: IMapManager
     {
         private IUserManager _userManager;
+        private Map _map;
 
         public MapManager(IUserManager userManager)
         {
             _userManager = userManager;
         }
 
-        public Map GenerateMap(string mapName)
+        public Map GenerateMapFromTXTFile(string mapName)
         {
             int mapSize;
-            Map map = new Map();
+            _map = new Map();
             List<LivingObject> matrice = new List<LivingObject>();
 
             IEnumerable<User> users = _userManager.GetAllUsers();
@@ -128,11 +128,42 @@ namespace Server.Manager
                 Log.WriteLine(Log.LogLevels.Error, "Probleme creating objects");
                 return null;
             }
-            map.LivingObjects = matrice;
-            map.MapName = mapName;
-            map.MapSize = mapSize;
+            _map.LivingObjects = matrice;
+            _map.MapName = mapName;
+            _map.MapSize = mapSize;
 
-            return map;
+            return _map;
+        }
+
+        public Position MovePlayer(User user, int stepX, int stepY)
+        {
+            //get the player linked to the user
+            Player playerToMove = user.Player;
+
+            // Get object at future player location
+            LivingObject collider = _map.LivingObjects.FirstOrDefault(x => playerToMove.Position.Y + stepY == x.Position.Y
+                                                                                      && playerToMove.Position.X + stepX == x.Position.X);
+            // Can't go thru wall or bomb
+            if (collider != null && (collider is Wall || collider is Bomb))
+            {
+                Log.WriteLine(Log.LogLevels.Debug, "Collider found : {0}, {1} type {2}", collider.Position.X, collider.Position.Y, collider);
+                return null;
+            }
+
+            Position oldPosition = playerToMove.Position;
+
+            Log.WriteLine(Log.LogLevels.Debug, "Player {0} move from {1},{2} to {3},{4}", user.Username, playerToMove.Position.X, playerToMove.Position.Y, newPosition.X, newPosition.Y);
+            
+            //update position's player
+            playerToMove.Position.Y += stepY;
+            playerToMove.Position.X += stepX;
+
+            return oldPosition;
+        }
+
+        public void PlayerDropBomb(Player player, Bomb bomb)
+        {
+            throw new NotImplementedException();
         }
     }
 }

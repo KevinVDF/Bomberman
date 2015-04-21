@@ -7,6 +7,7 @@ namespace Common.DataContract
     [KnownType(typeof(Bomb))]
     [KnownType(typeof(Bonus))]
     [KnownType(typeof(Player))]
+    
     public class Game
     {
         [DataMember]

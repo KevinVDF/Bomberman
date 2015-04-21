@@ -41,7 +41,7 @@ namespace Server
             Server.DisconnectUser(ID);
         }
 
-        public void StartGame(Guid ID)
+        public void StartGame()
         {
             Log.WriteLine(Log.LogLevels.Debug, "StartGame");
             Server.StartNewGame();
@@ -49,9 +49,8 @@ namespace Server
 
         public void PlayerAction(Guid ID, ActionType actionType)
         {
-            IBombermanCallbackService callback = OperationContext.Current.GetCallbackChannel<IBombermanCallbackService>();
             Log.WriteLine(Log.LogLevels.Debug, "PlayerAction :{0}", actionType.ToString());
-            Server.PlayerAction(callback, actionType);
+            Server.PlayerAction(ID, actionType);
         }
     }
 }

@@ -17,5 +17,7 @@ namespace Server.Manager.Interface
         void SendUsernameListToAllOtherUserAfterDisconnection(User DisconnectedUser);
 
         void SendGameToAllUsers(Game newGame);
+
+        void SendMoveToAllUsers(User user, Position newPosition);
     }
 }

@@ -21,7 +21,6 @@ namespace Server.Manager
 
         public void SendError(IBombermanCallbackService callback, string errorMessage, ErrorType errorType)
         {
-
             callback.OnError(errorMessage, errorType);
         }
 
@@ -135,6 +134,28 @@ namespace Server.Manager
             Log.WriteLine(Log.LogLevels.Info, "game send to all users");
 
             ExceptionFreeAction(users, user => user.CallbackService.OnGameStarted(user.Player, newGame));
+        }
+
+        public void SendMoveToAllUsers(User userMoved, Position newPosition)
+        {
+            if (userMoved == null || newPosition == null)
+            {
+                Log.WriteLine(Log.LogLevels.Error, "unknown user to move / new Position");
+                return;
+            }
+
+            IEnumerable<User> users = _userManager.GetAllUsers();
+
+            if (users == null || !users.Any())
+            {
+                Log.WriteLine(Log.LogLevels.Error, "Problem getting all users");
+                return;
+            }
+
+            Log.WriteLine(Log.LogLevels.Info, "Move succeed : send new position to all user");
+
+            ExceptionFreeAction(users, user => user.CallbackService.OnPlayerMove(userMoved.Player, newPosition));
+
         }
 
         private void ExceptionFreeAction(User user, Action<User> action)

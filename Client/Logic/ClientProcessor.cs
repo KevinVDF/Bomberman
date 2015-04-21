@@ -15,6 +15,15 @@ namespace Client.Logic
 
         public Map Map { get; set; }
 
+        private static void InitializeConsole()
+        {
+            Console.SetWindowSize(80, 30);
+            Console.BufferWidth = 80;
+            Console.BufferHeight = 30;
+            Console.CursorVisible = false;
+            Console.Clear();
+        }
+
         public void OnError(string errorMessage, ErrorType errorType)
         {
             InitializeConsole();
@@ -86,33 +95,28 @@ namespace Client.Logic
             DisplayMap(newGame);
         }
 
-        private static void InitializeConsole()
+        public void OnMove(LivingObject objectToMoveBefore, Position newPosition)
         {
-            Console.SetWindowSize(80, 30);
-            Console.BufferWidth = 80;
-            Console.BufferHeight = 30;
-            Console.CursorVisible = false;
-            Console.Clear();
+            LivingObject objectToMoveAfter = objectToMoveBefore;
+            objectToMoveAfter.Position = newPosition;
+            if (Map == null) 
+                return;
+            //check if object to move does exists
+            if (!Map.LivingObjects.Any(livingObject => livingObject.ComparePosition(objectToMoveBefore))) 
+                return;
+            //if before is player and is "me" then update global player
+            if (objectToMoveBefore is Player && Player.ID == objectToMoveBefore.ID)
+                Player = objectToMoveAfter as Player;
+            //handle before
+            Console.SetCursorPosition(objectToMoveBefore.Position.X, 10 + objectToMoveBefore.Position.Y); // 10 should be replaced with map parameters
+            Console.Write(' ');
+            Map.LivingObjects.Remove(objectToMoveBefore);
+            //handle after
+            char toDisplay = ObjectToChar(objectToMoveAfter);
+            Console.SetCursorPosition(objectToMoveAfter.Position.X, 10 + objectToMoveAfter.Position.Y); // 10 should be replaced with map parameters
+            Console.Write(toDisplay);
+            Map.LivingObjects.Add(objectToMoveAfter);
         }
-
-        //public void OnMove(LivingObject objectToMoveBefore, LivingObject objectToMoveAfter)
-        //{
-        //    if (Map == null) return;
-        //    //check if object to move does exists
-        //    if (!Map.LivingObjects.Any(livingObject => livingObject.ComparePosition(objectToMoveBefore))) return;
-        //    //if before is player and is "me" then update global player
-        //    if (objectToMoveBefore is Player && ID == objectToMoveBefore.ID)
-        //        Player = objectToMoveAfter as Player;
-        //    //handle before
-        //    Console.SetCursorPosition(objectToMoveBefore.Position.X, 10 + objectToMoveBefore.Position.Y); // 10 should be replaced with map parameters
-        //    Console.Write(' ');
-        //    Map.LivingObjects.Remove(objectToMoveBefore);
-        //    //handle after
-        //    char toDisplay = ObjectToChar(objectToMoveAfter);
-        //    Console.SetCursorPosition(objectToMoveAfter.Position.X, 10 + objectToMoveAfter.Position.Y); // 10 should be replaced with map parameters
-        //    Console.Write(toDisplay);
-        //    Map.LivingObjects.Add(objectToMoveAfter);
-        //}
 
         private void DisplayMap(Game currentGame)
         {

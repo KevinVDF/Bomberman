@@ -17,7 +17,7 @@
         </ItemsControl.ItemContainerStyle>
         <ItemsControl.ItemTemplate>
             <DataTemplate>
-                <Canvas x:Name="canva">
+                <Canvas>
                     <Rectangle Width="{Binding Width}" Height="{Binding Height}" Canvas.Top="{Binding Path=PositionY}" Canvas.Left="{Binding Path=PositionX}" Fill="{Binding ImageInUse}"/>
                 </Canvas>
             </DataTemplate>
