@@ -13,7 +13,7 @@ namespace Server.Manager
 {
     public class MapManager: IMapManager
     {
-        private IUserManager _userManager;
+        private readonly IUserManager _userManager;
         private Map _map;
 
         public MapManager(IUserManager userManager)
@@ -25,11 +25,11 @@ namespace Server.Manager
         {
             int mapSize;
             _map = new Map();
-            List<LivingObject> matrice = new List<LivingObject>();
+            var matrice = new List<LivingObject>();
 
-            IEnumerable<User> users = _userManager.GetAllUsers();
+            List<User> users = _userManager.GetAllUsers().ToList();
 
-            if (users == null || !users.Any())
+            if (!users.Any())
             {
                 Log.WriteLine(Log.LogLevels.Error, "Problem getting users");
                 return null;
@@ -98,12 +98,12 @@ namespace Server.Manager
                             case '1':
                             case '2':
                             case '3':
-                                if (players.Count() > (int)Char.GetNumericValue(cell))
+                                if (players.Count() > (int)char.GetNumericValue(cell))
                                 {
-                                    livingObject = players[(int) Char.GetNumericValue(cell)].Player = new Player
+                                    livingObject = players[(int) char.GetNumericValue(cell)].Player = new Player
                                     {
                                         Alive = true,
-                                        ID = (int)Char.GetNumericValue(cell),
+                                        ID = (int)char.GetNumericValue(cell),
                                         BombNumber = 1,
                                         BombPower = 1,
                                         CanShootBomb = false,
@@ -125,7 +125,7 @@ namespace Server.Manager
 
             if (matrice.Count == 0)
             {
-                Log.WriteLine(Log.LogLevels.Error, "Probleme creating objects");
+                Log.WriteLine(Log.LogLevels.Error, "Problem creating objects");
                 return null;
             }
             _map.LivingObjects = matrice;
@@ -150,13 +150,19 @@ namespace Server.Manager
                 return null;
             }
 
-            Position oldPosition = playerToMove.Position;
+            var oldPosition = playerToMove.Position;
+
+            //Calculate newPosition
+            var newPosition = new Position
+            {
+                Y = playerToMove.Position.Y + stepY,
+                X = playerToMove.Position.X + stepX
+            };
 
             Log.WriteLine(Log.LogLevels.Debug, "Player {0} move from {1},{2} to {3},{4}", user.Username, playerToMove.Position.X, playerToMove.Position.Y, newPosition.X, newPosition.Y);
             
             //update position's player
-            playerToMove.Position.Y += stepY;
-            playerToMove.Position.X += stepX;
+            playerToMove.Position = newPosition;
 
             return oldPosition;
         }
